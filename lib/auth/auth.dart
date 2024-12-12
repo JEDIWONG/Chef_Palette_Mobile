@@ -11,7 +11,7 @@ class Auth extends StatelessWidget{
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.white70,
       body: Column(
         children: [
 
@@ -29,7 +29,7 @@ class Auth extends StatelessWidget{
               children: [
                 RectButton(
                   bg: Colors.deepPurple,
-                  fg: Colors.white,
+                  fg: Colors.white70,
                   text: "Login",
                   rad: 10,
                   func: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>const Login()));}
@@ -38,7 +38,7 @@ class Auth extends StatelessWidget{
                 const SizedBox(height: 50,),
 
                 RectButton(
-                  bg: Colors.white,
+                  bg: Colors.white70,
                   fg: Colors.deepPurple,
                   text: "Sign Up",
                   rad: 10,

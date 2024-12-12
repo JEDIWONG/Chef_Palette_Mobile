@@ -1,7 +1,8 @@
-
-import 'package:chef_palette/component/logo.dart';
+import 'package:chef_palette/component/search.dart';
+import 'package:chef_palette/screen/account.dart';
 import 'package:chef_palette/screen/menu.dart';
 import 'package:chef_palette/screen/order.dart';
+import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 
 class Index extends StatefulWidget{
@@ -9,7 +10,6 @@ class Index extends StatefulWidget{
 
   @override
   State<Index> createState()=> IndexState();
-  
   
 }
 
@@ -21,7 +21,7 @@ class IndexState extends State<Index>{
     const Menu(),
     const Order(),
     const Menu(),
-    const Menu(),
+    const Account(),
   ];
 
   void _switchPage(int index) {
@@ -34,24 +34,14 @@ class IndexState extends State<Index>{
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        toolbarHeight: 80,
-        title: const Logo(),
-        actions: [
-          IconButton(onPressed: (){}, icon: const Icon(Icons.notifications_rounded))
-        ],
-        centerTitle: true,
-        elevation: 1.0,
-        surfaceTintColor: Colors.white,
-        shadowColor: Colors.grey,
-        backgroundColor: Colors.white,
-      ),
 
       body: pageList.elementAt(selectedIndex),
 
       floatingActionButton: FloatingActionButton(
         onPressed: (){},
         backgroundColor: const Color.fromARGB(255, 59, 248, 66),
+        shape: const CircleBorder(
+        ),
         child: const Icon(Icons.shopping_cart)
       ),
 
@@ -70,6 +60,11 @@ class IndexState extends State<Index>{
           BottomNavigationBarItem(
             icon: Icon(Icons.checklist),
             label: 'Order',
+          ),
+
+          BottomNavigationBarItem(
+            icon: Icon(Icons.star_outline_rounded),
+            label: 'Rewards',
           ),
 
           BottomNavigationBarItem(

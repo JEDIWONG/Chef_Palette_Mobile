@@ -15,7 +15,7 @@ class Login extends StatelessWidget{
         children: [
           const Padding(
             padding: EdgeInsets.only(top: 50.0),
-            child: Text("Sign In Account",style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold,color: Colors.white),),
+            child: Text("Sign In Account",style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold,color: Color.fromARGB(255, 255, 255, 255)),),
           ), 
           Container(
             width: MediaQuery.sizeOf(context).width,
@@ -23,7 +23,7 @@ class Login extends StatelessWidget{
             margin: const EdgeInsets.only(top: 50),
             padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
             decoration: const BoxDecoration(
-              color: Colors.white,
+              color: Color.fromARGB(255, 75, 39, 39),
               borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
               boxShadow: [
                 BoxShadow(
@@ -62,7 +62,7 @@ class Login extends StatelessWidget{
                 const SizedBox(height: 60,),
                 RectButton(
                   bg: Colors.green,
-                  fg: Colors.white,
+                  fg:Color.fromARGB(255, 255, 255, 255),
                   text: "Sign In",
                   func: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>const Index()));},
                   rad: 10

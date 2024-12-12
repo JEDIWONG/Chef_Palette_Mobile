@@ -22,13 +22,13 @@ class Register extends StatelessWidget{
               margin: const EdgeInsets.only(top: 50),
               padding: const EdgeInsets.fromLTRB(40,50,40,100),
               decoration: const BoxDecoration(
-                color: Colors.white,
+                color: Color.fromARGB(255, 255, 255, 255),
                 borderRadius: BorderRadius.vertical(top: Radius.circular(30))
               ),
               child: Column(
                 children: [
                   const StepsBar(index: 0, len: 2), 
-                  SizedBox(height: 50,),
+                  const SizedBox(height: 50,),
                   TextFormField(             
                     decoration: const InputDecoration(
                       label: Text("Email"),
@@ -54,7 +54,7 @@ class Register extends StatelessWidget{
                   const SizedBox(height: 50,),
                   RectButton(
                     bg: Colors.deepPurpleAccent,
-                    fg: Colors.white,
+                    fg: Color.fromARGB(255, 255, 255, 255),
                     text: "Next", func: (){}, rad: 10
                   )
                 ],
