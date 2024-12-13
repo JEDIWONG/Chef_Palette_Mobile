@@ -10,6 +10,14 @@ class CustomStyle{
   static TextStyle h4 = const TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color: Colors.black);
   static TextStyle h5 = const TextStyle(fontSize: 14,fontWeight: FontWeight.bold,color: Colors.black);
   static TextStyle txt = const TextStyle(fontSize: 14,fontWeight: FontWeight.normal,color: Colors.black);
+  
+  static TextStyle link = const TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.normal,
+    color: Colors.blue,
+    decoration: TextDecoration.underline,
+    decorationColor: Colors.blue
+  );
 
   static TextStyle subtitle = const TextStyle(fontSize: 12,fontWeight: FontWeight.normal,color: Colors.grey);
 

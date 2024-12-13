@@ -23,13 +23,14 @@ class Account extends StatelessWidget{
             const AccountTile(title: "Payment Method", icon: Icons.payment_rounded),
             const AccountSetting(),
 
-            const SizedBox(height: 50,),
+            const SizedBox(height: 30,),
             OutlinedButton(
               
               onPressed: (){
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>const Auth()));
               }, 
               style: OutlinedButton.styleFrom(
+              
                 backgroundColor: Colors.white,
                 side: const BorderSide(color: Colors.red),
                 foregroundColor: Colors.red,
