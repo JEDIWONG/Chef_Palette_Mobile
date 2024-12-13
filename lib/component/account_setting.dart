@@ -7,16 +7,16 @@ class AccountSetting extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: const EdgeInsets.symmetric(vertical: 30),
       child: Column(
         children: [
           ListTile(
-            leading: Text("Advanced Setting",style: CustomStyle.h3,),
+            leading: Text("Advanced",style: CustomStyle.h3,),
           ),
           ListTile(
 
             leading: const Icon(Icons.password_rounded),
             title: Text("Change Password",style: CustomStyle.h4,),
-            subtitle: Text("Change Your Password To a New one",style: CustomStyle.subtitle,),
             trailing: ElevatedButton(
               onPressed: (){}, 
               style: ElevatedButton.styleFrom(
@@ -24,23 +24,23 @@ class AccountSetting extends StatelessWidget{
                 foregroundColor: Colors.white,
                 fixedSize: Size(100, 30)
               ),
-              child: Text("Change"),
+              child: const Text("Change"),
 
             ),
           ),
           ListTile(
 
-            leading: const Icon(Icons.password_rounded),
-            title: Text("Terminate Account",style: CustomStyle.h4,),
-            subtitle: Text("This account will loss forever",style: CustomStyle.subtitle,),
+            leading: const Icon(Icons.delete_forever,color: Colors.red,),
+            title: Text("Delete Account",style: CustomStyle.h4,),
+          
             trailing: ElevatedButton(
               onPressed: (){}, 
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
                 foregroundColor: Colors.white,
-                fixedSize: Size(100, 30)
+                fixedSize: const Size(100, 30)
               ),
-              child: Text("Delete"),
+              child: const Text("Delete"),
 
             ),
           )

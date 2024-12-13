@@ -9,43 +9,32 @@ class AccountCard extends StatelessWidget{
   Widget build(BuildContext context) {
     return Container(
       width: MediaQuery.sizeOf(context).width,
-      
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.centerRight,
-            child:IconButton(onPressed: (){}, icon: const Icon(Icons.edit)),
-          ), 
-
-          Row(
-            children: [
-              const Icon(Icons.account_circle_rounded,size: 50,),
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 30),
-                
-                child: Column(
-                  children: [
-                    Text("John Doe",textAlign: TextAlign.left,style: CustomStyle.h1,),
-                    Text("Registered since 12 Nov 2024",textAlign: TextAlign.left,style: CustomStyle.txt,),
-                  ],
-                ),
-              )
-            ],
-           
-          ), 
-
-          Container(
-            width: MediaQuery.sizeOf(context).width,
-            margin: const EdgeInsets.symmetric(vertical: 10),
-            child: Column(
-              children: [
-                ListTile(title: Text("Contact Information",style: CustomStyle.h4,textAlign: TextAlign.left,),), 
-                const ListTile(leading: Text("Email"),title: Text("JohnDoe@gmail.com"),),
-                const ListTile(leading: Text("Phone"),title: Text("011-12312345"),),
-              ],
-            ),
+      padding: const EdgeInsets.symmetric(vertical: 30,horizontal: 10),
+      margin: EdgeInsets.fromLTRB(0, 10, 0, 5),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(Radius.circular(20)),
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 0.5,
+            spreadRadius: 0.1,
+            blurStyle: BlurStyle.normal,
+            offset: Offset(0, 0),
+            color: Colors.grey,
           )
-        
+        ]
+      ),    
+      child:  Column(
+        children: [
+          
+          ListTile(
+            leading: const Icon(Icons.account_circle_rounded,size: 70,),
+            title: Text("Wong Zhi Kin",style:CustomStyle.h3 ,),
+            subtitle: Text("Joined at 12 Nov 2024",style: CustomStyle.subtitle,),
+            trailing: IconButton(onPressed: (){}, icon:const Icon(Icons.edit))
+            
+          ),           
+
         ],
       ),
     );

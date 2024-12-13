@@ -1,5 +1,6 @@
 import 'package:chef_palette/component/search.dart';
 import 'package:chef_palette/screen/account.dart';
+import 'package:chef_palette/screen/cart.dart';
 import 'package:chef_palette/screen/menu.dart';
 import 'package:chef_palette/screen/order.dart';
 import 'package:chef_palette/style/style.dart';
@@ -38,18 +39,21 @@ class IndexState extends State<Index>{
       body: pageList.elementAt(selectedIndex),
 
       floatingActionButton: FloatingActionButton(
-        onPressed: (){},
-        backgroundColor: const Color.fromARGB(255, 59, 248, 66),
-        shape: const CircleBorder(
-        ),
+        onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>const Cart()));},
+        backgroundColor: Colors.amberAccent,
+        shape: const CircleBorder(),
         child: const Icon(Icons.shopping_cart)
       ),
+
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex,
         onTap: _switchPage, 
         selectedItemColor: const Color.fromARGB(255, 59, 248, 66),
         unselectedItemColor: Colors.black,
+        iconSize: 30,
+        type: BottomNavigationBarType.fixed,
       
         items: const [
           BottomNavigationBarItem(
@@ -63,7 +67,7 @@ class IndexState extends State<Index>{
           ),
 
           BottomNavigationBarItem(
-            icon: Icon(Icons.star_outline_rounded),
+            icon: Icon(Icons.money_rounded),
             label: 'Rewards',
           ),
 

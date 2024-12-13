@@ -9,8 +9,9 @@ class Menu extends StatelessWidget{
   Widget build(BuildContext context) {
     return   Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         toolbarHeight: 150,
-        title: Search(),
+        title: const Search(),
         centerTitle: true,
         elevation: 3.0,
         shadowColor: Colors.black,
@@ -23,7 +24,7 @@ class Menu extends StatelessWidget{
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-
+            
             //CategoryBar(),
           ],
         ),

@@ -1,6 +1,7 @@
 import "package:chef_palette/auth/login.dart";
 import "package:chef_palette/auth/register.dart";
 import "package:chef_palette/component/custom_button.dart";
+import "package:chef_palette/style/style.dart";
 import "package:flutter/material.dart";
 
 class Auth extends StatelessWidget{
@@ -11,25 +12,20 @@ class Auth extends StatelessWidget{
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white70,
+      backgroundColor: Colors.green,
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          
+          Image.asset("assets/images/logo.png",width: 200,),
 
           Container(
-            margin: const EdgeInsets.only(top: 100),
-            child: Center(
-              child: Image.asset("assets/images/logo.png",width: 200,),
-            )
-          ),
-          const Text("Chef Palette",style: TextStyle(fontSize: 24,fontWeight: FontWeight.bold)),
-
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 30,horizontal: 50),
+            padding: const EdgeInsets.symmetric(vertical: 50,horizontal: 70),
             child: Column(
               children: [
                 RectButton(
-                  bg: Colors.deepPurple,
-                  fg: Colors.white70,
+                  bg: CustomStyle.primary,
+                  fg: Colors.white,
                   text: "Login",
                   rad: 10,
                   func: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>const Login()));}
@@ -38,7 +34,7 @@ class Auth extends StatelessWidget{
                 const SizedBox(height: 50,),
 
                 RectButton(
-                  bg: Colors.white70,
+                  bg: Colors.white,
                   fg: Colors.deepPurple,
                   text: "Sign Up",
                   rad: 10,
