@@ -3,6 +3,7 @@ import 'package:chef_palette/screen/account.dart';
 import 'package:chef_palette/screen/cart.dart';
 import 'package:chef_palette/screen/menu.dart';
 import 'package:chef_palette/screen/order.dart';
+import 'package:chef_palette/screen/rewards.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +22,7 @@ class IndexState extends State<Index>{
   static List<Widget> pageList = [
     const Menu(),
     const Order(),
-    const Menu(),
+    const Rewards(),
     const Account(),
   ];
 
@@ -52,6 +53,7 @@ class IndexState extends State<Index>{
         onTap: _switchPage, 
         selectedItemColor: const Color.fromARGB(255, 59, 248, 66),
         unselectedItemColor: Colors.black,
+        backgroundColor: Colors.white,
         iconSize: 30,
         type: BottomNavigationBarType.fixed,
       
