@@ -1,3 +1,4 @@
+import 'package:chef_palette/screen/notification.dart';
 import 'package:flutter/material.dart';
 
 class Search extends StatelessWidget{
@@ -8,6 +9,7 @@ class Search extends StatelessWidget{
       return Container(
         width: MediaQuery.sizeOf(context).width,
         margin: const EdgeInsets.symmetric(vertical: 50),
+      
 
         child: Column(
           
@@ -16,7 +18,7 @@ class Search extends StatelessWidget{
             ListTile(
               leading: const Text("Good Day",style: TextStyle(color: Colors.white,fontSize: 24,fontWeight: FontWeight.bold),),
               trailing: IconButton(
-                onPressed: (){}, 
+                onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>const NotificationScreen()));}, 
                 style: IconButton.styleFrom(
                   backgroundColor: Colors.amber,
                   elevation: 3.0

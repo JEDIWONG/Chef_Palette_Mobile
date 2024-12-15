@@ -4,6 +4,7 @@ class UserModel {
   String firstName;
   String lastName;
   String phoneNumber;
+  
 
   UserModel({
     required this.uid,
@@ -11,6 +12,7 @@ class UserModel {
     required this.firstName,
     required this.lastName,
     required this.phoneNumber,
+    
   });
 
   Map<String, dynamic> toMap() {

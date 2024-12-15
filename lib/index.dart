@@ -1,10 +1,8 @@
-import 'package:chef_palette/component/search.dart';
 import 'package:chef_palette/screen/account.dart';
 import 'package:chef_palette/screen/cart.dart';
 import 'package:chef_palette/screen/menu.dart';
 import 'package:chef_palette/screen/order.dart';
 import 'package:chef_palette/screen/rewards.dart';
-import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 
 class Index extends StatefulWidget{

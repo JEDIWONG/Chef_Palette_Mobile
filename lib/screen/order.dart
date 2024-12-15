@@ -1,3 +1,4 @@
+import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 
 class Order extends StatelessWidget{
@@ -5,11 +6,23 @@ class Order extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
+
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        leadingWidth: MediaQuery.sizeOf(context).width * 0.30,
+        
+        title: Text(
+          "Orders",
+          style: CustomStyle.h1,
+        ),
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            Text("Order page")
+            
           ],
         ),
       ),
