@@ -19,6 +19,12 @@ class CustomStyle{
     decorationColor: Colors.blue
   );
 
+  static TextStyle link2 = const TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.bold,
+    color: Colors.blue,
+  );
+
   static TextStyle subtitle = const TextStyle(fontSize: 12,fontWeight: FontWeight.normal,color: Colors.grey);
 
   static Color primary = const Color.fromARGB(255, 37, 117, 30);

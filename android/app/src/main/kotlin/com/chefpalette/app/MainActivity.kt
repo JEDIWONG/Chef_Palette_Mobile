@@ -1,4 +1,4 @@
-package com.example.chef_palette
+package com.chefpalette.app
 
 import io.flutter.embedding.android.FlutterActivity
 

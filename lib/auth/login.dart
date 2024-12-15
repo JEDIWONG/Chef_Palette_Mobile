@@ -1,21 +1,50 @@
 import 'package:chef_palette/component/custom_button.dart';
 import 'package:chef_palette/index.dart';
 import 'package:chef_palette/style/style.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class Login extends StatelessWidget {
+class Login extends StatefulWidget {
   const Login({super.key});
+
+  @override
+  _LoginState createState() => _LoginState();
+}
+
+class _LoginState extends State<Login> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  String? _errorMessage;
+
+  // Firebase sign-in function
+  Future<void> _login() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+      // If login is successful, navigate to the next screen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const Index(), // Your home page after login
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        _errorMessage = e.message; // Handle error messages
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.black.withOpacity(0.5), 
+      backgroundColor: const Color.fromARGB(100, 0, 0, 0),
       body: Stack(
         children: [
-          
           Positioned.fill(
-          
             child: Image.asset(
               'assets/images/bg.png', 
               fit: BoxFit.contain,
@@ -24,11 +53,11 @@ class Login extends StatelessWidget {
           ),
           Positioned.fill(
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    Colors.black.withOpacity(0.5), 
-                    Colors.black.withOpacity(0.3), 
+                    Color.fromARGB(125, 0, 0, 0),
+                    Color.fromARGB(50, 0, 0, 0),
                   ],
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
@@ -36,7 +65,6 @@ class Login extends StatelessWidget {
               ),
             ),
           ),
-          
           Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -53,7 +81,7 @@ class Login extends StatelessWidget {
                         color: Colors.black,
                         offset: Offset(1, 1),
                         blurRadius: 1,
-                      )
+                      ),
                     ]
                   ),
                 ),
@@ -72,7 +100,7 @@ class Login extends StatelessWidget {
                       offset: Offset(0, -3),
                       blurRadius: 3,
                       blurStyle: BlurStyle.normal,
-                    )
+                    ),
                   ],
                 ),
                 child: Column(
@@ -83,15 +111,19 @@ class Login extends StatelessWidget {
                       child: Text("Welcome Back,",style: CustomStyle.h3,),
                     ),
                     const SizedBox(height: 40),
+                    // Email TextField
                     TextFormField(
+                      controller: _emailController,
                       decoration: const InputDecoration(
                         label: Text("Email"),
                         prefixIcon: Icon(Icons.email_rounded),
-                        fillColor: Colors.grey       
+                        fillColor: Colors.grey,
                       ),
                     ),
                     const SizedBox(height: 20),
+                    // Password TextField
                     TextFormField(
+                      controller: _passwordController,
                       obscureText: true,
                       decoration: const InputDecoration(
                         label: Text("Password"),
@@ -113,20 +145,22 @@ class Login extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 60),
+                    
                     RectButton(
                       bg: CustomStyle.primary,
                       fg: const Color.fromARGB(255, 255, 255, 255),
                       text: "Login",
-                      func: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Index(),
-                          ),
-                        );
-                      },
+                      func: _login, 
                       rad: 10,
                     ),
+                    if (_errorMessage != null) 
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Text(
+                          _errorMessage ?? '',
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      ),
                   ],
                 ),
               ),

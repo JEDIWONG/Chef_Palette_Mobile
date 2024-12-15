@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1027746126649",
+    "project_id": "chef-palette",
+    "storage_bucket": "chef-palette.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1027746126649:android:8f6faa60b077ea259626e8",
+        "android_client_info": {
+          "package_name": "com.chefpalette.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1027746126649-lb5gkpj8rgh44s00c043hj58birjlaqc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDezjkKndVn_CjHV1v6Ovk949ngZ98wDIA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1027746126649-lb5gkpj8rgh44s00c043hj58birjlaqc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1027746126649-i8a73m6o6ld8lrpi3u70kas3iq0rshfp.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.chefpalette.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
