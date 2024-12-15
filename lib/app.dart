@@ -1,3 +1,4 @@
+import 'package:chef_palette/auth/register.dart';
 import 'package:chef_palette/index.dart';
 import 'package:flutter/material.dart';
 
@@ -9,7 +10,7 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       title: 'Chef Palette',
       debugShowCheckedModeBanner: false,
-      home: Index()
+      home: RegisterStep2()
     );
   }
 }

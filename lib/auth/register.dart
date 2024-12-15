@@ -4,6 +4,7 @@ import 'package:chef_palette/index.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -172,12 +173,21 @@ class RegisterStep2 extends StatelessWidget {
                         prefixIcon: Icon(Icons.phone),
                       ),
                     ),
+                    const SizedBox(height: 30),
+                    ListTile(leading: Text("Date of Birth",style: CustomStyle.h4,),),
                     
+                    SfDateRangePicker(
+                      selectionMode: DateRangePickerSelectionMode.single,
+                      backgroundColor: const Color.fromARGB(255, 231, 255, 234),
+                      selectionColor: Colors.green,
+                      todayHighlightColor: const Color.fromARGB(255, 255, 191, 0),
+                      
+                    ),
                     const SizedBox(height: 50),
                     RectButton(
                       bg: const Color.fromARGB(255, 51, 64, 129),
                       fg: const Color.fromARGB(255, 255, 255, 255),
-                      text: "Next",
+                      text: "Move On",
                       func: () {
                         Navigator.push(
                           context,
@@ -265,6 +275,7 @@ class _RegisterStep3State extends State<RegisterStep3> {
                   ),
 
                   const SizedBox(height: 50),
+                  
                   RectButton(
                     bg: Colors.green,
                     fg: const Color.fromARGB(255, 255, 255, 255),
