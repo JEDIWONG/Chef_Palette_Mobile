@@ -1,3 +1,5 @@
+import 'package:chef_palette/auth/auth.dart';
+import 'package:chef_palette/auth/login.dart';
 import 'package:chef_palette/auth/register.dart';
 import 'package:chef_palette/auth/set_details.dart';
 import 'package:chef_palette/index.dart';
@@ -11,7 +13,7 @@ class MyApp extends StatelessWidget {
     return const MaterialApp(
       title: 'Chef Palette',
       debugShowCheckedModeBanner: false,
-      home: RegisterStep2(uid: '1',)
+      home: Auth(),
     );
   }
 }

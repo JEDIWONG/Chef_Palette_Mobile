@@ -8,10 +8,10 @@ final List<ProductModel> products = [
     price: 12.50,
     imgUrl: "assets/images/placeholder.png",
     addons: [
-      "Extra Sambal",
-      "Fried Chicken",
-      "Boiled Egg",
-      "Peanuts",
+      {"name": "Extra Sambal", "price": 2.00},
+      {"name": "Fried Chicken", "price": 5.00},
+      {"name": "Boiled Egg", "price": 1.50},
+      {"name": "Peanuts", "price": 1.00},
     ],
   ),
   ProductModel(
@@ -21,9 +21,9 @@ final List<ProductModel> products = [
     price: 5.00,
     imgUrl: "assets/images/placeholder.png",
     addons: [
-      "Curry Sauce",
-      "Dhal Gravy",
-      "Sugar Topping",
+      {"name": "Curry Sauce", "price": 1.50},
+      {"name": "Dhal Gravy", "price": 1.00},
+      {"name": "Sugar Topping", "price": 0.50},
     ],
   ),
   ProductModel(
@@ -33,9 +33,9 @@ final List<ProductModel> products = [
     price: 15.00,
     imgUrl: "assets/images/placeholder.png",
     addons: [
-      "Extra Prawns",
-      "Cockles",
-      "Boiled Egg",
+      {"name": "Extra Prawns", "price": 3.00},
+      {"name": "Cockles", "price": 2.50},
+      {"name": "Boiled Egg", "price": 1.50},
     ],
   ),
   ProductModel(
@@ -45,9 +45,9 @@ final List<ProductModel> products = [
     price: 14.00,
     imgUrl: "assets/images/placeholder.png",
     addons: [
-      "Extra Prawns",
-      "Extra Chili Paste",
-      "Duck Egg",
+      {"name": "Extra Prawns", "price": 3.00},
+      {"name": "Extra Chili Paste", "price": 1.50},
+      {"name": "Duck Egg", "price": 2.00},
     ],
   ),
 ];

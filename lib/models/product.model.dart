@@ -4,7 +4,7 @@ class ProductModel {
   String desc;
   double price;
   String imgUrl;
-  List<String> addons; // Add-ons as a list of strings
+  List<Map<String, dynamic>> addons; // List of add-ons with names and prices
 
   ProductModel({
     required this.uid,
@@ -12,7 +12,7 @@ class ProductModel {
     required this.desc,
     required this.price,
     required this.imgUrl,
-    this.addons = const [], // Default to an empty list if no add-ons
+    required this.addons,
   });
 
   Map<String, dynamic> toMap() {
