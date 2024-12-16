@@ -39,6 +39,8 @@ dependencies:
   firebase_auth: ^5.3.4
   syncfusion_flutter_datepicker: ^28.1.33
   cloud_firestore: ^5.5.1
+  flutter_secure_storage: ^9.2.2
+  shared_preferences: ^2.3.3
 
 dev_dependencies:
   flutter_test:

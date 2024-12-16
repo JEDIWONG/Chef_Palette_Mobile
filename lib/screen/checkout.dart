@@ -48,10 +48,11 @@ class OrderSummary extends StatelessWidget{
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Order Summary",style: CustomStyle.h2,)
+          Text("Order Summary",style: CustomStyle.h2,),
+          
         ],
       ),
     ); 
   }
-
+  
 }

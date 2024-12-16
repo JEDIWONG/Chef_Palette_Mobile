@@ -1,4 +1,6 @@
 import 'package:chef_palette/component/custom_button.dart';
+import 'package:chef_palette/models/cart_item_model.dart';
+import 'package:chef_palette/services/firestore_services.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 
@@ -26,7 +28,8 @@ class _ProductDetailsState extends State<ProductDetails> {
   final List<Map<String, dynamic>> selectedAddons = []; 
   double totalPrice = 0.0; 
   int quantity = 1;
-  
+  TextEditingController instructionController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -38,10 +41,32 @@ class _ProductDetailsState extends State<ProductDetails> {
         selectedAddons.fold(
           0.0,
           (sum, addon) => sum + addon["price"],
-        ))*quantity;
+        )) * quantity;
   }
 
-  
+  void _addItemToCart() {
+    final cartItem = CartItemModel(
+      productId: widget.name, 
+      name: widget.name,
+      price: totalPrice,
+      quantity: quantity,
+      addons: selectedAddons,
+      instruction: instructionController.text,
+      imageUrl: widget.imgUrl,
+      
+    );
+
+    FirestoreService firestoreService =  FirestoreService();
+    firestoreService.addToCart(cartItem);
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          "Added to Cart: RM ${totalPrice.toStringAsFixed(2)} - Add-ons: ${selectedAddons.map((e) => e['name']).join(', ')}",
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,11 +74,9 @@ class _ProductDetailsState extends State<ProductDetails> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         leadingWidth: MediaQuery.sizeOf(context).width * 0.3,
-        leading: const CustomBackButton(title: "Menu", first: false,),
+        leading: const CustomBackButton(title: "Menu", first: false),
         surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
-        
-        
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -104,28 +127,25 @@ class _ProductDetailsState extends State<ProductDetails> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 30,horizontal: 30),
+              padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
               child: Column(
                 spacing: 10,
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Addtional Instruction",style: CustomStyle.h3,),
-
+                  Text("Additional Instruction", style: CustomStyle.h3),
                   TextFormField(
+                    controller: instructionController,
                     decoration: const InputDecoration(
                       hintText: "Tell Us Something",
                       fillColor: Colors.grey,
-                      
                     ),
                   )
                 ],
-              )
-          
+              ),
             ),
-
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 30),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -158,18 +178,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                 ],
               ),
             ),
-
             ElevatedButton(
-              onPressed: () {
-                // Show the final price with add-ons in a snackbar
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      "Added to Cart: RM ${totalPrice.toStringAsFixed(2)} - Add-ons: ${selectedAddons.map((e) => e['name']).join(', ')}",
-                    ),
-                  ),
-                );
-              },
+              onPressed: _addItemToCart,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
                 foregroundColor: Colors.white,
@@ -180,12 +190,11 @@ class _ProductDetailsState extends State<ProductDetails> {
                 fixedSize: Size(MediaQuery.sizeOf(context).width * 0.8, 50),
               ),
               child: Text(
-                "Add to Cart ${totalPrice.toStringAsFixed(2)}",
+                "Add to Cart RM ${totalPrice.toStringAsFixed(2)}",
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
-
-            SizedBox(height: 50,)
+            SizedBox(height: 50),
           ],
         ),
       ),
