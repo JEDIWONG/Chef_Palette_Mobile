@@ -33,7 +33,7 @@ class _RegisterStep2State extends State<RegisterStep2> {
 
     UserModel user = UserModel(
       uid: widget.uid,
-      email: '', // Assuming you already have the user's email
+      email: '',
       firstName: _firstNameController.text.trim(),
       lastName: _lastNameController.text.trim(),
       phoneNumber: _phoneNumberController.text.trim(),

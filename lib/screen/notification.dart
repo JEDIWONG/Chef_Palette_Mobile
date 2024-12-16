@@ -54,7 +54,7 @@ class NewsTabs extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return  SingleChildScrollView(
+    return  const SingleChildScrollView(
       child: Column(
         children: [
           NewsCard(title: "Order is Ready", desc: "desc", date: "12-12-2024"),
