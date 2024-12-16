@@ -16,21 +16,21 @@ class ProductDetails extends StatefulWidget {
   final String imgUrl;
   final double price;
   final String desc;
-  final List<Map<String, dynamic>> addons; // Add-ons with prices
+  final List<Map<String, dynamic>> addons; 
 
   @override
   State<ProductDetails> createState() => _ProductDetailsState();
 }
 
 class _ProductDetailsState extends State<ProductDetails> {
-  final List<Map<String, dynamic>> selectedAddons = []; // Track selected add-ons
-  double totalPrice = 0.0; // To store the total price
+  final List<Map<String, dynamic>> selectedAddons = []; 
+  double totalPrice = 0.0; 
   int quantity = 1;
   
   @override
   void initState() {
     super.initState();
-    totalPrice = widget.price; // Initialize total price with base price
+    totalPrice = widget.price; 
   }
 
   void _updateTotalPrice() {
@@ -49,7 +49,7 @@ class _ProductDetailsState extends State<ProductDetails> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         leadingWidth: MediaQuery.sizeOf(context).width * 0.3,
-        leading: const CustomBackButton(title: "Menu"),
+        leading: const CustomBackButton(title: "Menu", first: false,),
         surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
         
@@ -57,8 +57,9 @@ class _ProductDetailsState extends State<ProductDetails> {
       ),
       body: SingleChildScrollView(
         child: Column(
+          spacing: 10,
           children: [
-            const SizedBox(height: 50),
+            const SizedBox(height: 30),
             Image.asset(widget.imgUrl),
             ListTile(
               title: Text(widget.name, style: CustomStyle.h2),
@@ -102,10 +103,29 @@ class _ProductDetailsState extends State<ProductDetails> {
                 ],
               ),
             ),
-            const SizedBox(height: 50),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 30,horizontal: 30),
+              child: Column(
+                spacing: 10,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Addtional Instruction",style: CustomStyle.h3,),
+
+                  TextFormField(
+                    decoration: const InputDecoration(
+                      hintText: "Tell Us Something",
+                      fillColor: Colors.grey,
+                      
+                    ),
+                  )
+                ],
+              )
+          
+            ),
 
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 30),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -121,7 +141,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                             }
                           });
                         },
-                        icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                        icon: const Icon(Icons.remove_circle, color: Colors.red),
                       ),
                       Text(quantity.toString(), style: CustomStyle.h2),
                       IconButton(
@@ -131,7 +151,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                             _updateTotalPrice();
                           });
                         },
-                        icon: const Icon(Icons.add_circle_outline, color: Colors.green),
+                        icon: const Icon(Icons.add_circle, color: Colors.green),
                       ),
                     ],
                   ),
@@ -139,7 +159,6 @@ class _ProductDetailsState extends State<ProductDetails> {
               ),
             ),
 
-            
             ElevatedButton(
               onPressed: () {
                 // Show the final price with add-ons in a snackbar
@@ -165,6 +184,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
+
+            SizedBox(height: 50,)
           ],
         ),
       ),

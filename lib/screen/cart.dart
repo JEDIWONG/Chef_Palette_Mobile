@@ -1,5 +1,7 @@
+import 'package:chef_palette/component/address_selector.dart';
 import 'package:chef_palette/component/cart_item.dart';
 import 'package:chef_palette/component/custom_button.dart';
+import 'package:chef_palette/screen/checkout.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 
@@ -24,6 +26,7 @@ class _CartState extends State<Cart> {
         leadingWidth: MediaQuery.sizeOf(context).width * 0.30,
         leading: const CustomBackButton(
           title: 'Menu',
+          first: false,
         ),
         title: Text(
           "Cart",
@@ -73,17 +76,7 @@ class _CartState extends State<Cart> {
               ),
             ), 
 
-            ListTile(
-              leading: const Icon(Icons.location_pin,color: Colors.red,),
-              title: Text("Nasi Lemak Bamboo (Samarahan)",style: CustomStyle.h4,),
-              subtitle: Row(
-                children: [
-                  Text("Opening Hour: 7AM-8PM",style: CustomStyle.subtitle,),
-                  const SizedBox(width: 10,),
-                  Text("Change Location",style: CustomStyle.link,)
-                ],
-              )
-            ),
+            const AddressSelector(addr: "Nasi Lemak Bamboo (Samarahan)", hour: "7AM-8PM"),
 
             Container(
               margin: const EdgeInsets.symmetric(vertical: 30),
@@ -91,7 +84,15 @@ class _CartState extends State<Cart> {
 
             ),
             
-            RectButton(bg: Colors.green, fg: Colors.white, text: "Pay Now", func: (){}, rad: 0),
+            RectButton(
+              bg: Colors.green,
+              fg: Colors.white,
+              text: "Pay Now",
+              func: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>const Checkout()));
+              },
+              rad: 0
+            ),
              
           ],
         ),

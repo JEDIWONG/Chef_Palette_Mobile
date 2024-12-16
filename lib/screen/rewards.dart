@@ -19,7 +19,8 @@ class _RewardsState extends State<Rewards> {
         backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: Colors.white,
-          
+          leading:const CustomBackButton(title: "Menu", first: true),
+          leadingWidth: MediaQuery.sizeOf(context).width*0.3,
           title: Text("Rewards", style: CustomStyle.h1),
           centerTitle: true,
           bottom: const TabBar(

@@ -1,3 +1,4 @@
+import 'package:chef_palette/index.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 
@@ -38,16 +39,23 @@ class RectButton extends StatelessWidget{
 }
 
 class CustomBackButton extends StatelessWidget{
-  const CustomBackButton({super.key, required this.title});
+  const CustomBackButton({super.key, required this.title, required this.first});
 
   final String title; 
+  final bool first; 
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: (){
         
-        Navigator.pop(context);
+        if(first==false){
+          Navigator.pop(context);
+        }
+        else{
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>const Index()));
+        }
+        
       }, 
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.all(10),
