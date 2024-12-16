@@ -1,5 +1,4 @@
 import 'package:chef_palette/auth/auth.dart';
-import 'package:chef_palette/auth/login.dart';
 import 'package:chef_palette/component/account_card.dart';
 import 'package:chef_palette/component/account_setting.dart';
 import 'package:chef_palette/style/style.dart';

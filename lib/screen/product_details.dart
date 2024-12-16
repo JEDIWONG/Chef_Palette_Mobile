@@ -52,6 +52,8 @@ class _ProductDetailsState extends State<ProductDetails> {
         leading: const CustomBackButton(title: "Menu"),
         surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
+        
+        
       ),
       body: SingleChildScrollView(
         child: Column(
