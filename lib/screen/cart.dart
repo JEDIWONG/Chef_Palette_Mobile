@@ -108,7 +108,7 @@ class _CartState extends State<Cart> {
                         imgUrl: c.imageUrl,
                         title: c.name,
                         quantity: c.quantity,
-                        price: c.price,
+                        price: c.price, a: (BuildContext context) {}, 
                       );
                     }).toList(),
                   );

@@ -1,5 +1,7 @@
 import 'package:chef_palette/component/address_selector.dart';
 import 'package:chef_palette/component/custom_button.dart';
+import 'package:chef_palette/models/cart_item_model.dart';
+import 'package:chef_palette/services/firestore_services.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +20,7 @@ class Checkout extends StatelessWidget{
           title: Text("Review and Pay",style: CustomStyle.h1,),
         ),
       ),
-      body:  SingleChildScrollView(
+      body:  const SingleChildScrollView(
         child: Column(
 
           children: [
@@ -42,6 +44,8 @@ class Checkout extends StatelessWidget{
 class OrderSummary extends StatelessWidget{
   const OrderSummary({super.key});
 
+  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -49,6 +53,7 @@ class OrderSummary extends StatelessWidget{
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text("Order Summary",style: CustomStyle.h2,),
+          
           
         ],
       ),

@@ -1,5 +1,6 @@
 import 'package:chef_palette/component/custom_button.dart';
 import 'package:chef_palette/models/cart_item_model.dart';
+import 'package:chef_palette/screen/cart.dart';
 import 'package:chef_palette/services/firestore_services.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
@@ -12,28 +13,31 @@ class ProductDetails extends StatefulWidget {
     required this.price,
     required this.desc,
     required this.addons,
+    required this.option,
   });
 
   final String name;
   final String imgUrl;
   final double price;
   final String desc;
-  final List<Map<String, dynamic>> addons; 
+  final List<Map<String, dynamic>> addons; // Addons list
+  final List<String> option; // Options list
 
   @override
   State<ProductDetails> createState() => _ProductDetailsState();
 }
 
 class _ProductDetailsState extends State<ProductDetails> {
-  final List<Map<String, dynamic>> selectedAddons = []; 
-  double totalPrice = 0.0; 
+  final List<Map<String, dynamic>> selectedAddons = []; // Selected addons
+  String? selectedOption; // Selected radio button value
+  double totalPrice = 0.0;
   int quantity = 1;
   TextEditingController instructionController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    totalPrice = widget.price; 
+    totalPrice = widget.price;
   }
 
   void _updateTotalPrice() {
@@ -46,23 +50,32 @@ class _ProductDetailsState extends State<ProductDetails> {
 
   void _addItemToCart() {
     final cartItem = CartItemModel(
-      productId: widget.name, 
+      productId: widget.name,
       name: widget.name,
       price: totalPrice,
       quantity: quantity,
       addons: selectedAddons,
       instruction: instructionController.text,
       imageUrl: widget.imgUrl,
-      
     );
 
-    FirestoreService firestoreService =  FirestoreService();
+    FirestoreService firestoreService = FirestoreService();
     firestoreService.addToCart(cartItem);
-    
+
+    Navigator.push(context,MaterialPageRoute(builder: (context)=>const Cart()));
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
+        backgroundColor: Colors.green,
+        behavior: SnackBarBehavior.floating,
         content: Text(
-          "Added to Cart: RM ${totalPrice.toStringAsFixed(2)} - Add-ons: ${selectedAddons.map((e) => e['name']).join(', ')}",
+          "Added to Cart: RM ${totalPrice.toStringAsFixed(2)} - "
+          "Option: ${selectedOption ?? "None"} - "
+          "Add-ons: ${selectedAddons.map((e) => e['name']).join(', ')}",
+          style: const TextStyle(color: Colors.white,fontWeight: FontWeight.bold),
+        ),
+        margin: EdgeInsets.only(
+          bottom: MediaQuery.sizeOf(context).height-100,
         ),
       ),
     );
@@ -80,14 +93,15 @@ class _ProductDetailsState extends State<ProductDetails> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          spacing: 10,
           children: [
             const SizedBox(height: 30),
             Image.asset(widget.imgUrl),
             ListTile(
               title: Text(widget.name, style: CustomStyle.h2),
               subtitle: Text(widget.desc, style: CustomStyle.subtitle),
-              trailing: Text(
+            ),
+            ListTile(
+              leading: Text(
                 "RM ${widget.price.toStringAsFixed(2)}",
                 style: const TextStyle(
                   fontSize: 20,
@@ -96,12 +110,33 @@ class _ProductDetailsState extends State<ProductDetails> {
                 ),
               ),
             ),
-            const Divider(),
+            const Divider(indent: 10, endIndent: 10),
+
+            // Options Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text("Options", style: CustomStyle.h2),
+                  const SizedBox(height: 10),
+
+                  Column(
+                    children: widget.option.map((option) {
+                      return RadioListTile<String>(
+                        title: Text(option, style: CustomStyle.subtitle),
+                        value: option,
+                        groupValue: selectedOption,
+                        onChanged: (value) {
+                          setState(() {
+                            selectedOption = value;
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ),
+
+                  const SizedBox(height: 10),
                   Text("Add-ons", style: CustomStyle.h2),
                   const SizedBox(height: 10),
                   ...widget.addons.map((addon) {
@@ -122,15 +157,15 @@ class _ProductDetailsState extends State<ProductDetails> {
                         });
                       },
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ),
+
+            // Additional Instruction Section
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
               child: Column(
-                spacing: 10,
-                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("Additional Instruction", style: CustomStyle.h3),
@@ -140,10 +175,12 @@ class _ProductDetailsState extends State<ProductDetails> {
                       hintText: "Tell Us Something",
                       fillColor: Colors.grey,
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
+
+            // Quantity Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
               child: Row(
@@ -178,6 +215,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                 ],
               ),
             ),
+
+            // Add to Cart Button
             ElevatedButton(
               onPressed: _addItemToCart,
               style: ElevatedButton.styleFrom(
@@ -194,11 +233,10 @@ class _ProductDetailsState extends State<ProductDetails> {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
           ],
         ),
       ),
     );
   }
 }
-

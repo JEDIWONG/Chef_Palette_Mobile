@@ -10,12 +10,10 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
-  // Check if user session exists
   final isUserLoggedIn = await checkSession();
 
   runApp(MyApp(screen: isUserLoggedIn ? const Index() : const Auth()));
 
-  
 }
 
 Future<bool> checkSession() async {

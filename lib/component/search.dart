@@ -10,11 +10,8 @@ class Search extends StatelessWidget{
         width: MediaQuery.sizeOf(context).width,
         margin: const EdgeInsets.symmetric(vertical: 50),
       
-
         child: Column(
-          
           children: [
-
             ListTile(
               leading: const Text("Good Day",style: TextStyle(color: Colors.white,fontSize: 24,fontWeight: FontWeight.bold),),
               trailing: IconButton(

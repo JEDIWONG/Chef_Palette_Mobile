@@ -74,6 +74,7 @@ class FirestoreService {
     }
   }
 
+  //do not invoke this function
   Future<void> addAllProducts(List<ProductModel> products) async {
     try {
       for (var product in products) {
