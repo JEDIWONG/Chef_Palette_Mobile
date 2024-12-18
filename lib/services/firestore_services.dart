@@ -26,20 +26,21 @@ class FirestoreService {
     try {
       // Fetch user document from Firestore
       DocumentSnapshot<Map<String, dynamic>> docSnapshot =
-          await _firestore.collection('users').doc(uid).get();
+        await _firestore.collection('users').doc(uid).get();
 
       // Check if the document exists
       if (docSnapshot.exists) {
         final data = docSnapshot.data();
 
         if (data != null) {
-          // Map the Firestore data to a UserModel object
+  
           return UserModel(
             uid: data['uid'] as String,
             email: data['email'] as String,
             firstName: data['firstName'] as String,
             lastName: data['lastName'] as String,
             phoneNumber: data['phoneNumber'] as String,
+            dob: data['dob'] as String,
           );
         }
       }
@@ -116,6 +117,10 @@ class FirestoreService {
     }
   }
 
+  Future <void> deleteCartItem() async{
+    final currentUser = FirebaseAuth.instance.currentUser;
+  }
+
   Future<List<CartItemModel>> getCartItems() async {
     final currentUser = FirebaseAuth.instance.currentUser;
 
@@ -154,5 +159,5 @@ class FirestoreService {
     }
   }
 
-
+  
 }

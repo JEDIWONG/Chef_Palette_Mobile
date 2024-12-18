@@ -8,9 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 class RegisterStep2 extends StatefulWidget {
-  const RegisterStep2({super.key, required this.uid});
+  const RegisterStep2({super.key, required this.uid, required this.email});
 
   final String uid;
+  final String email;
 
   @override
   State<RegisterStep2> createState() => _RegisterStep2State();
@@ -26,27 +27,33 @@ class _RegisterStep2State extends State<RegisterStep2> {
   Future<void> _saveUserData() async {
     if (_selectedDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select your date of birth")),
+        const SnackBar(content: Text("Please Select Your Birthday date")),
       );
       return;
     }
+    else{
 
-    UserModel user = UserModel(
-      uid: widget.uid,
-      email: '',
-      firstName: _firstNameController.text.trim(),
-      lastName: _lastNameController.text.trim(),
-      phoneNumber: _phoneNumberController.text.trim(),
-    );
+      UserModel user = UserModel(
+        uid: widget.uid,
+        email: widget.email,
+        firstName: _firstNameController.text.trim(),
+        lastName: _lastNameController.text.trim(),
+        phoneNumber: _phoneNumberController.text.trim(),
+        dob: "${_selectedDate!.day}-${_selectedDate!.month}-${_selectedDate!.year}",
+      );
 
-    await _firestoreService.createUser(user);
+      await _firestoreService.createUser(user);
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const RegisterStep3(),
-      ),
-    );
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const RegisterStep3(),
+        ),
+      );
+
+    }
+
+    
   }
 
   @override

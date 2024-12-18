@@ -4,6 +4,7 @@ class UserModel {
   String firstName;
   String lastName;
   String phoneNumber;
+  String dob;
   
 
   UserModel({
@@ -12,7 +13,7 @@ class UserModel {
     required this.firstName,
     required this.lastName,
     required this.phoneNumber,
-    
+    required this.dob,
   });
 
   Map<String, dynamic> toMap() {
@@ -22,6 +23,7 @@ class UserModel {
       'firstName': firstName,
       'lastName': lastName,
       'phoneNumber': phoneNumber,
+      'dob':dob,
     };
   }
 }

@@ -40,7 +40,7 @@ class _RegisterState extends State<Register> {
       // Pass the UID to RegisterStep2
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => RegisterStep2(uid: uid)),
+        MaterialPageRoute(builder: (context) => RegisterStep2(uid: uid, email: _emailController.text,)),
       );
     } else {
       setState(() {
