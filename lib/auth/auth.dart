@@ -11,9 +11,18 @@ class Auth extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.green,
-      body: Column(
+      body: Stack(
+        children:[
+        Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/background.png"),
+            fit: BoxFit.cover,
+           ),
+        ),
+      ),
+      
+      Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           
@@ -46,6 +55,8 @@ class Auth extends StatelessWidget{
           )
         ],
       ),
-    );
+      ],
+    ),
+  );
   }
 }
