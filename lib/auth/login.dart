@@ -28,13 +28,20 @@ class _LoginState extends State<Login> {
       );
 
        
-      
+      /*
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => const Index(), // Your home page after login
         ),
       );
+      */ //i make this quit direct without goin back to auth screen
+
+      Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const Index()), // Your home page after login
+      (route) => false, // This removes all routes (i.e., Auth, Login, etc.) from the stack
+    );
     } on FirebaseAuthException catch (e) {
       setState(() {
         _errorMessage = e.message; // Handle error messages
