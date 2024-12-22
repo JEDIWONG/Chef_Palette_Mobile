@@ -16,6 +16,7 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
   String? _errorMessage;
 
   // Firebase sign-in function
@@ -27,13 +28,20 @@ class _LoginState extends State<Login> {
       );
 
        
-      
+      /*
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => const Index(), // Your home page after login
         ),
       );
+      */ //i make this quit direct without goin back to auth screen
+
+      Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const Index()), // Your home page after login
+      (route) => false, // This removes all routes (i.e., Auth, Login, etc.) from the stack
+    );
     } on FirebaseAuthException catch (e) {
       setState(() {
         _errorMessage = e.message; // Handle error messages
@@ -132,10 +140,20 @@ class _LoginState extends State<Login> {
                       // Password TextField
                       TextFormField(
                         controller: _passwordController,
-                        obscureText: true,
-                        decoration: const InputDecoration(
-                          label: Text("Password"),
-                          prefixIcon: Icon(Icons.lock),
+                        obscureText: !_isPasswordVisible, // Toggle visibility based on state
+                        decoration: InputDecoration(
+                          label: const Text("Password"),
+                          prefixIcon: const Icon(Icons.lock),
+                          suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible; // Toggle state
+                            });
+                          },
+                        ),
                         ),
                       ),
                       const SizedBox(height: 10),
