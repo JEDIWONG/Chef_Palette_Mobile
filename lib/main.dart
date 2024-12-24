@@ -5,6 +5,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
+    
+
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -15,14 +18,15 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return  MaterialApp(
       title: 'Chef Palette',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: const SplashScreen(), // Splash screen as the first screen
+      home: const SplashScreen(),
     );
   }
 }
