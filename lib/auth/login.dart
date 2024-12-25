@@ -1,10 +1,12 @@
 import 'package:chef_palette/component/custom_button.dart';
-import 'package:chef_palette/data/product_data.dart';
+//import 'package:chef_palette/data/product_data.dart';
 import 'package:chef_palette/index.dart';
-import 'package:chef_palette/services/firestore_services.dart';
+//import 'package:chef_palette/services/firestore_services.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'resetpassword.dart';
+
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -18,24 +20,28 @@ class _LoginState extends State<Login> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   String? _errorMessage;
+  bool _isLoading = false;
 
   // Firebase sign-in function
   Future<void> _login() async {
+
+      if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+    setState(() {
+      _errorMessage = "Please fill in both email and password.";
+    });
+    return; // Stop further execution
+  }
+
+     setState(() {
+    _isLoading = true; // Start loading state 
+     _errorMessage = null; 
+  });
+
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
-
-       
-      /*
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const Index(), // Your home page after login
-        ),
-      );
-      */ //i make this quit direct without goin back to auth screen
 
       Navigator.pushAndRemoveUntil(
       context,
@@ -47,7 +53,18 @@ class _LoginState extends State<Login> {
         _errorMessage = e.message; // Handle error messages
       });
     }
+
+    finally {
+    setState(() {
+      _isLoading = false; // Stop loading state when done
+    }); 
+      }
   }
+
+Future<void> _resetPassword() async {
+  Navigator.push(context, MaterialPageRoute(builder: (context)=>const ForgotPassword()));
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -55,9 +72,8 @@ class _LoginState extends State<Login> {
       resizeToAvoidBottomInset: true,
       backgroundColor: const Color.fromARGB(255, 0, 0, 0),
       body: SingleChildScrollView(
-        
+  
         child: Stack(
-          
           children: [
             Positioned.fill(
               child: Image.asset(
@@ -160,7 +176,7 @@ class _LoginState extends State<Login> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: InkWell(
-                          onTap: () {},
+                          onTap: _resetPassword,
                           child: const Text(
                             "Forgot Password ?",
                             style: TextStyle(
@@ -187,11 +203,22 @@ class _LoginState extends State<Login> {
                             style: const TextStyle(color: Colors.red),
                           ),
                         ),
+                    
                     ],
+                    
                   ),
                 ),
               ],
             ),
+              if (_isLoading) 
+                        Positioned.fill(
+                          child: Container(
+                        color: Colors.black.withOpacity(0.5), 
+                        child: const Center(
+                              child: CircularProgressIndicator(), 
+                           ),
+                          ),
+                        ),
           ],
         ),
       )
