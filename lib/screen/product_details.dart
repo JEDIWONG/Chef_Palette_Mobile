@@ -1,8 +1,12 @@
+import 'dart:math';
+
 import 'package:chef_palette/component/custom_button.dart';
 import 'package:chef_palette/models/cart_item_model.dart';
 import 'package:chef_palette/screen/cart.dart';
 import 'package:chef_palette/services/firestore_services.dart';
 import 'package:chef_palette/style/style.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ProductDetails extends StatefulWidget {
@@ -48,15 +52,40 @@ class _ProductDetailsState extends State<ProductDetails> {
         )) * quantity;
   }
 
-  void _addItemToCart() {
+  Future<String> generateUniqueCartId(String userId) async {
+    final cartRef = FirebaseFirestore.instance
+        .collection('cart')
+        .doc(userId)
+        .collection('items');
+    String uniqueId;
+    bool exists;
+
+    do {
+      // Generate a random alphanumeric ID
+      uniqueId = Random().nextInt(1000000).toString().padLeft(6, '0'); // Example: "012345"
+
+      // Check if the ID exists in Firestore
+      final doc = await cartRef.doc(uniqueId).get();
+      exists = doc.exists;
+    } while (exists);
+
+    return uniqueId;
+  }
+
+  Future<void> _addItemToCart() async {
+
+    final currentUser = FirebaseAuth.instance.currentUser;
+    final cartId = await generateUniqueCartId(currentUser!.uid);
+
     final cartItem = CartItemModel(
       productId: widget.name,
+      itemId: '',
       name: widget.name,
       price: totalPrice,
       quantity: quantity,
       addons: selectedAddons,
       instruction: instructionController.text,
-      imageUrl: widget.imgUrl,
+      imageUrl: widget.imgUrl, 
     );
 
     FirestoreService firestoreService = FirestoreService();
@@ -64,7 +93,7 @@ class _ProductDetailsState extends State<ProductDetails> {
 
     Navigator.push(context,MaterialPageRoute(builder: (context)=>const Cart()));
 
-    ScaffoldMessenger.of(context).showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar( 
       SnackBar(
         backgroundColor: Colors.green,
         behavior: SnackBarBehavior.floating,

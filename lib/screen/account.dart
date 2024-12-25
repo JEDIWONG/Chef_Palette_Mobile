@@ -42,6 +42,7 @@ class _AccountState extends State<Account> {
         joinDate = "12-12-2024";
       });
     }
+    
   }
 
   // Sign-out function

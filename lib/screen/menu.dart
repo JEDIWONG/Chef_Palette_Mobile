@@ -4,18 +4,29 @@ import 'package:chef_palette/screen/notification.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 
-class Menu extends StatelessWidget {
+class Menu extends StatefulWidget {
   const Menu({super.key});
 
   @override
+  State<Menu> createState() => _MenuState();
+}
+
+class _MenuState extends State<Menu> {
+  final List<String> categories = [
+    "All",
+    "main",
+    "side",
+    "beverage",
+  ];
+
+  String selectedCategory = "All";
+
+  @override
   Widget build(BuildContext context) {
-    // Example category list
-    final List<String> categories = [
-      "All",
-      "Main ",
-      "Side",
-      "Beverages",
-    ];
+    // Filter products based on the selected category
+    final filteredProducts = selectedCategory == "All"
+        ? products
+        : products.where((product) => product.category == selectedCategory).toList();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -23,10 +34,9 @@ class Menu extends StatelessWidget {
         slivers: [
           // AppBar with title and action buttons
           SliverAppBar(
-            
             automaticallyImplyLeading: false,
-            pinned: false, // App bar scrolls away with the content
-            floating: true, // Reappears when scrolling up
+            pinned: false,
+            floating: true,
             toolbarHeight: 80,
             elevation: 3.0,
             shadowColor: Colors.black,
@@ -40,14 +50,13 @@ class Menu extends StatelessWidget {
               ),
             ),
             bottom: PreferredSize(
-              preferredSize: Size(MediaQuery.sizeOf(context).width, 50), 
+              preferredSize: Size(MediaQuery.sizeOf(context).width, 50),
               child: Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: MediaQuery.sizeOf(context).width * 0.08,
                   vertical: 10,
                 ),
                 child: const SearchBar(
-                  
                   shape: WidgetStatePropertyAll(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -89,7 +98,7 @@ class Menu extends StatelessWidget {
           // Category Bar
           SliverPersistentHeader(
             pinned: false,
-            floating: true, // Reappears on scroll up
+            floating: true,
             delegate: _SliverHeaderDelegate(
               child: Container(
                 color: Colors.white,
@@ -99,21 +108,39 @@ class Menu extends StatelessWidget {
                   scrollDirection: Axis.horizontal,
                   itemCount: categories.length,
                   itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Column(
-                        children: [
-                          ClipOval(
-                            child: Image.asset(
-                              "assets/images/placeholder.png",
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
+                    final category = categories[index];
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          selectedCategory = category;
+                        });
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          children: [
+                            ClipOval(
+                              child: Image.asset(
+                                "assets/images/placeholder.png",
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(categories[index]),
-                        ],
+                            const SizedBox(height: 5),
+                            Text(
+                              category,
+                              style: TextStyle(
+                                color: selectedCategory == category
+                                    ? CustomStyle.primary
+                                    : Colors.black,
+                                fontWeight: selectedCategory == category
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -135,7 +162,7 @@ class Menu extends StatelessWidget {
               ),
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  final product = products[index];
+                  final product = filteredProducts[index];
                   return ProductCard(
                     obj: product,
                     imgUrl: product.imgUrl,
@@ -143,7 +170,7 @@ class Menu extends StatelessWidget {
                     price: product.price,
                   );
                 },
-                childCount: products.length,
+                childCount: filteredProducts.length,
               ),
             ),
           ),
