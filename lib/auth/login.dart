@@ -1,7 +1,5 @@
 import 'package:chef_palette/component/custom_button.dart';
-import 'package:chef_palette/data/product_data.dart';
 import 'package:chef_palette/index.dart';
-import 'package:chef_palette/services/firestore_services.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -27,19 +25,10 @@ class _LoginState extends State<Login> {
         password: _passwordController.text,
       );
 
-       
-      /*
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const Index(), // Your home page after login
-        ),
-      );
-      */ //i make this quit direct without goin back to auth screen
-
-      Navigator.pushAndRemoveUntil(
+      
+    Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => const Index()), // Your home page after login
+      MaterialPageRoute(builder: (context) => const Index()), // home page after login
       (route) => false, // This removes all routes (i.e., Auth, Login, etc.) from the stack
     );
     } on FirebaseAuthException catch (e) {

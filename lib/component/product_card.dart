@@ -15,7 +15,6 @@ class ProductCard extends StatelessWidget{
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        print("wtf");
         Navigator.push(context, MaterialPageRoute(builder: (context)=> ProductDetails(name: name, imgUrl: imgUrl, price: price, desc: obj.desc, addons: obj.addons, option: obj.options,)));
       },
 

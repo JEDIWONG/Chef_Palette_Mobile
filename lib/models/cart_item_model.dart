@@ -1,5 +1,6 @@
 class CartItemModel {
   String productId;     
+  String itemId; 
   String name;          
   String imageUrl;     
   List<Map<String, dynamic>> addons;
@@ -11,6 +12,7 @@ class CartItemModel {
   // Constructor with default values for addons and instruction
   CartItemModel({
     required this.productId,
+    required this.itemId,
     required this.name,
     required this.imageUrl,
     required this.price,
@@ -37,6 +39,7 @@ class CartItemModel {
   Map<String, dynamic> toMap() {
     return {
       'productId': productId,
+      'cartId': itemId,
       'name': name,
       'imageUrl': imageUrl,
       'price': price,
@@ -51,12 +54,13 @@ class CartItemModel {
   factory CartItemModel.fromMap(Map<String, dynamic> map) {
     return CartItemModel(
       productId: map['productId'] ?? '',
+      itemId: map['itemId']??'',
       name: map['name'] ?? '',
       imageUrl: map['imageUrl'] ?? '',
       price: (map['price'] ?? 0).toDouble(),
       quantity: map['quantity'] ?? 1,
       addons: List<Map<String, dynamic>>.from(map['addons'] ?? []), // Default empty list if null
-      instruction: map['instruction'] ?? '',  // Default empty string if null
+      instruction: map['instruction'] ?? '',   // Default empty string if null
     );
   }
 }
