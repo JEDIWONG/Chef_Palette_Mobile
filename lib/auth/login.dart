@@ -23,7 +23,7 @@ class _LoginState extends State<Login> {
   bool _isLoading = false;
 
   // Firebase sign-in function
-  Future<void> _login() async {
+Future<void> _login() async {
 
       if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
     setState(() {

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:math';
-
+import 'setnewpassword.dart';
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({Key? key}) : super(key: key);
 
@@ -30,8 +30,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
     try {
        // Check if email exists in Firebase
-          final email = _emailController.text;
-          QuerySnapshot query =  await FirebaseFirestore.instance.collection('users').where("e-mail", isEqualTo: email).get();
+          String email = _emailController.text;
+          QuerySnapshot query =  await FirebaseFirestore.instance.collection('users').where("email", isEqualTo: email).get();
 
           if (query.docs.isEmpty) {
             setState(() {
@@ -71,19 +71,37 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     }
   }
 
-  // Function to verify OTP (For demo purposes, assume OTP is "123456")
-  void _verifyOtp() {
-    if (_otpController.text == "123456") {
-      Navigator.pop(context); // Navigate back to Login
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("OTP verified. Check email to reset password.")),
+  // Function to verify OTP and navigate to set new password screen
+  void _verifyOtp() async {
+     if (_otpController.text.isEmpty) {
+    setState(() {
+      _errorMessage = "Please enter the OTP.";
+    });
+    return;
+  }
+    try{
+    final doc = await FirebaseFirestore.instance.collection('passwordResets').doc(_emailController.text).get();
+
+    if (doc.exists && doc['otp'].toString() == _otpController.text) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SetNewPassword(email: _emailController.text),
+        ),
       );
     } else {
       setState(() {
         _errorMessage = "Invalid OTP. Please try again.";
       });
     }
+    }
+    catch (e) {
+    setState(() {
+      _errorMessage = "Error verifying OTP. Please try again.";
+    });
   }
+  }
+  
 
   @override
   Widget build(BuildContext context) {
