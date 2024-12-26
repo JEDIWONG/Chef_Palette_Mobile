@@ -1,22 +1,21 @@
-//TODO:
+//ununsed since now we use firebase own page to reset password
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SetNewPassword extends StatefulWidget {
-  final String email;
-  const SetNewPassword({required this.email, Key? key}) : super(key: key);
+  const SetNewPassword({super.key});
 
   @override
   _SetNewPasswordState createState() => _SetNewPasswordState();
 }
 
 class _SetNewPasswordState extends State<SetNewPassword> {
-  
   final TextEditingController _passwordController = TextEditingController();
   String? _errorMessage;
 
   Future<void> _setNewPassword() async {
+
     if (_passwordController.text.isEmpty) {
       setState(() {
         _errorMessage = "Please enter a new password.";
@@ -25,15 +24,24 @@ class _SetNewPasswordState extends State<SetNewPassword> {
     }
 
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: widget.email);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Password reset successfully.")),
-      );
-      Navigator.pop(context);
-    } catch (e) {
-      setState(() {
-        _errorMessage = "Failed to reset password.";
-      });
+
+      final user = FirebaseAuth.instance.currentUser;
+
+    if (FirebaseAuth.instance.currentUser != null) {
+            
+
+              await user!.updatePassword(_passwordController.text); 
+               
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Password reset successfully.")),
+            );
+
+    }
+            Navigator.pop(context);
+          } catch (e) {
+            setState(() {
+              _errorMessage = "Failed to reset password.";
+            });
     }
   }
 

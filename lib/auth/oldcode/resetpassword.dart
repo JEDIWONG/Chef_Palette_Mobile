@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:math';
-import 'package:chef_palette/auth/setnewpassword.dart';
+import 'package:chef_palette/auth/oldcode/setnewpassword.dart';
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({Key? key}) : super(key: key);
 

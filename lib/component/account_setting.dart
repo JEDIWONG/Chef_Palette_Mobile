@@ -1,5 +1,7 @@
 import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
+import 'delete_account.dart';
+import 'change_password.dart';
 
 class AccountSetting extends StatelessWidget{
   const AccountSetting({super.key});
@@ -18,7 +20,14 @@ class AccountSetting extends StatelessWidget{
             leading: const Icon(Icons.password_rounded),
             title: Text("Change Password",style: CustomStyle.h4,),
             trailing: ElevatedButton(
-              onPressed: (){}, 
+              onPressed: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SetNewPassword(), //i dunno if this works or not
+                  ),
+                );
+              }, 
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.black,
                 foregroundColor: Colors.white,
@@ -34,7 +43,14 @@ class AccountSetting extends StatelessWidget{
             title: Text("Delete Account",style: CustomStyle.h4,),
           
             trailing: ElevatedButton(
-              onPressed: (){}, 
+              onPressed: (){
+                Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ConfirmDeleteAccount(),
+                      ),
+                );
+              }, 
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
                 foregroundColor: Colors.white,
