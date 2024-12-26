@@ -2,12 +2,11 @@ import "package:chef_palette/component/custom_button.dart";
 import "package:chef_palette/style/style.dart";
 import "package:flutter/material.dart";
 
-// Rewards as a StatefulWidget
 class Rewards extends StatefulWidget {
   const Rewards({super.key});
 
   @override
-  _RewardsState createState() => _RewardsState();
+  createState() => _RewardsState();
 }
 
 class _RewardsState extends State<Rewards> {

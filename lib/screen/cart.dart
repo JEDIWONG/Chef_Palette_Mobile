@@ -61,7 +61,7 @@ class _CartState extends State<Cart> {
                   });
                 },
                 borderRadius: BorderRadius.circular(20),
-                textStyle: TextStyle(fontSize: 14),
+                textStyle: const TextStyle(fontSize: 14),
                 selectedColor: Colors.white,
                 fillColor: Colors.green,
                 color: Colors.black,
@@ -94,9 +94,11 @@ class _CartState extends State<Cart> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   
                   return const Center(child: CircularProgressIndicator());
+
                 } else if (snapshot.hasError) {
-                  
+
                   return Center(child: Text("Error: ${snapshot.error}"));
+
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   
                   return const Center(child: Text("Your cart is empty"));
@@ -108,14 +110,14 @@ class _CartState extends State<Cart> {
                         imgUrl: c.imageUrl,
                         title: c.name,
                         quantity: c.quantity,
-                        price: c.price, a: (BuildContext context) {}, 
+                        price: c.price,
+                        itemId: c.itemId, 
                       );
                     }).toList(),
                   );
                 }
               },
             ),
-
 
             // Pay Now button
             RectButton(
@@ -136,14 +138,5 @@ class _CartState extends State<Cart> {
     );
   }
 
-  // ignore: unused_element
-  String _getSelectedOption() {
-    List<String> options = ["Option 1", "Option 2", "Option 3"];
-    for (int i = 0; i < isSelected.length; i++) {
-      if (isSelected[i]) {
-        return options[i];
-      }
-    }
-    return "None";
-  }
+  
 }

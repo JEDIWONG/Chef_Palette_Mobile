@@ -39,7 +39,7 @@ class CartItemModel {
   Map<String, dynamic> toMap() {
     return {
       'productId': productId,
-      'cartId': itemId,
+      'itemId': itemId,
       'name': name,
       'imageUrl': imageUrl,
       'price': price,

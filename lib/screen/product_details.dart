@@ -62,7 +62,7 @@ class _ProductDetailsState extends State<ProductDetails> {
 
     do {
       // Generate a random alphanumeric ID
-      uniqueId = Random().nextInt(1000000).toString().padLeft(6, '0'); // Example: "012345"
+      uniqueId = Random().nextInt(1000000).toString().padLeft(6, '0'); 
 
       // Check if the ID exists in Firestore
       final doc = await cartRef.doc(uniqueId).get();
@@ -75,11 +75,11 @@ class _ProductDetailsState extends State<ProductDetails> {
   Future<void> _addItemToCart() async {
 
     final currentUser = FirebaseAuth.instance.currentUser;
-    final cartId = await generateUniqueCartId(currentUser!.uid);
+    final itemId = await generateUniqueCartId(currentUser!.uid);
 
     final cartItem = CartItemModel(
       productId: widget.name,
-      itemId: '',
+      itemId: itemId,
       name: widget.name,
       price: totalPrice,
       quantity: quantity,

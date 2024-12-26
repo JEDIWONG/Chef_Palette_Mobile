@@ -1,3 +1,4 @@
+import 'package:chef_palette/services/firestore_services.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -5,18 +6,19 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 class CartItem extends StatelessWidget {
   CartItem({
     super.key,
+    required this.itemId,
     required this.imgUrl,
     required this.title,
     required this.quantity,
     required this.price,
-    required this.a,
+
   });
 
+  final String itemId;
   final String imgUrl;
   final String title;
   final int quantity;
   final double price;
-  SlidableActionCallback a;
 
   @override
   Widget build(BuildContext context) {
@@ -27,12 +29,21 @@ class CartItem extends StatelessWidget {
 
       endActionPane: ActionPane(
         motion: const ScrollMotion(),
-        dismissible: DismissiblePane(onDismissed: (){}),
+        dismissible: DismissiblePane(
+          onDismissed: (){
+            FirestoreService firestoreService = FirestoreService();
+            firestoreService.deleteCartItem(itemId);
+          }
+        ),
         
         children: [
           SlidableAction(
 
-            onPressed: a,
+            onPressed: (context){
+              FirestoreService firestoreService = FirestoreService();
+              firestoreService.deleteCartItem(itemId);
+              
+            },
             backgroundColor: Colors.red,
             label: "Swipe Left To Delete",
             icon: Icons.remove_shopping_cart_rounded,
