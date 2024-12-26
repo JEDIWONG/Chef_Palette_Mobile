@@ -1,7 +1,5 @@
 // ignore_for_file: avoid_print
 
-import 'dart:math';
-
 import 'package:chef_palette/models/cart_item_model.dart';
 import 'package:chef_palette/models/cart_model.dart';
 import 'package:chef_palette/models/product.model.dart';
@@ -13,7 +11,7 @@ class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<void> createUser(UserModel user) async {
-    try {
+    try { 
       await _firestore.collection('users').doc(user.uid).set(user.toMap());
 
       CartModel newCart = CartModel(uid: user.uid, items: []);
@@ -120,27 +118,42 @@ class FirestoreService {
 
 
   Future<void> deleteCartItem(String cartItemId) async {
-    try {
-      final currentUser = FirebaseAuth.instance.currentUser;
+  try {
+    final currentUser = FirebaseAuth.instance.currentUser;
 
-      if (currentUser == null) {
-        throw Exception("No user is currently signed in.");
-      }
-
-      // Reference to the current user's cart
-      final cartRef = FirebaseFirestore.instance
-          .collection('cart')
-          .doc(currentUser.uid)
-          .collection('items');
-
-      // Delete the specific cart item
-      await cartRef.doc(cartItemId).delete();
-
-      print("Cart item deleted successfully.");
-    } catch (e) {
-      print("Error deleting cart item: $e");
+    if (currentUser == null) {
+      print("User not logged in.");
+      return;
     }
+
+    // Reference to the current user's cart
+    final cartDocRef = FirebaseFirestore.instance.collection('carts').doc(currentUser.uid);
+
+    // Fetch the current cart document
+    final snapshot = await cartDocRef.get();
+
+    if (!snapshot.exists) {
+      print("Cart document does not exist.");
+      return;
+    }
+
+    // Get the items array
+    List<dynamic> items = snapshot.data()?['items'] ?? [];
+
+    // Find and remove the item by itemId
+    items.removeWhere((item) => item['itemId'] == cartItemId);
+
+    // Update the document with the modified array
+    await cartDocRef.update({
+      'items': items,
+    });
+
+    print("Cart item deleted successfully.");
+  } catch (e) {
+    print("Error deleting cart item: $e");
   }
+}
+
 
   Future<List<CartItemModel>> getCartItems() async {
     final currentUser = FirebaseAuth.instance.currentUser;
@@ -161,13 +174,13 @@ class FirestoreService {
         List<dynamic> cartItems = snapshot['items'] ?? [];
         return cartItems.map((itemData) {
           return CartItemModel(
-            productId: itemData['productId'],
+            productId: "itemData['productId']",
             itemId: itemData['itemId'],
             name: itemData['name'],
-            price: itemData['price'],
+            price: 0.00 + itemData['price'],
             quantity: itemData['quantity'],
             addons: List<Map<String, dynamic>>.from(itemData['addons'] ?? []),
-            instruction: itemData['instruction'],
+            instruction: itemData['instruction']??"",
             imageUrl: itemData['imageUrl'], 
           );
         }).toList();
