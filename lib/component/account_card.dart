@@ -5,12 +5,14 @@ class AccountCard extends StatelessWidget {
   final String firstName;
   final String lastName;
   final String joinDate;
+  final Function() onEditName;
 
   const AccountCard({
     super.key,
     required this.firstName,
     required this.lastName,
     required this.joinDate,
+    required this.onEditName,
   });
 
   @override
@@ -48,7 +50,7 @@ class AccountCard extends StatelessWidget {
               style: CustomStyle.subtitle,
             ),
             trailing: IconButton(
-              onPressed: () {},
+              onPressed: onEditName,
               icon: const Icon(Icons.edit),
             ),
           ),

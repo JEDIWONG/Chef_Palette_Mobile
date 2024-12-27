@@ -1,6 +1,7 @@
 import 'package:chef_palette/auth/auth.dart';
 import 'package:chef_palette/component/account_card.dart';
 import 'package:chef_palette/component/account_setting.dart';
+import 'package:chef_palette/component/change_name.dart';
 import 'package:chef_palette/models/user_model.dart';
 import 'package:chef_palette/screen/location.dart';
 import 'package:chef_palette/screen/payment_method.dart';
@@ -21,6 +22,24 @@ class _AccountState extends State<Account> {
   String firstName = "";
   String lastName = "";
   String joinDate = "";
+
+   void _editName() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return EditNameDialog(
+          currentFirstName: firstName,
+          currentLastName: lastName,
+          onSave: (newFirstName, newLastName) {
+            setState(() {
+              firstName = newFirstName;
+              lastName = newLastName;
+            });
+          },
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -44,6 +63,8 @@ class _AccountState extends State<Account> {
         lastName = currUser?.lastName ?? "Default Last Name";      // Default if null
         joinDate = "12-12-2024";
       });
+
+      
     }
     
   }
@@ -69,6 +90,7 @@ class _AccountState extends State<Account> {
               firstName: firstName,
               lastName: lastName,
               joinDate: joinDate,
+              onEditName: _editName,
             ),
             ListTile(
               title: Text("Features", style: CustomStyle.h3),
