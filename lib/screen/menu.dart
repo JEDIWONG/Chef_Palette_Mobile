@@ -19,14 +19,24 @@ class _MenuState extends State<Menu> {
     "beverage",
   ];
 
+  final List<String> categoryIcon = [
+    "assets/icons/cat_0.png",
+    "assets/icons/cat_1.png",
+    "assets/icons/cat_2.png",
+    "assets/icons/cat_3.png",
+  ];
+
   String selectedCategory = "All";
+  String selectedIcon = "assets/icons/cat_0.png";
 
   @override
   Widget build(BuildContext context) {
-    // Filter products based on the selected category
+    
     final filteredProducts = selectedCategory == "All"
         ? products
-        : products.where((product) => product.category == selectedCategory).toList();
+        : products.where((product) => product.category == selectedCategory).toList(); 
+
+    filteredProducts.sort((a, b) => a.name.compareTo(b.name));
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -109,10 +119,12 @@ class _MenuState extends State<Menu> {
                   itemCount: categories.length,
                   itemBuilder: (context, index) {
                     final category = categories[index];
+                    final catIcon = categoryIcon[index];
                     return GestureDetector(
                       onTap: () {
                         setState(() {
                           selectedCategory = category;
+                          selectedIcon = catIcon;
                         });
                       },
                       child: Padding(
@@ -121,7 +133,7 @@ class _MenuState extends State<Menu> {
                           children: [
                             ClipOval(
                               child: Image.asset(
-                                "assets/images/placeholder.png",
+                                catIcon,
                                 width: 50,
                                 height: 50,
                                 fit: BoxFit.cover,

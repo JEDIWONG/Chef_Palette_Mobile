@@ -62,12 +62,12 @@ class _CheckoutState extends State<Checkout> {
         ),
       ),
       bottomNavigationBar: RectButton(
-              bg: Colors.green, 
-              fg: Colors.white, 
-              text: "Place Order", 
-              func: (){}, 
-              rad: 0,   
-            ), 
+        bg: Colors.green, 
+        fg: Colors.white, 
+        text: "Place Order", 
+        func: (){}, 
+        rad: 0,   
+      ), 
       body:  SingleChildScrollView(
         child: Column(
           children: [
@@ -168,6 +168,7 @@ class OrderSummary extends StatelessWidget {
         children: [
 
           Accordion(
+            disableScrolling: true,
             children: [
               AccordionSection(
                 headerBackgroundColor: Colors.green,

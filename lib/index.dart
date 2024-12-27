@@ -91,6 +91,7 @@ class IndexState extends State<Index>{
         backgroundColor: Colors.white,
         iconSize: 30,
         type: BottomNavigationBarType.fixed,
+        
       
         items: const [
           BottomNavigationBarItem(
