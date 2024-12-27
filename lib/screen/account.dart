@@ -3,6 +3,9 @@ import 'package:chef_palette/component/account_card.dart';
 import 'package:chef_palette/component/account_setting.dart';
 import 'package:chef_palette/component/change_name.dart';
 import 'package:chef_palette/models/user_model.dart';
+import 'package:chef_palette/screen/location.dart';
+import 'package:chef_palette/screen/payment_method.dart';
+import 'package:chef_palette/screen/transaction_record.dart';
 import 'package:chef_palette/services/firestore_services.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -44,11 +47,11 @@ class _AccountState extends State<Account> {
     _fetchUserData();
   }
 
-  // Fetch user data (replace with your own logic for Firestore or database fetching)
+  
   Future<void> _fetchUserData() async {
     final User? user = FirebaseAuth.instance.currentUser;
 
-    // Ensure user is not null
+
     if (user != null) {
       
       FirestoreService firestoreService = FirestoreService();
@@ -92,9 +95,9 @@ class _AccountState extends State<Account> {
             ListTile(
               title: Text("Features", style: CustomStyle.h3),
             ),
-            const AccountTile(title: "Transaction History", icon: Icons.receipt),
-            const AccountTile(title: "Location", icon: Icons.location_city),
-            const AccountTile(title: "Payment Method", icon: Icons.payment_rounded),
+            const AccountTile(title: "Transaction History", icon: Icons.receipt, screen: TransactionRecord(),),
+            const AccountTile(title: "Location", icon: Icons.location_city, screen: Location(),),
+            const AccountTile(title: "Payment Method", icon: Icons.payment_rounded, screen: PaymentMethod(),),
             const AccountSetting(),
             const SizedBox(height: 30),
             OutlinedButton(
@@ -115,16 +118,18 @@ class _AccountState extends State<Account> {
 }
 
 class AccountTile extends StatelessWidget {
-  const AccountTile({super.key, required this.title, required this.icon});
+  const AccountTile({super.key, required this.title, required this.icon, required this.screen});
 
   final String title;
   final IconData icon;
+  final Widget screen;
 
   @override
   Widget build(BuildContext context) {
+    
     return InkWell(
       onTap: () {
-        // Add navigation or on-tap functionality here
+        Navigator.push(context,MaterialPageRoute(builder: (context)=>screen));
       },
       splashColor: Colors.green,
       child: ListTile(
