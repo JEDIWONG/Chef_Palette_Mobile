@@ -4,18 +4,25 @@ import 'package:chef_palette/screen/menu.dart';
 import 'package:chef_palette/screen/order.dart';
 import 'package:chef_palette/screen/rewards.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 
 class Index extends StatefulWidget{
   const Index({super.key});
 
   @override
   State<Index> createState()=> IndexState();
-  
+
 }
 
 class IndexState extends State<Index>{
 
+  DateTime? currentBackPressTime;
+  final String exit_warning = "Press back again to exit boi";
+  bool canPopNow = false;
+  int requiredSeconds = 2;
   int selectedIndex =0;
+
 
   static List<Widget> pageList = [
     const Menu(),
@@ -28,15 +35,45 @@ class IndexState extends State<Index>{
     setState(() {
       selectedIndex = index;
     });
+  
+  }
+
+  void onPopInvoked(bool didPop) {
+    DateTime now = DateTime.now();
+    if (currentBackPressTime == null || 
+        now.difference(currentBackPressTime ?? now) > Duration(seconds: requiredSeconds)) {
+      currentBackPressTime = now;
+      Fluttertoast.showToast(msg: exit_warning);
+      Future.delayed(
+        Duration(seconds: requiredSeconds),
+        () {
+          // Disable pop invoke and close the toast after 2s timeout
+          setState(() {
+            canPopNow = false;
+          });
+          Fluttertoast.cancel();
+        },
+      );
+      // Ok, let user exit app on the next back press
+      setState(() {
+        canPopNow = true;
+      });
+  }
+
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       backgroundColor: Colors.white,
 
-      body: pageList.elementAt(selectedIndex),
-
+      body: PopScope(
+       canPop: canPopNow,
+       // ignore: deprecated_member_use
+       onPopInvoked: onPopInvoked,
+       child:pageList.elementAt(selectedIndex),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>const Cart()));},
         backgroundColor: Colors.amberAccent,
@@ -77,8 +114,14 @@ class IndexState extends State<Index>{
           ),
         ],
       ),
-      
-    );
-  }
-  
+     );
+
+    }
 }
+    
+
+
+  
+
+
+
