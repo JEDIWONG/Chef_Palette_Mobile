@@ -8,6 +8,7 @@ import 'package:chef_palette/screen/payment_method.dart';
 import 'package:chef_palette/screen/transaction_record.dart';
 import 'package:chef_palette/services/firestore_services.dart';
 import 'package:chef_palette/style/style.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -23,22 +24,34 @@ class _AccountState extends State<Account> {
   String lastName = "";
   String joinDate = "";
 
-   void _editName() {
+  void _editName(){
     showDialog(
       context: context,
       builder: (context) {
         return EditNameDialog(
           currentFirstName: firstName,
           currentLastName: lastName,
-          onSave: (newFirstName, newLastName) {
-            setState(() {
-              firstName = newFirstName;
-              lastName = newLastName;
-            });
+          onSave: (newFirstName, newLastName) async {      
+              // Update Firestore 
+              String userId = FirebaseAuth.instance.currentUser!.uid;
+              await FirebaseFirestore.instance.collection('users').doc(userId).update({
+                'firstName': newFirstName,
+                'lastName': newLastName,
+              });
+
+              // Update Firebase Auth profile
+              await FirebaseAuth.instance.currentUser!.updateDisplayName('$newFirstName $newLastName');
+
+              // Update local state
+              setState(() {
+                firstName = newFirstName;
+                lastName = newLastName;
+              });
           },
         );
       },
     );
+    return;
   }
 
   @override
