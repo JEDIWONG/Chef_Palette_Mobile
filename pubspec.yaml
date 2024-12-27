@@ -45,6 +45,7 @@ dependencies:
   fluttertoast: ^8.2.10
   flutter_hooks: ^0.18.0
   flutter_launcher_icons: ^0.13.1
+  accordion: ^2.6.0
 
 dev_dependencies:
   flutter_test:

@@ -46,44 +46,8 @@ class _CartState extends State<Cart> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Toggle buttons for selection
-            Container(
-              width: MediaQuery.sizeOf(context).width,
-              margin: const EdgeInsets.symmetric(vertical: 30),
-              alignment: Alignment.center,
-              child: ToggleButtons(
-                isSelected: isSelected,
-                onPressed: (int index) {
-                  setState(() {
-                    for (int i = 0; i < isSelected.length; i++) {
-                      isSelected[i] = i == index;
-                    }
-                  });
-                },
-                borderRadius: BorderRadius.circular(20),
-                textStyle: const TextStyle(fontSize: 14),
-                selectedColor: Colors.white,
-                fillColor: Colors.green,
-                color: Colors.black,
-                borderWidth: 1,
-                borderColor: Colors.green,
-                selectedBorderColor: Colors.green,
-                children: const [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 0),
-                    child: Text("Dine-In"),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
-                    child: Text("PickUp"),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
-                    child: Text("Delivery"),
-                  ),
-                ],
-              ),
-            ),
+            
+            
             
             const AddressSelector(addr: "Nasi Lemak Bamboo (Samarahan)", hour: "7AM-8PM"),
 

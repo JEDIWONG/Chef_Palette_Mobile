@@ -70,7 +70,7 @@ class CustomBackButton extends StatelessWidget{
       child: Row(
         spacing: 10,
         children: [
-          const Icon(Icons.arrow_back,color: Colors.white,),
+          const Icon(Icons.arrow_back,color: Colors.black,),
           
           Text(title,style: CustomStyle.h5,),
         ],
