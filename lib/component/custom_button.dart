@@ -46,35 +46,38 @@ class CustomBackButton extends StatelessWidget{
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: (){
-        
-        if(first==false){
-          Navigator.pop(context);
-        }
-        else{
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>const Index()));
-        }
-        
-      }, 
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.all(10),
-        fixedSize: Size(MediaQuery.sizeOf(context).width, 50),
-        backgroundColor: Colors.green,
-        foregroundColor: Colors.black,
-        elevation: 1,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.horizontal(right: Radius.circular(100))
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      child: ElevatedButton(
+        onPressed: (){
+          
+          if(first==false){
+            Navigator.pop(context);
+          }
+          else{
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>const Index()));
+          }
+          
+        }, 
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.all(10),
+          fixedSize: Size(MediaQuery.sizeOf(context).width, 50),
+          backgroundColor: Colors.green,
+          foregroundColor: Colors.black,
+          elevation: 1,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.horizontal(right: Radius.circular(100))
+          )
+        ),
+        child: Row(
+          spacing: 10,
+          children: [
+            const Icon(Icons.arrow_back,color: Colors.black,),
+            
+            Text(title,style: CustomStyle.h5,),
+          ],
         )
       ),
-      child: Row(
-        spacing: 10,
-        children: [
-          const Icon(Icons.arrow_back,color: Colors.white,),
-          
-          Text(title,style: CustomStyle.h5,),
-        ],
-      )
     );
   }
 

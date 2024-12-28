@@ -11,6 +11,13 @@ class CustomStyle{
   static TextStyle h5 = const TextStyle(fontSize: 14,fontWeight: FontWeight.bold,color: Colors.black);
   static TextStyle txt = const TextStyle(fontSize: 14,fontWeight: FontWeight.normal,color: Colors.black);
   
+  static TextStyle lightH2 = const TextStyle(fontSize: 24,fontWeight: FontWeight.bold,color: Colors.white);
+  static TextStyle lightH3= const TextStyle(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.white);
+  static TextStyle lightH4 = const TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color: Colors.white);
+  static TextStyle lightH5 = const TextStyle(fontSize: 14,fontWeight: FontWeight.bold,color: Colors.white);
+  static TextStyle lightTxt = const TextStyle(fontSize: 14,fontWeight: FontWeight.normal,color: Colors.white);
+
+
   static TextStyle link = const TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.normal,

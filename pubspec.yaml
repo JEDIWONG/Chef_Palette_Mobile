@@ -45,6 +45,7 @@ dependencies:
   fluttertoast: ^8.2.10
   flutter_hooks: ^0.18.0
   flutter_launcher_icons: ^0.13.1
+  accordion: ^2.6.0
 
 dev_dependencies:
   flutter_test:
@@ -76,10 +77,23 @@ flutter:
   assets:
     - assets/images/logo.png
     - assets/images/bg.png
-    - assets/images/placeholder.png
     - assets/images/splash_screen.png
     - assets/images/background.png
     - assets/images/test.png
+    - assets/images/prod_1.png
+    - assets/images/prod_2.png
+    - assets/images/prod_3.png
+    - assets/images/prod_4.png
+    - assets/images/prod_5.png
+    - assets/images/prod_6.png
+    - assets/images/prod_7.png
+    - assets/images/prod_8.png
+    - assets/images/prod_9.png
+    - assets/images/prod_10.png
+    - assets/icons/cat_0.png
+    - assets/icons/cat_1.png
+    - assets/icons/cat_2.png
+    - assets/icons/cat_3.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -3,12 +3,13 @@
 import 'package:chef_palette/models/product.model.dart';
 
 final List<ProductModel> products = [
+
   ProductModel(
     uid: "1",
     name: "Nasi Lemak Ayam Goreng",
     desc: "A traditional Malaysian dish with fried chicken.",
     price: 12.50,
-    imgUrl: "assets/images/placeholder.png",
+    imgUrl: "assets/images/prod_1.png",
     category: "main",
     addons: [
       {"name": "Extra Sambal", "price": 2.00},
@@ -23,7 +24,7 @@ final List<ProductModel> products = [
     name: "Mee Goreng Mamak",
     desc: "Spicy stir-fried noodles with vegetables and tofu.",
     price: 10.00,
-    imgUrl: "assets/images/placeholder.png",
+    imgUrl: "assets/images/prod_2.png",
     category: "main",
     addons: [
       {"name": "Fried Egg", "price": 1.50},
@@ -35,10 +36,10 @@ final List<ProductModel> products = [
   ),
   ProductModel(
     uid: "3",
-    name: "Roti Canai with Curry",
+    name: "Roti Canai",
     desc: "Flaky flatbread served with a side of curry.",
     price: 5.00,
-    imgUrl: "assets/images/placeholder.png",
+    imgUrl: "assets/images/prod_3.png",
     category: "main",
     addons: [
       {"name": "Extra Curry", "price": 2.00},
@@ -51,7 +52,7 @@ final List<ProductModel> products = [
     name: "Teh Tarik",
     desc: "A popular Malaysian pulled tea, served hot or cold.",
     price: 3.50,
-    imgUrl: "assets/images/placeholder.png",
+    imgUrl: "assets/images/prod_4.png",
     category: "beverage",
     addons: [],
     options: ["Hot", "Cold"],
@@ -63,7 +64,7 @@ final List<ProductModel> products = [
     name: "Kopi O",
     desc: "Classic black coffee, served hot or cold.",
     price: 3.00,
-    imgUrl: "assets/images/placeholder.png",
+    imgUrl: "assets/images/prod_5.png",
     category: "beverage",
     addons: [],
     options: ["Hot", "Cold"],
@@ -74,7 +75,7 @@ final List<ProductModel> products = [
     name: "Iced Lemon Tea",
     desc: "Refreshing tea with a splash of lemon.",
     price: 4.50,
-    imgUrl: "assets/images/placeholder.png",
+    imgUrl: "assets/images/prod_6.png",
     category: "beverage",
     addons: [],
     options: ["Cold"],
@@ -86,7 +87,7 @@ final List<ProductModel> products = [
     name: "Cendol",
     desc: "Traditional dessert with shaved ice, coconut milk, and palm sugar.",
     price: 6.00,
-    imgUrl: "assets/images/placeholder.png",
+    imgUrl: "assets/images/prod_7.png",
     category: "side",
     addons: [
       {"name": "Extra Gula Melaka", "price": 1.00},
@@ -100,7 +101,7 @@ final List<ProductModel> products = [
     name: "Sirap Bandung",
     desc: "Rose syrup drink mixed with condensed milk.",
     price: 4.00,
-    imgUrl: "assets/images/placeholder.png",
+    imgUrl: "assets/images/prod_8.png",
     category: "beverage",
     addons: [],
     options: ["Cold"],
@@ -111,7 +112,7 @@ final List<ProductModel> products = [
     name: "Nasi Goreng Kampung",
     desc: "Village-style fried rice with anchovies and vegetables.",
     price: 11.00,
-    imgUrl: "assets/images/placeholder.png",
+    imgUrl: "assets/images/prod_9.png",
     category: "main",
     addons: [
       {"name": "Fried Egg", "price": 1.50},
@@ -124,7 +125,7 @@ final List<ProductModel> products = [
     name: "Milo Dinosaur",
     desc: "Iced chocolate malt drink.",
     price: 4.00,
-    imgUrl: "assets/images/placeholder.png",
+    imgUrl: "assets/images/prod_10.png",
     category: "beverage",
     addons: [],
     options: ["Hot","Cold"],

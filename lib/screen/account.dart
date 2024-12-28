@@ -110,7 +110,7 @@ class _AccountState extends State<Account> {
             ),
             const AccountTile(title: "Transaction History", icon: Icons.receipt, screen: TransactionRecord(),),
             const AccountTile(title: "Location", icon: Icons.location_city, screen: Location(),),
-            const AccountTile(title: "Payment Method", icon: Icons.payment_rounded, screen: PaymentMethod(),),
+            const AccountTile(title: "Payment Method", icon: Icons.payment_rounded, screen: TransactionRecord(),),
             const AccountSetting(),
             const SizedBox(height: 30),
             OutlinedButton(

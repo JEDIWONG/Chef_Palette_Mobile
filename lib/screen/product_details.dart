@@ -1,5 +1,4 @@
 import 'dart:math';
-
 import 'package:chef_palette/component/custom_button.dart';
 import 'package:chef_palette/models/cart_item_model.dart';
 import 'package:chef_palette/screen/cart.dart';
@@ -113,159 +112,172 @@ class _ProductDetailsState extends State<ProductDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        leadingWidth: MediaQuery.sizeOf(context).width * 0.3,
-        leading: const CustomBackButton(title: "Menu", first: false),
-        surfaceTintColor: Colors.white,
-        backgroundColor: Colors.white,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 30),
-            Image.asset(widget.imgUrl),
-            ListTile(
-              title: Text(widget.name, style: CustomStyle.h2),
-              subtitle: Text(widget.desc, style: CustomStyle.subtitle),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 300.0,
+            pinned: true,
+            floating: false,
+            backgroundColor: Colors.white,
+            surfaceTintColor: Colors.white,
+            elevation: 0,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Image.asset(
+                widget.imgUrl,
+                fit: BoxFit.fill,
+                height: 300,
+              ),
+
             ),
-            ListTile(
-              leading: Text(
-                "RM ${widget.price.toStringAsFixed(2)}",
-                style: const TextStyle(
-                  fontSize: 20,
-                  color: Colors.green,
-                  fontWeight: FontWeight.bold,
+            leading: const CustomBackButton(title: "Menu", first: false),
+            leadingWidth: MediaQuery.sizeOf(context).width*0.3,
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate(
+              [
+                ListTile(
+                  title: Text(widget.name, style: CustomStyle.h2),
+                  subtitle: Text(widget.desc, style: CustomStyle.subtitle),
                 ),
-              ),
-            ),
-            const Divider(indent: 10, endIndent: 10),
-
-            // Options Section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Options", style: CustomStyle.h2),
-                  const SizedBox(height: 10),
-
-                  Column(
-                    children: widget.option.map((option) {
-                      return RadioListTile<String>(
-                        title: Text(option, style: CustomStyle.subtitle),
-                        value: option,
-                        groupValue: selectedOption,
-                        onChanged: (value) {
-                          setState(() {
-                            selectedOption = value;
-                          });
-                        },
-                      );
-                    }).toList(),
-                  ),
-
-                  const SizedBox(height: 10),
-                  Text("Add-ons", style: CustomStyle.h2),
-                  const SizedBox(height: 10),
-                  ...widget.addons.map((addon) {
-                    return CheckboxListTile(
-                      title: Text(
-                        "${addon['name']} (RM ${addon['price'].toStringAsFixed(2)})",
-                        style: CustomStyle.subtitle,
-                      ),
-                      value: selectedAddons.contains(addon),
-                      onChanged: (isChecked) {
-                        setState(() {
-                          if (isChecked == true) {
-                            selectedAddons.add(addon);
-                          } else {
-                            selectedAddons.remove(addon);
-                          }
-                          _updateTotalPrice();
-                        });
-                      },
-                    );
-                  }),
-                ],
-              ),
-            ),
-
-            // Additional Instruction Section
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Additional Instruction", style: CustomStyle.h3),
-                  TextFormField(
-                    controller: instructionController,
-                    decoration: const InputDecoration(
-                      hintText: "Tell Us Something",
-                      fillColor: Colors.grey,
+                ListTile(
+                  leading: Text(
+                    "RM ${widget.price.toStringAsFixed(2)}",
+                    style: const TextStyle(
+                      fontSize: 20,
+                      color: Colors.green,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ],
-              ),
-            ),
-
-            // Quantity Section
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text("Quantity", style: CustomStyle.h2),
-                  Row(
+                ),
+                const Divider(indent: 10, endIndent: 10),
+                
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            if (quantity > 1) {
-                              quantity--;
-                              _updateTotalPrice();
-                            }
-                          });
-                        },
-                        icon: const Icon(Icons.remove_circle, color: Colors.red),
+                      Text("Options", style: CustomStyle.h2),
+                      const SizedBox(height: 10),
+                      Column(
+                        children: widget.option.map((option) {
+                          return RadioListTile<String>(
+                            title: Text(option, style: CustomStyle.subtitle),
+                            value: option,
+                            groupValue: selectedOption,
+                            onChanged: (value) {
+                              setState(() {
+                                selectedOption = value;
+                              });
+                            },
+                          );
+                        }).toList(),
                       ),
-                      Text(quantity.toString(), style: CustomStyle.h2),
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            quantity++;
-                            _updateTotalPrice();
-                          });
-                        },
-                        icon: const Icon(Icons.add_circle, color: Colors.green),
+                      const SizedBox(height: 10),
+                      Text("Add-ons", style: CustomStyle.h2),
+                      const SizedBox(height: 10),
+                      ...widget.addons.map((addon) {
+                        return CheckboxListTile(
+                          title: Text(
+                            "${addon['name']} (RM ${addon['price'].toStringAsFixed(2)})",
+                            style: CustomStyle.subtitle,
+                          ),
+                          value: selectedAddons.contains(addon),
+                          onChanged: (isChecked) {
+                            setState(() {
+                              if (isChecked == true) {
+                                selectedAddons.add(addon);
+                              } else {
+                                selectedAddons.remove(addon);
+                              }
+                              _updateTotalPrice();
+                            });
+                          },
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+                
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Additional Instruction", style: CustomStyle.h3),
+                      TextFormField(
+                        controller: instructionController,
+                        decoration: const InputDecoration(
+                          hintText: "Tell Us Something",
+                          fillColor: Colors.grey,
+                        ),
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
-
-            // Add to Cart Button
-            ElevatedButton(
-              onPressed: _addItemToCart,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
                 ),
-                fixedSize: Size(MediaQuery.sizeOf(context).width * 0.8, 50),
-              ),
-              child: Text(
-                "Add to Cart RM ${totalPrice.toStringAsFixed(2)}",
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Quantity", style: CustomStyle.h2),
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                if (quantity > 1) {
+                                  quantity--;
+                                  _updateTotalPrice();
+                                }
+                              });
+                            },
+                            icon: const Icon(Icons.remove_circle, color: Colors.red),
+                          ),
+                          Text(quantity.toString(), style: CustomStyle.h2),
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                quantity++;
+                                _updateTotalPrice();
+                              });
+                            },
+                            icon: const Icon(Icons.add_circle, color: Colors.green),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 30,horizontal: 10),
+                  child: ElevatedButton(
+                    onPressed: _addItemToCart,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                      fixedSize: Size(MediaQuery.sizeOf(context).width * 0.8, 50),
+                    ),
+                    child: Text(
+                      "Add to Cart RM ${totalPrice.toStringAsFixed(2)}",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                
+              
+              ],
             ),
-            const SizedBox(height: 50),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
+
 }

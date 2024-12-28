@@ -18,20 +18,19 @@ class ProductCard extends StatelessWidget{
         Navigator.push(context, MaterialPageRoute(builder: (context)=> ProductDetails(name: name, imgUrl: imgUrl, price: price, desc: obj.desc, addons: obj.addons, option: obj.options,)));
       },
 
-      child: Container(
-        width: MediaQuery.sizeOf(context).width*0.4,
-        height: MediaQuery.sizeOf(context).width*0.4,
-
+      child: Card(
+        elevation: 0,
+        color: Colors.white,
         child:  Column(
-          
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             ClipRRect(
               borderRadius: const BorderRadius.all(Radius.circular(10)),
               child: Image.asset(
                 imgUrl,
-                
-              
-                fit: BoxFit.cover,
+                fit: BoxFit.fill,
+                width: MediaQuery.sizeOf(context).width*0.8,
+                height: 200,
               ),
             ),
             
