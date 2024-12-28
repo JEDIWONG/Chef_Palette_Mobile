@@ -46,9 +46,7 @@ class _CartState extends State<Cart> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            
-            
-            
+
             const AddressSelector(addr: "Nasi Lemak Bamboo (Samarahan)", hour: "7AM-8PM"),
 
             // FutureBuilder to display cart items

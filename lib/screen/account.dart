@@ -4,7 +4,6 @@ import 'package:chef_palette/component/account_setting.dart';
 import 'package:chef_palette/component/change_name.dart';
 import 'package:chef_palette/models/user_model.dart';
 import 'package:chef_palette/screen/location.dart';
-import 'package:chef_palette/screen/payment_method.dart';
 import 'package:chef_palette/screen/transaction_record.dart';
 import 'package:chef_palette/services/firestore_services.dart';
 import 'package:chef_palette/style/style.dart';

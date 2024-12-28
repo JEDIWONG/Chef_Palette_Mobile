@@ -2,10 +2,14 @@ import 'dart:async';
 import 'package:accordion/accordion.dart';
 import 'package:chef_palette/component/address_selector.dart';
 import 'package:chef_palette/component/custom_button.dart';
+import 'package:chef_palette/component/discount_selector.dart';
 import 'package:chef_palette/component/payment_selector.dart';
+import 'package:chef_palette/controller/order_controller.dart';
 import 'package:chef_palette/models/cart_item_model.dart';
+import 'package:chef_palette/models/order_model.dart';
 import 'package:chef_palette/services/firestore_services.dart'; 
 import 'package:chef_palette/style/style.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Checkout extends StatefulWidget{
@@ -25,6 +29,10 @@ class _CheckoutState extends State<Checkout> {
   double processingFee = 0.0; 
   
   String paymentMethod = "Select a Payment method";
+  String branchName = "Nasi Lemak Bamboo (Samarahan)";
+  double discountRate = 0.0;
+
+  final user  = FirebaseAuth.instance.currentUser;
 
   void updateProcessingFee() {
     setState(() {
@@ -66,9 +74,26 @@ class _CheckoutState extends State<Checkout> {
         bg: Colors.green, 
         fg: Colors.white, 
         text: "Place Order", 
-        func: (){}, 
+        func: () async {
+          OrderController orderController = OrderController();
+          double totalPrice = await calculateTotalPrice(); 
+          List<CartItemModel> cartItems = await fetchCartItems(); 
+
+          orderController.createOrder(
+            OrderModel(
+              paymentMethod: paymentMethod,
+              timestamp: DateTime.now(),  
+              userID: user!.uid,          
+              branchName: branchName,
+              orderItems: cartItems,      
+              price: totalPrice,          
+              status: 'Pending',          
+            ),
+          );
+        }, 
         rad: 0,   
-      ), 
+      ),
+
       body:  SingleChildScrollView(
         controller: _scrollController,
         child: Column(
@@ -123,20 +148,32 @@ class _CheckoutState extends State<Checkout> {
 
             const TotalPriceBar(),
 
-            Padding(
+            Container(
               padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 30),
-              child: PaymentSelector(
-                current: paymentMethod,
-                onPaymentMethodSelected: (String s) { 
-                  setState(() {
-                    paymentMethod = s;
-                  });
-                },
-                
-              ),
+              child: Column(
+                spacing: 20,
+                children: [
+                  PaymentSelector(
+                    current: paymentMethod,
+                    onPaymentMethodSelected: (String s) { 
+                      setState(() {
+                        paymentMethod = s;
+                      });
+                    },
+                  ),
+                  
+                  DiscountSelector(
+                    onDiscountSelected: (double d){
+                      setState(() {
+                        discountRate = d;
+                      });
+                    },
+                    current: discountRate,
+                  )
+                ],
+              )
             ),
-            
-            
+
           ],
         ),
       ),

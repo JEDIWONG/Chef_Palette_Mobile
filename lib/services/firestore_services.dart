@@ -116,7 +116,6 @@ class FirestoreService {
     }
   }
 
-
   Future<void> deleteCartItem(String cartItemId) async {
   try {
     final currentUser = FirebaseAuth.instance.currentUser;
