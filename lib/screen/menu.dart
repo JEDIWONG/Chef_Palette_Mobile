@@ -106,12 +106,12 @@ class _MenuState extends State<Menu> {
           ),
 
           SliverPersistentHeader(
-            pinned: true,
-            floating: true,
+            pinned: false,
+            floating: false,
             delegate: _SliverHeaderDelegate(
 
               child: Container(
-    
+                
                 padding: const EdgeInsets.only(top: 10),
                 height: 80,
                 decoration: const BoxDecoration(
@@ -119,9 +119,9 @@ class _MenuState extends State<Menu> {
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey,
-                      offset: Offset(0, 1),
+                      offset: Offset(0, 0.5),
                       blurRadius: 0,
-                      blurStyle: BlurStyle.normal
+                      blurStyle: BlurStyle.outer
                     )
                   ]
                 ),

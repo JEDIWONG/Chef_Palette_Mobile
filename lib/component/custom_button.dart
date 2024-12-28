@@ -63,7 +63,7 @@ class CustomBackButton extends StatelessWidget{
           padding: const EdgeInsets.all(10),
           fixedSize: Size(MediaQuery.sizeOf(context).width, 50),
           backgroundColor: Colors.green,
-          foregroundColor: Colors.black,
+          foregroundColor: Colors.white,
           elevation: 1,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.horizontal(right: Radius.circular(100))
@@ -72,9 +72,9 @@ class CustomBackButton extends StatelessWidget{
         child: Row(
           spacing: 10,
           children: [
-            const Icon(Icons.arrow_back,color: Colors.black,),
+            const Icon(Icons.navigate_before,color: Colors.white,),
             
-            Text(title,style: CustomStyle.h5,),
+            Text(title,style: const TextStyle(fontWeight: FontWeight.bold),),
           ],
         )
       ),

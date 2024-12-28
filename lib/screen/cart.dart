@@ -21,7 +21,7 @@ class _CartState extends State<Cart> {
   @override
   void initState() {
     super.initState();
-    loadCartItems(); // Load initial cart items
+    loadCartItems(); 
   }
 
   Future<void> loadCartItems() async {
@@ -48,7 +48,7 @@ class _CartState extends State<Cart> {
         centerTitle: true,
         leadingWidth: MediaQuery.sizeOf(context).width * 0.30,
         leading: const CustomBackButton(
-          title: 'Menu',
+          title: 'Back',
           first: false,
         ),
         title: Text(
