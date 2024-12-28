@@ -6,6 +6,8 @@ import 'package:chef_palette/models/user_model.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:intl/intl.dart';
+
 
 class RegisterStep2 extends StatefulWidget {
   const RegisterStep2({super.key, required this.uid, required this.email});
@@ -23,6 +25,7 @@ class _RegisterStep2State extends State<RegisterStep2> {
   final _phoneNumberController = TextEditingController();
   DateTime? _selectedDate;
   final FirestoreService _firestoreService = FirestoreService();
+  String joinDate = DateFormat('yyyy-MM-dd').format(DateTime.now()); // ISO 8601 format
 
   Future<void> _saveUserData() async {
     if (_selectedDate == null) {
@@ -40,6 +43,7 @@ class _RegisterStep2State extends State<RegisterStep2> {
         lastName: _lastNameController.text.trim(),
         phoneNumber: _phoneNumberController.text.trim(),
         dob: "${_selectedDate!.day}-${_selectedDate!.month}-${_selectedDate!.year}",
+        joinDate: joinDate,
       );
 
       await _firestoreService.createUser(user);

@@ -25,15 +25,14 @@ class FirestoreService {
   Future<UserModel?> getUser(String uid) async {
     try {
       // Fetch user document from Firestore
-      DocumentSnapshot<Map<String, dynamic>> docSnapshot =
-        await _firestore.collection('users').doc(uid).get();
+      DocumentSnapshot<Map<String, dynamic>> docSnapshot =  await _firestore.collection('users').doc(uid).get();
 
       // Check if the document exists
       if (docSnapshot.exists) {
         final data = docSnapshot.data();
 
         if (data != null) {
-  
+  //save the data in the user model
           return UserModel(
             uid: data['uid'] as String,
             email: data['email'] as String,
@@ -41,6 +40,7 @@ class FirestoreService {
             lastName: data['lastName'] as String,
             phoneNumber: data['phoneNumber'] as String,
             dob: data['dob'] as String,
+            joinDate: data['joinDate'] as String,
           );
         }
       }

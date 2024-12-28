@@ -5,6 +5,7 @@ class UserModel {
   String lastName;
   String phoneNumber;
   String dob;
+  String joinDate;
   
 
   UserModel({
@@ -14,6 +15,7 @@ class UserModel {
     required this.lastName,
     required this.phoneNumber,
     required this.dob,
+    required this.joinDate,
   });
 
   Map<String, dynamic> toMap() {
@@ -24,6 +26,7 @@ class UserModel {
       'lastName': lastName,
       'phoneNumber': phoneNumber,
       'dob':dob,
+      'joinDate':joinDate,
     };
   }
 }
