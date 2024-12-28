@@ -90,8 +90,7 @@ class IndexState extends State<Index>{
         unselectedItemColor: Colors.black,
         backgroundColor: Colors.white,
         iconSize: 30,
-        type: BottomNavigationBarType.fixed,
-        
+        type: BottomNavigationBarType.fixed, 
       
         items: const [
           BottomNavigationBarItem(

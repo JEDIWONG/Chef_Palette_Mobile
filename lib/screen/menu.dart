@@ -105,15 +105,26 @@ class _MenuState extends State<Menu> {
             ),
           ),
 
-          // Category Bar
           SliverPersistentHeader(
-            pinned: false,
+            pinned: true,
             floating: true,
             delegate: _SliverHeaderDelegate(
+
               child: Container(
-                color: Colors.white,
+    
                 padding: const EdgeInsets.only(top: 10),
                 height: 80,
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey,
+                      offset: Offset(0, 1),
+                      blurRadius: 0,
+                      blurStyle: BlurStyle.normal
+                    )
+                  ]
+                ),
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: categories.length,
@@ -158,7 +169,7 @@ class _MenuState extends State<Menu> {
                   },
                 ),
               ),
-              height: 90,
+              height: 100,
             ),
           ),
 

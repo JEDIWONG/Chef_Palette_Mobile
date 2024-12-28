@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:accordion/accordion.dart';
 import 'package:chef_palette/component/address_selector.dart';
 import 'package:chef_palette/component/custom_button.dart';
@@ -18,17 +17,21 @@ class Checkout extends StatefulWidget{
 }
 
 class _CheckoutState extends State<Checkout> {
+
+  final ScrollController _scrollController = ScrollController();
   
   List<bool> isSelected = [true, false, false];
 
-  double processingFee = 0.0; // Initialize with no processing fee
+  double processingFee = 0.0; 
+  
+  String paymentMethod = "Select a Payment method";
 
   void updateProcessingFee() {
     setState(() {
       if (isSelected[2]) {
-        processingFee = 5.0; // Set a processing fee for delivery
+        processingFee = 5.0; 
       } else {
-        processingFee = 0.0; // No processing fee for Dine-In or PickUp
+        processingFee = 0.0; 
       }
     });
   }
@@ -38,8 +41,6 @@ class _CheckoutState extends State<Checkout> {
     double tax = await calculateTax();
     return subPrice + tax + processingFee;
   }
-
- 
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +70,7 @@ class _CheckoutState extends State<Checkout> {
         rad: 0,   
       ), 
       body:  SingleChildScrollView(
+        controller: _scrollController,
         child: Column(
           children: [
 
@@ -119,26 +121,19 @@ class _CheckoutState extends State<Checkout> {
             
             OrderSummary(processingFee: processingFee,),
 
-            ListTile(
-              
-              leading: Text("Total ", style: CustomStyle.h1),
-              trailing: FutureBuilder<double>(
-                future: calculateTotalPrice(), 
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return Text("Error: ${snapshot.error}");
-                  } else if (snapshot.hasData) {
-                    return Text("RM ${snapshot.data!.toStringAsFixed(2)}",style: CustomStyle.h3,); 
-                  } else {
-                    return const Text("RM 0.00");
-                  }
-                },
-              ),
-            ),
+            const TotalPriceBar(),
 
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30,vertical: 30),
-              child: PaymentSelector(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 30),
+              child: PaymentSelector(
+                current: paymentMethod,
+                onPaymentMethodSelected: (String s) { 
+                  setState(() {
+                    paymentMethod = s;
+                  });
+                },
+                
+              ),
             ),
             
             
@@ -169,11 +164,12 @@ class OrderSummary extends StatelessWidget {
 
           Accordion(
             disableScrolling: true,
+            paddingBetweenClosedSections: 50,
             children: [
               AccordionSection(
+                isOpen: true,
                 headerBackgroundColor: Colors.green,
                 contentBorderColor: Colors.green, 
-                
                 headerPadding: const EdgeInsets.all(10),
                 header: Text("Order Summary", style: CustomStyle.lightH4),
                 content: Padding(
@@ -230,6 +226,50 @@ class OrderSummary extends StatelessWidget {
       ),
     );
   }
+}
+
+class TotalPriceBar extends StatelessWidget{
+  const TotalPriceBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 10),
+      decoration:  BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20), 
+        border: Border.all(
+          color: Colors.green,
+          width: 1,
+        ),
+        boxShadow: const [
+          BoxShadow(
+            color: Colors.grey,
+            offset: Offset(1, 1),
+            blurRadius: 1,
+            blurStyle: BlurStyle.normal,
+          )
+        ]
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(vertical:0,horizontal: 20),
+        leading:  Text("Total", style: CustomStyle.h3),
+        trailing: FutureBuilder<double>(
+          future: calculateTotalPrice(), 
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Text("Error: ${snapshot.error}");
+            } else if (snapshot.hasData) {
+              return Text("RM ${snapshot.data!.toStringAsFixed(2)}",style: CustomStyle.h2,);
+            } else {
+              return const Text("RM 0.00");
+            }
+          },
+        ),
+      ),
+    );
+  }
+  
 }
 
 class OrderItem extends StatelessWidget {
