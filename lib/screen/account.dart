@@ -41,12 +41,14 @@ class _AccountState extends State<Account> {
               // Update Firebase Auth profile
               await FirebaseAuth.instance.currentUser!.updateDisplayName('$newFirstName $newLastName');
 
-              // Update local state
               setState(() {
                 firstName = newFirstName;
                 lastName = newLastName;
-              });
-          },
+              }); 
+              
+              // Update local state
+          
+         },
         );
       },
     );
@@ -66,14 +68,13 @@ class _AccountState extends State<Account> {
 
     if (user != null) {
       
-      FirestoreService firestoreService = FirestoreService();
-      UserModel? currUser = await firestoreService.getUser(user.uid);
+      UserModel? currUser = await FirestoreService().getUser(user.uid);
 
       
       setState(() {
         firstName = currUser?.firstName ?? "Default First Name";  // Default if null
         lastName = currUser?.lastName ?? "Default Last Name";      // Default if null
-        joinDate = "12-12-2024";
+        joinDate = currUser?.joinDate ?? "12-12-2024";
       });
 
       
