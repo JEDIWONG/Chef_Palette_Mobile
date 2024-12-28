@@ -88,7 +88,7 @@ class _ProductDetailsState extends State<ProductDetails> {
     );
 
     FirestoreService firestoreService = FirestoreService();
-    firestoreService.addToCart(cartItem);
+    await firestoreService.addToCart(cartItem);
 
     Navigator.push(context,MaterialPageRoute(builder: (context)=>const Cart()));
 
@@ -103,7 +103,7 @@ class _ProductDetailsState extends State<ProductDetails> {
           style: const TextStyle(color: Colors.white,fontWeight: FontWeight.bold),
         ),
         margin: EdgeInsets.only(
-          bottom: MediaQuery.sizeOf(context).height-100,
+          bottom: MediaQuery.sizeOf(context).height*0.8,
         ),
       ),
     );
