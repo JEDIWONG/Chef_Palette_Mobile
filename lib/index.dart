@@ -18,7 +18,7 @@ class Index extends StatefulWidget{
 class IndexState extends State<Index>{
 
   DateTime? currentBackPressTime;
-  final String exit_warning = "Press back again to exit boi";
+  final String exitWarning = "Press back again to exit.";
   bool canPopNow = false;
   int requiredSeconds = 2;
   int selectedIndex =0;
@@ -43,7 +43,7 @@ class IndexState extends State<Index>{
     if (currentBackPressTime == null || 
         now.difference(currentBackPressTime ?? now) > Duration(seconds: requiredSeconds)) {
       currentBackPressTime = now;
-      Fluttertoast.showToast(msg: exit_warning);
+      Fluttertoast.showToast(msg: exitWarning);
       Future.delayed(
         Duration(seconds: requiredSeconds),
         () {

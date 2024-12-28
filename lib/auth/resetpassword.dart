@@ -11,11 +11,8 @@ class ForgotPassword extends StatefulWidget {
 
 class _ForgotPasswordState extends State<ForgotPassword> {
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _otpController = TextEditingController();
   String? _errorMessage;
-
   // Firebase auth instance
-  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // Function to send password reset email
   Future<void> _sendResetEmail() async {
@@ -26,11 +23,15 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       return;
     }
 
+    setState(() { 
+     _errorMessage = null; 
+  });
+
     try {
        // Check if email exists in Firebase
           String email = _emailController.text;
           QuerySnapshot query =  await FirebaseFirestore.instance.collection('users').where("email", isEqualTo: email).get();
-
+          
           if (query.docs.isEmpty) {
             setState(() {
               _errorMessage = "No account found for this email.";
@@ -45,7 +46,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
           setState(() {
             _errorMessage = null;
+
           });
+
+          
         Navigator.pop(context); // Navigate back to Login
          ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Reset link sent to your email. Please check.")),
@@ -59,6 +63,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       });
     }
   }
+
+  
 
   @override
   Widget build(BuildContext context) {

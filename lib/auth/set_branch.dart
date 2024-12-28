@@ -3,6 +3,82 @@ import 'package:chef_palette/component/steps_bar.dart';
 import 'package:chef_palette/index.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+
+
+class LocationService {
+  // List of branch coordinates (latitude, longitude)
+  final List<Map<String, dynamic>> branches = [
+    {'name': 'Kuching, Kota Samarahan', 'latitude': 1.4624359, 'longitude': 110.417582},
+    {'name': 'Kuching Kota Padungan', 'latitude': 4.387372, 'longitude': 110.7806254},
+    {'name': 'Sabah Segama Complex', 'latitude': 5.9424039, 'longitude': 116.0568832},
+  ];
+
+  // Function to calculate the nearest branch
+  String getNearestBranch(Position userPosition) {
+    double minDistance = double.infinity;
+    String nearestBranch = '';
+
+    for (var branch in branches) {
+      double distance = Geolocator.distanceBetween(
+        userPosition.latitude,
+        userPosition.longitude,
+        branch['latitude'],
+        branch['longitude'],
+      );
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearestBranch = branch['name'];
+      }
+    }
+
+    return nearestBranch;
+  }
+
+
+//get current location
+ Future<Position?> getCurrentLocation(BuildContext context) async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      _showDialog(context, "Error", "Please enable location services.");
+      return null;
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        _showDialog(context, "Permission Denied", "Location permission is required.");
+        return null;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      _showDialog(context, "Permission Denied Forever", "Enable location permission from settings.");
+      return null;
+    }
+
+    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  }
+}
+
+  // Function to show dialog box
+  void _showDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
 
 
 class RegisterStep3 extends StatefulWidget {
@@ -14,6 +90,34 @@ class RegisterStep3 extends StatefulWidget {
 
 class _RegisterStep3State extends State<RegisterStep3> {
   String? selectedState;
+  String? nearestBranch;
+
+  Future<void> _detectNearestBranch() async {
+    LocationService locationService = LocationService();
+    Position? position = await locationService.getCurrentLocation(context);
+
+    if (position != null) {
+      String branch = locationService.getNearestBranch(position);
+      setState(() {
+        nearestBranch = branch;
+      });
+
+      // Show detected branch dialog
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text("Detected Nearest Branch"),
+          content: Text("Your nearest branch is: $branch"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text("OK"),
+            ),
+          ],
+        ),
+      );
+    }
+  }
 
   // List of states in Malaysia
   final List<String> states = [
@@ -76,19 +180,20 @@ class _RegisterStep3State extends State<RegisterStep3> {
                     bg: Colors.green,
                     fg: const Color.fromARGB(255, 255, 255, 255),
                     text: "Get Nearest Branch",
-                    func: () {
-                      if (selectedState != null) {
-                        // Handle the submission with the selected state
-                        print("Selected State: $selectedState");
-                      } else {
-                        // Handle the case where no state is selected
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Please select a state."),
-                          ),
-                        );
-                      }
-                    },
+                    func: _detectNearestBranch,
+                    //() {
+                      // if (selectedState != null) {
+                      //   // Handle the submission with the selected state
+                      //   print("Selected State: $selectedState");
+                      // } else {
+                      //   // Handle the case where no state is selected
+                      //   ScaffoldMessenger.of(context).showSnackBar(
+                      //     const SnackBar(
+                      //       content: Text("Please select a state."),
+                      //     ),
+                      //   );
+                      // }
+                   // },
                     rad: 10,
                   ),
                   const SizedBox(height: 20),

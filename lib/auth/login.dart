@@ -3,7 +3,9 @@ import 'package:chef_palette/index.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'resetpassword.dart';
+import 'package:chef_palette/auth/resetpassword.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' hide Index; 
+//since we have a class named Index in index.dart, we need to hide it to avoid conflict
 
 
 class Login extends StatefulWidget {
@@ -19,17 +21,39 @@ class _LoginState extends State<Login> {
   bool _isPasswordVisible = false;
   String? _errorMessage;
   bool _isLoading = false;
+  
 
-  // Firebase sign-in function
-Future<void> _login() async {
+// Firebase sign-in function
+  Future<void> _login() async {
+  //check valid email format to differentiate error 
+  final bool emailValid = 
+    RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+      .hasMatch(_emailController.text);
 
       if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
     setState(() {
       _errorMessage = "Please fill in both email and password.";
     });
-    return; // Stop further execution
+    return;
   }
 
+//let user know the email is not registered
+  QuerySnapshot query =  
+  await FirebaseFirestore.instance.collection('users').where("email", isEqualTo:_emailController.text).get();
+
+      if (query.docs.isEmpty && emailValid) {
+        setState(() {
+          _errorMessage = "Email not registered in database.";
+        });
+        return;
+      }
+      if (!emailValid ) {
+        setState(() {
+          _errorMessage = "Wrong email format.";
+        });
+        return;
+      }
+      
      setState(() {
     _isLoading = true; // Start loading state 
      _errorMessage = null; 

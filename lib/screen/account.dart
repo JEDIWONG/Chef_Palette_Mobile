@@ -39,7 +39,7 @@ class _AccountState extends State<Account> {
               });
 
               // Update Firebase Auth profile
-              await FirebaseAuth.instance.currentUser!.updateDisplayName('$newFirstName $newLastName');
+              await FirebaseAuth.instance.currentUser!.updateDisplayName('$newFirstName.trim $newLastName.trim');
 
               setState(() {
                 firstName = newFirstName;
