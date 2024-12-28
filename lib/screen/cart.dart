@@ -15,15 +15,28 @@ class Cart extends StatefulWidget {
 }
 
 class _CartState extends State<Cart> {
-  List<bool> isSelected = [true, false, false];
-  late Future<List<CartItemModel>> cartItems; // Variable to hold cart items
-  
+  List<CartItemModel> cartItems = []; // Holds cart items
+  bool isCartEmpty = true; // Tracks whether the cart is empty
+
   @override
   void initState() {
     super.initState();
-    
-    cartItems = FirestoreService().getCartItems();
-    
+    loadCartItems(); // Load initial cart items
+  }
+
+  Future<void> loadCartItems() async {
+    final items = await FirestoreService().getCartItems();
+    setState(() {
+      cartItems = items;
+      isCartEmpty = cartItems.isEmpty;
+    });
+  }
+
+  void handleItemRemoved(String itemId) {
+    setState(() {
+      cartItems.removeWhere((item) => item.itemId == itemId);
+      isCartEmpty = cartItems.isEmpty;
+    });
   }
 
   @override
@@ -43,62 +56,47 @@ class _CartState extends State<Cart> {
           style: CustomStyle.h1,
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-
-            const AddressSelector(addr: "Nasi Lemak Bamboo (Samarahan)", hour: "7AM-8PM"),
-
-            // FutureBuilder to display cart items
-            FutureBuilder<List<CartItemModel>>(
-              future: cartItems,  // The Future is directly used here
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  
-                  return const Center(child: CircularProgressIndicator());
-
-                } else if (snapshot.hasError) {
-
-                  return Center(child: Text("Error: ${snapshot.error}"));
-
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  
-                  return const Center(child: Text("Your cart is empty"));
-                } else {
-                  
-                  return Column(
-                    children: snapshot.data!.map((c) {
-                      return CartItem(
-                        imgUrl: c.imageUrl,
-                        title: c.name,
-                        quantity: c.quantity,
-                        price: c.price,
-                        itemId: c.itemId, 
-                      );
-                    }).toList(),
-                  );
-                }
-              },
-            ),
-
-            // Pay Now button
-            RectButton(
-              bg: Colors.green,
-              fg: Colors.white,
-              text: "Pay Now",
-              func: () {
+      bottomSheet: RectButton(
+        bg: isCartEmpty ? Colors.grey : Colors.green, // Disable button if cart is empty
+        fg: Colors.white,
+        text: "Pay Now",
+        func: isCartEmpty
+            ? () {} // Do nothing if the cart is empty
+            : () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const Checkout()),
                 );
               },
-              rad: 0,
+        rad: 0,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const AddressSelector(
+              addr: "Nasi Lemak Bamboo (Samarahan)", 
+              hour: "7AM-8PM"
             ),
+            if (cartItems.isEmpty)
+              const Center(child: Text("Your cart is empty")),
+            if (cartItems.isNotEmpty)
+              Column(
+                children: cartItems.map((item) {
+                  return CartItem(
+                    imgUrl: item.imageUrl,
+                    title: item.name,
+                    quantity: item.quantity,
+                    price: item.price,
+                    itemId: item.itemId,
+                    onItemRemoved: handleItemRemoved, // Pass callback
+                  );
+                }).toList(),
+              ),
           ],
         ),
       ),
     );
   }
-
-  
 }
+
+

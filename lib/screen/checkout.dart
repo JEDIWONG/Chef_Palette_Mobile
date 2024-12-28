@@ -4,9 +4,11 @@ import 'package:chef_palette/component/address_selector.dart';
 import 'package:chef_palette/component/custom_button.dart';
 import 'package:chef_palette/component/discount_selector.dart';
 import 'package:chef_palette/component/payment_selector.dart';
+import 'package:chef_palette/controller/cart_controller.dart';
 import 'package:chef_palette/controller/order_controller.dart';
 import 'package:chef_palette/models/cart_item_model.dart';
 import 'package:chef_palette/models/order_model.dart';
+import 'package:chef_palette/screen/order.dart';
 import 'package:chef_palette/services/firestore_services.dart'; 
 import 'package:chef_palette/style/style.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -74,12 +76,17 @@ class _CheckoutState extends State<Checkout> {
         bg: Colors.green, 
         fg: Colors.white, 
         text: "Place Order", 
-        func: () async {
+        func: () async{
+
           OrderController orderController = OrderController();
+          CartController cartController = CartController();
+
           double totalPrice = await calculateTotalPrice(); 
           List<CartItemModel> cartItems = await fetchCartItems(); 
 
-          orderController.createOrder(
+          await cartController.deleteAllCartItems();
+
+          await orderController.createOrder(
             OrderModel(
               paymentMethod: paymentMethod,
               timestamp: DateTime.now(),  
@@ -90,6 +97,8 @@ class _CheckoutState extends State<Checkout> {
               status: 'Pending',          
             ),
           );
+
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>const Order())); 
         }, 
         rad: 0,   
       ),

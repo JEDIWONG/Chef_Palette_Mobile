@@ -4,54 +4,50 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class CartItem extends StatelessWidget {
-  CartItem({
+  final String itemId;
+  final String imgUrl;
+  final String title;
+  final int quantity;
+  final double price;
+  final Function(String) onItemRemoved; // Callback to parent
+
+  const CartItem({
     super.key,
     required this.itemId,
     required this.imgUrl,
     required this.title,
     required this.quantity,
     required this.price,
-
+    required this.onItemRemoved,
   });
-
-  final String itemId;
-  final String imgUrl;
-  final String title;
-  final int quantity;
-  final double price;
 
   @override
   Widget build(BuildContext context) {
     return Slidable(
-      
-      key: const ValueKey(0),
+      key: ValueKey(itemId),
       direction: Axis.horizontal,
-
       endActionPane: ActionPane(
         motion: const ScrollMotion(),
         dismissible: DismissiblePane(
-          onDismissed: (){
+          onDismissed: () async {
             FirestoreService firestoreService = FirestoreService();
-            firestoreService.deleteCartItem(itemId);
-          }
+            await firestoreService.deleteCartItem(itemId);
+            onItemRemoved(itemId); // Notify parent widget
+          },
         ),
-        
         children: [
           SlidableAction(
-
-            onPressed: (context){
+            onPressed: (context) {
               FirestoreService firestoreService = FirestoreService();
               firestoreService.deleteCartItem(itemId);
-              
+              onItemRemoved(itemId); // Notify parent widget
             },
             backgroundColor: Colors.red,
             label: "Swipe Left To Delete",
             icon: Icons.remove_shopping_cart_rounded,
-            
-          )
-        ]
+          ),
+        ],
       ),
-      
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
         child: InkWell(
@@ -126,3 +122,4 @@ class CartItem extends StatelessWidget {
     );
   }
 }
+
