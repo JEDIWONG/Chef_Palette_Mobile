@@ -1,7 +1,11 @@
-import 'package:chef_palette/component/custom_button.dart';
-import 'package:chef_palette/controller/order_controller.dart';
-import 'package:chef_palette/style/style.dart';
+import 'package:accordion/accordion.dart';
+import 'package:chef_palette/component/loading_progress_bar.dart';
+import 'package:chef_palette/component/order_item.dart';
+import 'package:chef_palette/models/cart_item_model.dart';
 import 'package:flutter/material.dart';
+import 'package:chef_palette/controller/order_controller.dart';
+import 'package:chef_palette/component/custom_button.dart';
+import 'package:chef_palette/style/style.dart';
 import 'package:linear_progress_bar/linear_progress_bar.dart';
 
 class OrderStatus extends StatefulWidget {
@@ -15,18 +19,15 @@ class OrderStatus extends StatefulWidget {
 
 class _OrderStatusState extends State<OrderStatus> {
   late Future<Map<String, dynamic>?> orderFuture;
+  int currentStep = 0; 
 
-  // Current status step, default to the first status (Pending)
-  int currentStep = 1; 
-
-  // Order statuses
   final List<String> statuses = ["Pending", "Preparing", "Serving", "Complete"];
+  final List<String> statusDesc = ["We're Confirming Your Order", "Our Kitchen Is Preparing Your Order", "Your Food Is On The Way", "Order Served. Thanks For Ordering"];
 
-  
-  // Initialize the order future in initState
   @override
   void initState() {
     super.initState();
+    // Fetch the order by ID using the order controller
     orderFuture = OrderController().getOrderById(widget.orderId);
   }
 
@@ -37,17 +38,14 @@ class _OrderStatusState extends State<OrderStatus> {
       appBar: AppBar(
         shadowColor: Colors.grey,
         automaticallyImplyLeading: false,
-        title: Text(
-          "Order Status",
-          style: CustomStyle.h1,
-        ),
+        title: Text("Order Status", style: CustomStyle.h2),
         leading: const CustomBackButton(title: "Menu", first: false),
         leadingWidth: MediaQuery.sizeOf(context).width * 0.3,
         centerTitle: true,
         backgroundColor: Colors.white,
       ),
       body: FutureBuilder<Map<String, dynamic>?>(
-        future: orderFuture,
+        future: orderFuture, // Use the orderFuture here
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -66,43 +64,86 @@ class _OrderStatusState extends State<OrderStatus> {
               ),
             );
           } else {
-            // Extract the order details
+            // Extract order details from the snapshot data
             final order = snapshot.data!["order"];
-            final status = order.status; // Assuming status is available in the order object
+            final status = order.status;
 
             // Set the currentStep based on the order status
-            currentStep = statuses.indexOf(status) + 1;
+            currentStep = statuses.indexOf(status);
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Progress Bar
-                Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.only(top: 50.0),
-                  child: LinearProgressBar(
-                    maxSteps: statuses.length, // Total number of statuses
-                    progressType: LinearProgressBar.progressTypeDots,
-                    currentStep: currentStep, // Current status step
-                    progressColor: Colors.green, // Progress bar color
-                    backgroundColor: Colors.grey[300]!,
-                    dotsAxis: Axis.horizontal,
-                    dotsActiveSize: 20,
-                    dotsInactiveSize: 10,
-                    dotsSpacing: const EdgeInsets.symmetric(horizontal: 20),
-                    semanticsLabel: "Order Status",
-                    semanticsValue: statuses[currentStep - 1], // Current status label
-                    minHeight: 10,
+            // Now you can fetch the order items from the 'order' object
+            final orderItems = order.orderItems;
+
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  
+                  const SizedBox(height: 50,),
+
+                  Container(
+                    alignment: Alignment.center,
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    child: LinearProgressBar(
+                      maxSteps: statuses.length,
+                      progressType: LinearProgressBar.progressTypeDots,
+                      valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
+                      currentStep: currentStep,
+                      progressColor: Colors.green,
+                      backgroundColor: Colors.grey[300]!,
+                      dotsAxis: Axis.horizontal,
+                      dotsActiveSize: 20,
+                      dotsInactiveSize: 15,
+                      dotsSpacing: const EdgeInsets.symmetric(horizontal: 20),
+                      semanticsLabel: "Order Status",
+                      semanticsValue: statuses[currentStep],
+                      minHeight: 10,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 20),
 
-                // Current Status Text
-                Text(
-                  statuses[currentStep - 1],
-                  style: CustomStyle.h3,
-                ),
-              ],
+                  ListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 30),
+                    title: Text(statuses[currentStep], style:const TextStyle(fontSize: 24,fontWeight: FontWeight.bold,color: Colors.green),),
+                    subtitle: Text(statusDesc[currentStep],style: CustomStyle.subtitle,),
+                    trailing: const Icon(Icons.dining_rounded,color: Colors.green,),
+                  ),
+                  // Progress Bar
+                  
+                  const LoadingProgressBar(isComplete: false),
+                  // Current Status Text
+                  
+                  const SizedBox(height: 20),
+
+                  Accordion(
+                    children: [
+                      AccordionSection(
+                        isOpen: true,
+                        contentBorderColor: Colors.green,
+                        headerBackgroundColor: Colors.green,
+                        headerPadding: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
+                        rightIcon: const Icon(Icons.arrow_drop_up_rounded,color: Colors.white,),
+                        header: Text("Order Summary",style: CustomStyle.lightH3,),
+                        content: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            children: orderItems.map<Widget>((CartItemModel item) {
+                              return OrderItem(
+                                name: item.name,
+                                price: item.price,
+                                quantity: item.quantity,
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      )
+                    ]
+                  ),
+
+                  // Order Items List
+                  
+                  
+                ],
+              ),
             );
           }
         },
