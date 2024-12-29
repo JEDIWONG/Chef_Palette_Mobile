@@ -6,6 +6,7 @@ import 'package:chef_palette/component/discount_selector.dart';
 import 'package:chef_palette/component/payment_selector.dart';
 import 'package:chef_palette/controller/cart_controller.dart';
 import 'package:chef_palette/controller/order_controller.dart';
+import 'package:chef_palette/index.dart';
 import 'package:chef_palette/models/cart_item_model.dart';
 import 'package:chef_palette/models/order_model.dart';
 import 'package:chef_palette/screen/order.dart';
@@ -98,7 +99,7 @@ class _CheckoutState extends State<Checkout> {
             ),
           );
 
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>const Order())); 
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>const Index(initIndex: 1,))); 
         }, 
         rad: 0,   
       ),

@@ -68,7 +68,7 @@ class _LoginState extends State<Login> {
       
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => const Index()), // home page after login
+      MaterialPageRoute(builder: (context) => const Index(initIndex: 0,)), // home page after login
       (route) => false, // This removes all routes (i.e., Auth, Login, etc.) from the stack
     );
     } on FirebaseAuthException catch (e) {

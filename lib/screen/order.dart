@@ -1,4 +1,3 @@
-import 'package:chef_palette/component/custom_button.dart';
 import 'package:chef_palette/component/order_card.dart';
 import 'package:chef_palette/controller/order_controller.dart';
 import 'package:chef_palette/models/order_model.dart';
@@ -18,57 +17,64 @@ class Order extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         centerTitle: true,
-        leadingWidth: MediaQuery.sizeOf(context).width * 0.30,
-        leading: const CustomBackButton(
-          title: 'Menu',
-          first: true,
-        ),
+        automaticallyImplyLeading: false,
         title: Text(
           "Orders",
           style: CustomStyle.h1,
         ),
       ),
-      body: FutureBuilder<List<OrderModel>>(
+      body: FutureBuilder<List<Map<String, dynamic>>>(
         future: OrderController().getOrdersByUser(userId),
         builder: (context, snapshot) {
+          // Show a loading indicator while the future is resolving
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
+          }
+
+          // Handle any error that might occur during fetching
+          if (snapshot.hasError) {
             return Center(
               child: Text(
                 "Error fetching orders: ${snapshot.error}",
                 style: const TextStyle(color: Colors.red),
               ),
             );
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          }
+
+          // Check if there are no orders or the data is null
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(
               child: Text(
                 "No orders found",
                 style: TextStyle(fontSize: 18),
               ),
             );
-          } else {
-            // Display the list of orders
-            List<OrderModel> orders = snapshot.data!;
-
-            return Container(
-              margin: const EdgeInsets.symmetric(vertical: 30),
-              padding: const EdgeInsets.all(10),
-              child: ListView.builder(
-                itemCount: orders.length,
-                itemBuilder: (context, index) {
-                  final order = orders[index];
-                  return OrderCard(
-                    orderItems: order.orderItems,
-                    status: order.status,
-                    datetime: order.timestamp,
-                  );
-                },
-              ),
-            );
           }
+
+          // If data is available, display the list of orders
+          List<Map<String, dynamic>> ordersWithIds = snapshot.data!;
+
+          return Container(
+            margin: const EdgeInsets.symmetric(vertical: 30),
+            padding: const EdgeInsets.all(10),
+            child: ListView.builder(
+              itemCount: ordersWithIds.length,
+              itemBuilder: (context, index) {
+                // Extract the document ID and OrderModel
+                final orderId = ordersWithIds[index]['id'] as String;
+                final order = ordersWithIds[index]['order'] as OrderModel;
+
+                return OrderCard(
+                  orderId: orderId, 
+                  status: order.status, 
+                  datetime: order.timestamp,
+                );
+              },
+            ),
+          );
         },
       ),
+
     );
   }
 }

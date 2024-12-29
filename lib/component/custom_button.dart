@@ -55,7 +55,7 @@ class CustomBackButton extends StatelessWidget{
             Navigator.pop(context);
           }
           else{
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>const Index()));
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>const Index(initIndex: 0,)));
           }
           
         }, 

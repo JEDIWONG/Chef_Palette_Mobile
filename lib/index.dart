@@ -8,7 +8,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 
 class Index extends StatefulWidget{
-  const Index({super.key});
+  const Index({super.key, required this.initIndex});
+
+  final int initIndex;
 
   @override
   State<Index> createState()=> IndexState();
@@ -22,6 +24,14 @@ class IndexState extends State<Index>{
   bool canPopNow = false;
   int requiredSeconds = 2;
   int selectedIndex =0;
+
+  @override
+  initState() {
+    super.initState();
+    setState(() {
+      selectedIndex  = widget.initIndex;
+    });
+  }
 
 
   static List<Widget> pageList = [

@@ -27,6 +27,8 @@ class OrderModel {
       'userID': userID,
       'branchName': branchName,
       'orderItems': orderItems.map((item) => item.toMap()).toList(), 
+      'price': price,
+      'status':status,
     };
   }
 
@@ -40,7 +42,7 @@ class OrderModel {
         (map['orderItems'] as List).map((item) => CartItemModel.fromMap(item)),
       ),
       price: map['price']??0,
-      status: map['status']??'Preparing', 
+      status: map['status']??'Pending', 
     );
   }
 }
