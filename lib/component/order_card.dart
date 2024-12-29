@@ -1,12 +1,12 @@
-import 'package:chef_palette/models/cart_item_model.dart';
+import 'package:chef_palette/screen/order_status.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 
 
 class OrderCard extends StatelessWidget{
-  const OrderCard({super.key, required this.orderItems, required this.status, required this.datetime});
+  const OrderCard({super.key, required this.orderId, required this.status, required this.datetime, });
 
-  final List <CartItemModel> orderItems;
+  final String orderId;
   final String status;
   final DateTime datetime; 
 
@@ -22,7 +22,7 @@ class OrderCard extends StatelessWidget{
   Widget build(BuildContext context) {
     return InkWell(
       onTap: (){
-        
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> OrderStatus(orderId: orderId,)));
       },
 
       child: Card(
@@ -38,5 +38,4 @@ class OrderCard extends StatelessWidget{
       ),
     );
   }
-  
 }
