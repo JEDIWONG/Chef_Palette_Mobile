@@ -10,9 +10,13 @@ class ConfirmDeleteAccount extends StatelessWidget {
     try {
       // Delete the user's account
 
-      await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).delete();
-
+      String oldUserid = FirebaseAuth.instance.currentUser!.uid;
+      
       await FirebaseAuth.instance.currentUser?.delete();
+      
+      await FirebaseFirestore.instance.collection('users').doc(oldUserid).delete();
+    
+      // Delete the user's document from Firestore
       // Navigate to the home or login page after account deletion
       Navigator.pushAndRemoveUntil(
         context,

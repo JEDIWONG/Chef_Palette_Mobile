@@ -27,6 +27,10 @@ class _RegisterState extends State<Register> {
   }
 
   try {
+
+    setState(() {
+      _errorMessage = null;
+    });
     // Create the user and get the UserCredential
     UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
       email: _emailController.text,

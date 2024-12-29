@@ -6,64 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 
-class LocationService {
-  // List of branch coordinates (latitude, longitude)
-  final List<Map<String, dynamic>> branches = [
-    {'name': 'Kuching, Kota Samarahan', 'latitude': 1.4643256, 'longitude': 110.415054},
-    {'name': 'Kuching Kota Padungan', 'latitude': 1.5566214, 'longitude': 110.351420},
-    {'name': 'Sabah Segama Complex', 'latitude': 5.9424039, 'longitude': 116.0568832},
-
-  ];
-
-  // Function to calculate the nearest branch
-  String getNearestBranch(Position userPosition) {
-    double minDistance = double.infinity;
-    String nearestBranch = '';
-
-    for (var branch in branches) {
-      double distance = Geolocator.distanceBetween(
-        userPosition.latitude,
-        userPosition.longitude,
-        branch['latitude'],
-        branch['longitude'],
-      );
-
-      if (distance < minDistance) {
-        minDistance = distance;
-        nearestBranch = branch['name'];
-      }
-    }
-
-    return nearestBranch;
-  }
-
-
-//get current location
- Future<Position?> getCurrentLocation(BuildContext context) async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      _showDialog(context, "Error", "Please enable location services.");
-      return null;
-    }
-
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        _showDialog(context, "Permission Denied", "Location permission is required.");
-        return null;
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      _showDialog(context, "Permission Denied Forever", "Enable location permission from settings.");
-      return null;
-    }
-
-    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-  }
-}
-
   // Function to show dialog box
   void _showDialog(BuildContext context, String title, String message) {
     showDialog(
@@ -90,20 +32,93 @@ class RegisterStep3 extends StatefulWidget {
 }
 
 class _RegisterStep3State extends State<RegisterStep3> {
+
+  String? selectedBranch;
+  // List of branch coordinates (latitude, longitude)
+  final List<Map<String, dynamic>> branches = [
+    {'name': 'Kota Samarahan', 'latitude': 1.4643256, 'longitude': 110.415054},
+    {'name': 'Kuching Jalan Padungan', 'latitude': 1.5566214, 'longitude': 110.351420},
+    {'name': 'Sabah Segama Complex', 'latitude': 5.9424039, 'longitude': 116.0568832},
+    {'name': 'Wilayah Persekutuan Labuan', 'latitude': 5.2790732, 'longitude': 115.2429376},
+    {'name': 'Selangor', 'latitude': 3.0738379, 'longitude': 101.5183467},
+    {'name': 'Perak', 'latitude': 4.5921, 'longitude': 101.0901},
+  ];
+
+  // Function to calculate the nearest branch
+  String getNearestBranch(Position userPosition) {
+    double minDistance = double.infinity;
+    String nearestBranch = '';
+
+    for (var branch in branches) {
+      double distance = Geolocator.distanceBetween(
+        userPosition.latitude,
+        userPosition.longitude,
+        branch['latitude'],
+        branch['longitude'],
+      );
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        nearestBranch = branch['name'];
+      }
+    }
+
+    return nearestBranch;
+  }
+
+
+
+//get current location
+ Future<Position?> getCurrentLocation(BuildContext context) async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      _showDialog(context, "Error", "Please enable location services.");
+      return null;
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        _showDialog(context, "Permission Denied", "Location permission is required.");
+        return null;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      _showDialog(context, "Permission Denied Forever", "Enable location permission from settings.");
+      return null;
+    }
+
+    return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
+  }
+
+
   String? selectedState;
   String? nearestBranch;
+  bool _isLoading = false;
 
   Future<void> _detectNearestBranch() async {
-    LocationService locationService = LocationService();
-    Position? position = await locationService.getCurrentLocation(context);
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    //LocationService locationService = LocationService();
+    Position? position = await _RegisterStep3State().getCurrentLocation(context);
 
     if (position != null) {
-      String branch = locationService.getNearestBranch(position);
+      String branch = _RegisterStep3State().getNearestBranch(position);
       setState(() {
         nearestBranch = branch;
         selectedState = branch;
       });
 
+    setState(() {
+      _isLoading = false;
+    });
+      
       // Show detected branch dialog
       showDialog(
         context: context,
@@ -121,15 +136,15 @@ class _RegisterStep3State extends State<RegisterStep3> {
     }
   }
 
-  // List of states in Malaysia
-  final List<String> states = [
-    "Sabah",
-    "Kota Samarahan Sarawak",
-    "Kuching Padungan Sarawak",
-    "Kuala Lumpur",
-    "Selangor",
-    "Perak",
-  ];
+ // List of states in Malaysia
+  // final List<String> states = [
+  //   "Sabah",
+  //   "Kota Samarahan Sarawak",
+  //   "Kuching Jalan Padungan Sarawak",
+  //   "Kuala Lumpur",
+  //   "Selangor",
+  //   "Perak",
+  // ];
 
   @override
   Widget build(BuildContext context) {
@@ -160,14 +175,14 @@ class _RegisterStep3State extends State<RegisterStep3> {
                     value: selectedState,
                     hint: const Text("Select your state"),
                     decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
+                    border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    items: states.map((String state) {
+                    items: branches.map((branch) {
                       return DropdownMenuItem<String>(
-                        value: state,
-                        child: Text(state),
+                        value: branch['name'],
+                        child: Text(branch['name']),
                       );
                     }).toList(),
                     onChanged: (String? newValue) {
@@ -182,8 +197,8 @@ class _RegisterStep3State extends State<RegisterStep3> {
                   RectButton(
                     bg: Colors.green,
                     fg: const Color.fromARGB(255, 255, 255, 255),
-                    text: "Get Nearest Branch",
-                    func: _detectNearestBranch,
+                    text: _isLoading ? "Loading..." : "Get Nearest Branch",
+                    func: _isLoading ? (){} : _detectNearestBranch,
                     
                     //() {
                       // if (selectedState != null) {
@@ -200,17 +215,33 @@ class _RegisterStep3State extends State<RegisterStep3> {
                    // },
                     rad: 10,
                   ),
+
+                  const SizedBox(height: 20),
+                  RectButton(
+                    bg: Colors.purple,
+                    fg: const Color.fromARGB(255, 255, 255, 255),
+                    text: "Finish Setup",
+                    func: (){
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const Index(initIndex: 0,)),
+                          (route) => false,
+                      );
+                    },
+                    
+                    rad: 10,
+                  ),
+
                   const SizedBox(height: 20),
                   InkWell(
                     splashColor: Colors.green,
                     onTap: (){
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const Index(initIndex: 0,),
-                        ),
-                      );
-                      
+                       Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => const Index(initIndex: 0,)), // home page after login
+                          (route) => false, // This removes all routes (i.e., Auth, Login, etc.) from the stack
+                     );
                     } ,
                     child: Text("Skip For Now",style: CustomStyle.link2,),
                   )

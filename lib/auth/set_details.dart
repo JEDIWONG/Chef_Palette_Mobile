@@ -7,14 +7,15 @@ import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:intl/intl.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 class RegisterStep2 extends StatefulWidget {
   const RegisterStep2({super.key, required this.uid, required this.email});
 
-  final String uid;
   final String email;
-
+  final String uid;
+  
   @override
   State<RegisterStep2> createState() => _RegisterStep2State();
 }
@@ -22,12 +23,37 @@ class RegisterStep2 extends StatefulWidget {
 class _RegisterStep2State extends State<RegisterStep2> {
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
-  final _phoneNumberController = TextEditingController();
+  //final _phoneNumberController = TextEditingController();
   DateTime? _selectedDate;
   final FirestoreService _firestoreService = FirestoreService();
   String joinDate = DateFormat('yyyy-MM-dd').format(DateTime.now()); // ISO 8601 format
-
+  bool isFormComplete =  false;
+  
+  final TextEditingController controller = TextEditingController();
+  String initialCountry = 'MY';
+  PhoneNumber number = PhoneNumber(isoCode: 'MY');
+  
   Future<void> _saveUserData() async {
+
+     setState(() {
+          isFormComplete = true; // Mark the form as complete
+  });
+                
+    if (_firstNameController.text.isEmpty || _lastNameController.text.isEmpty || controller.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please fill in all fields")),
+      );
+      return;
+    }
+
+    if(!RegExp(r'^(\+|00)?[0-9]+$').hasMatch(number.phoneNumber.toString())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter a valid phone number")),
+      );
+      return;
+    }
+
+    else
     if (_selectedDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please Select Your Birthday date")),
@@ -35,13 +61,13 @@ class _RegisterStep2State extends State<RegisterStep2> {
       return;
     }
     else{
-
+   
       UserModel user = UserModel(
         uid: widget.uid,
         email: widget.email,
         firstName: _firstNameController.text.trim(),
         lastName: _lastNameController.text.trim(),
-        phoneNumber: _phoneNumberController.text.trim(),
+        phoneNumber: number.phoneNumber.toString(),
         dob: "${_selectedDate!.day}-${_selectedDate!.month}-${_selectedDate!.year}",
         joinDate: joinDate,
       );
@@ -54,15 +80,45 @@ class _RegisterStep2State extends State<RegisterStep2> {
           builder: (context) => const RegisterStep3(),
         ),
       );
-
     }
 
-    
+  
+  }
+
+
+  Future<bool> _onWillPop() async {
+    if (!isFormComplete) {
+
+      // Show the warning popup
+      bool? shouldLeave = await showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text("Incomplete Form"),
+          content: const Text("Are you sure you want to leave? Your progress will be lost."),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false), // Stay on the page
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(true), // Allow navigation
+              child: const Text("Leave"),
+            ),
+          ],
+        ),
+      );
+    await FirebaseAuth.instance.currentUser?.delete(); //undo account creation
+    return shouldLeave ?? false; // Default to staying on the page
+    }
+      
+    return true; // Allow navigation if the form is complete
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return WillPopScope(
+            onWillPop: _onWillPop,
+    child: Scaffold(
       resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(
         child: Container(
@@ -98,14 +154,42 @@ class _RegisterStep2State extends State<RegisterStep2> {
                         label: Text("Last Name"),
                       ),
                     ),
+                   
                     const SizedBox(height: 30),
-                    TextFormField(
-                      controller: _phoneNumberController,
-                      decoration: const InputDecoration(
-                        label: Text("Phone Number"),
-                        prefixIcon: Icon(Icons.phone),
+                   
+                    // TextFormField(
+                    //   controller: _phoneNumberController,
+                    //   decoration: const InputDecoration(
+                    //     label: Text("Phone Number"),
+                    //     prefixIcon: Icon(Icons.phone),
+                    //   ),
+                    // ),
+                   
+                      InternationalPhoneNumberInput(
+                      onInputChanged: (PhoneNumber number) {
+                        print(number.phoneNumber);
+                      },
+                      onInputValidated: (bool value) {
+                        print(value);
+                      },
+                      selectorConfig: const SelectorConfig(
+                        selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+                        useBottomSheetSafeArea: true,
                       ),
+                      ignoreBlank: true,
+                      autoValidateMode: AutovalidateMode.disabled,
+                      selectorTextStyle: const TextStyle(color: Colors.black),
+                      initialValue: number,
+                      textFieldController: controller,
+                      formatInput: true,
+                      keyboardType:
+                          const TextInputType.numberWithOptions(signed: true, decimal: true),
+                      inputBorder: const OutlineInputBorder(),
+                      onSaved: (PhoneNumber number) {
+                        print('On Saved: $number');
+                      },
                     ),
+                   
                     const SizedBox(height: 30),
                     ListTile(
                       leading: Text(
@@ -129,7 +213,7 @@ class _RegisterStep2State extends State<RegisterStep2> {
                       bg: const Color.fromARGB(255, 51, 64, 129),
                       fg: const Color.fromARGB(255, 255, 255, 255),
                       text: "Move On",
-                      func: _saveUserData,
+                      func: _saveUserData, 
                       rad: 10,
                     ),
                   ],
@@ -139,6 +223,7 @@ class _RegisterStep2State extends State<RegisterStep2> {
           ),
         ),
       ),
+    ),
     );
   }
 }
