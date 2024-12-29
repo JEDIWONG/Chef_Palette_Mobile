@@ -9,9 +9,10 @@ import 'package:geolocator/geolocator.dart';
 class LocationService {
   // List of branch coordinates (latitude, longitude)
   final List<Map<String, dynamic>> branches = [
-    {'name': 'Kuching, Kota Samarahan', 'latitude': 1.4624359, 'longitude': 110.417582},
-    {'name': 'Kuching Kota Padungan', 'latitude': 4.387372, 'longitude': 110.7806254},
+    {'name': 'Kuching, Kota Samarahan', 'latitude': 1.4643256, 'longitude': 110.415054},
+    {'name': 'Kuching Kota Padungan', 'latitude': 1.5566214, 'longitude': 110.351420},
     {'name': 'Sabah Segama Complex', 'latitude': 5.9424039, 'longitude': 116.0568832},
+
   ];
 
   // Function to calculate the nearest branch
@@ -100,6 +101,7 @@ class _RegisterStep3State extends State<RegisterStep3> {
       String branch = locationService.getNearestBranch(position);
       setState(() {
         nearestBranch = branch;
+        selectedState = branch;
       });
 
       // Show detected branch dialog
@@ -122,7 +124,8 @@ class _RegisterStep3State extends State<RegisterStep3> {
   // List of states in Malaysia
   final List<String> states = [
     "Sabah",
-    "Sarawak",
+    "Kota Samarahan Sarawak",
+    "Kuching Padungan Sarawak",
     "Kuala Lumpur",
     "Selangor",
     "Perak",
@@ -181,6 +184,7 @@ class _RegisterStep3State extends State<RegisterStep3> {
                     fg: const Color.fromARGB(255, 255, 255, 255),
                     text: "Get Nearest Branch",
                     func: _detectNearestBranch,
+                    
                     //() {
                       // if (selectedState != null) {
                       //   // Handle the submission with the selected state
@@ -220,3 +224,4 @@ class _RegisterStep3State extends State<RegisterStep3> {
     );
   }
 }
+
