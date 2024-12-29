@@ -3,13 +3,13 @@ import 'package:accordion/accordion.dart';
 import 'package:chef_palette/component/address_selector.dart';
 import 'package:chef_palette/component/custom_button.dart';
 import 'package:chef_palette/component/discount_selector.dart';
+import 'package:chef_palette/component/order_item.dart';
 import 'package:chef_palette/component/payment_selector.dart';
 import 'package:chef_palette/controller/cart_controller.dart';
 import 'package:chef_palette/controller/order_controller.dart';
 import 'package:chef_palette/index.dart';
 import 'package:chef_palette/models/cart_item_model.dart';
 import 'package:chef_palette/models/order_model.dart';
-import 'package:chef_palette/screen/order.dart';
 import 'package:chef_palette/services/firestore_services.dart'; 
 import 'package:chef_palette/style/style.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -317,24 +317,6 @@ class TotalPriceBar extends StatelessWidget{
     );
   }
   
-}
-
-class OrderItem extends StatelessWidget {
-  const OrderItem(
-      {super.key, required this.name, required this.price, required this.quantity});
-
-  final String name;
-  final double price;
-  final int quantity;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: Text("$quantity x"),
-      title: Text(name),
-      trailing: Text("RM ${price.toStringAsFixed(2)}"),
-    );
-  }
 }
 
 class BreakdownPrice extends StatelessWidget{
