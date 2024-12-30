@@ -1,5 +1,7 @@
 import 'package:chef_palette/auth/auth.dart';
-import 'package:chef_palette/index.dart';
+import 'package:chef_palette/index.dart' as cf;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -41,11 +43,32 @@ class _SplashScreenState extends State<SplashScreen> {
     // Check if the user is logged in
     final isUserLoggedIn = await checkSession();
 
+
+//check email to delete authentication data created despite not complete registration
+//due to exiting app on the 2nd registration page
+
+QuerySnapshot query =  
+  await FirebaseFirestore.instance.collection('incomplete_mark').where("status", isEqualTo: "incomplete").get();
+
+if (query.docs.isNotEmpty) {
+    // Get the first matching document
+    DocumentSnapshot doc = query.docs.first;
+    // Access neighboring fields
+
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: doc['email'],
+        password: doc['password'],
+      );
+    
+      await FirebaseAuth.instance.currentUser?.delete();
+      await FirebaseFirestore.instance.collection('incomplete_mark').doc(doc['email']).delete();
+  }
+
     // Navigate to the appropriate screen
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => isUserLoggedIn ? const Index(initIndex: 0,) : const Auth(),
+        builder: (context) => isUserLoggedIn ? const cf.Index(initIndex: 0,) : const Auth(),
       ),
     );
   }

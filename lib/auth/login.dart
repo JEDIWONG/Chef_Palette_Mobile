@@ -4,7 +4,8 @@ import 'package:chef_palette/style/style.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:chef_palette/auth/resetpassword.dart';
-import 'package:cloud_firestore/cloud_firestore.dart' hide Index; 
+import 'package:cloud_firestore/cloud_firestore.dart' hide Index;
+import 'package:shared_preferences/shared_preferences.dart'; 
 //since we have a class named Index in index.dart, we need to hide it to avoid conflict
 
 
@@ -65,6 +66,8 @@ class _LoginState extends State<Login> {
         password: _passwordController.text,
       );
 
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool('isLoggedIn', true);
       
     Navigator.pushAndRemoveUntil(
       context,

@@ -4,6 +4,7 @@ import 'package:chef_palette/component/custom_button.dart';
 import 'package:chef_palette/component/steps_bar.dart';
 import 'package:chef_palette/models/user_model.dart';
 import 'package:chef_palette/style/style.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:intl/intl.dart';
@@ -26,32 +27,24 @@ class _RegisterStep2State extends State<RegisterStep2> {
   //final _phoneNumberController = TextEditingController();
   DateTime? _selectedDate;
   final FirestoreService _firestoreService = FirestoreService();
+  final TextEditingController controller = TextEditingController();
   String joinDate = DateFormat('yyyy-MM-dd').format(DateTime.now()); // ISO 8601 format
   bool isFormComplete =  false;
   
-  final TextEditingController controller = TextEditingController();
+ 
   String initialCountry = 'MY';
   PhoneNumber number = PhoneNumber(isoCode: 'MY');
+
   
   Future<void> _saveUserData() async {
 
-     setState(() {
-          isFormComplete = true; // Mark the form as complete
-  });
-                
     if (_firstNameController.text.isEmpty || _lastNameController.text.isEmpty || controller.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Please fill in all fields")),
       );
       return;
     }
-
-    if(!RegExp(r'^(\+|00)?[0-9]+$').hasMatch(number.phoneNumber.toString())) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter a valid phone number")),
-      );
-      return;
-    }
+//ceck phone num format 
 
     else
     if (_selectedDate == null) {
@@ -61,7 +54,13 @@ class _RegisterStep2State extends State<RegisterStep2> {
       return;
     }
     else{
-   
+  
+        setState(() {
+                isFormComplete = true; // Mark the form as complete
+        });
+
+        await FirebaseFirestore.instance.collection('incomplete_mark').doc(widget.email).delete();
+
       UserModel user = UserModel(
         uid: widget.uid,
         email: widget.email,
@@ -82,13 +81,14 @@ class _RegisterStep2State extends State<RegisterStep2> {
       );
     }
 
+    
+
   
   }
 
 
   Future<bool> _onWillPop() async {
     if (!isFormComplete) {
-
       // Show the warning popup
       bool? shouldLeave = await showDialog(
         context: context,
@@ -117,7 +117,7 @@ class _RegisterStep2State extends State<RegisterStep2> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-            onWillPop: _onWillPop,
+    onWillPop: _onWillPop,
     child: Scaffold(
       resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(
@@ -165,31 +165,43 @@ class _RegisterStep2State extends State<RegisterStep2> {
                     //   ),
                     // ),
                    
-                      InternationalPhoneNumberInput(
-                      onInputChanged: (PhoneNumber number) {
-                        print(number.phoneNumber);
-                      },
-                      onInputValidated: (bool value) {
-                        print(value);
-                      },
-                      selectorConfig: const SelectorConfig(
-                        selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-                        useBottomSheetSafeArea: true,
-                      ),
-                      ignoreBlank: true,
-                      autoValidateMode: AutovalidateMode.disabled,
-                      selectorTextStyle: const TextStyle(color: Colors.black),
-                      initialValue: number,
-                      textFieldController: controller,
-                      formatInput: true,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(signed: true, decimal: true),
-                      inputBorder: const OutlineInputBorder(),
-                      onSaved: (PhoneNumber number) {
-                        print('On Saved: $number');
-                      },
+                    InternationalPhoneNumberInput(
+                    onInputChanged: (PhoneNumber number) {
+                      setState(() {
+                        this.number = number; // Update state
+                      });
+                      print('Phone Number Changed: ${number.phoneNumber}');
+                    },
+                    onInputValidated: (bool value) {
+                      print('Phone Number Valid: $value');
+                    },
+                    selectorConfig: const SelectorConfig(
+                      selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+                      useBottomSheetSafeArea: true,
                     ),
-                   
+                    ignoreBlank: true,
+                    validator: (userInput) {
+                          if (userInput!.isEmpty) {
+                            return 'Please enter your phone number';
+                          }
+
+                          // Ensure it is only digits and optional '+' or '00' for the country code.
+                          if (!RegExp(r'^(\+|-|00)?[\-\0-9]+$').hasMatch(userInput)) {
+                            return 'Please enter a valid phone number';
+                          }
+                        
+                          return null; // Return null when the input is valid
+                    },
+                    autoValidateMode: AutovalidateMode.onUserInteraction,
+                    selectorTextStyle: const TextStyle(color: Colors.black),
+                    initialValue: number,
+                    textFieldController: controller,
+                    formatInput: true,
+                    keyboardType: TextInputType.phone,
+                    inputBorder: const OutlineInputBorder(),
+                    hintText: 'Phone Number',
+                    ),
+                
                     const SizedBox(height: 30),
                     ListTile(
                       leading: Text(

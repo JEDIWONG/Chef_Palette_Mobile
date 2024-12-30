@@ -2,6 +2,7 @@ import 'package:chef_palette/auth/set_details.dart';
 import 'package:chef_palette/component/custom_button.dart';
 import 'package:chef_palette/component/steps_bar.dart';
 import 'package:chef_palette/style/style.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -17,8 +18,28 @@ class _RegisterState extends State<Register> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _reenterPasswordController = TextEditingController();
   String? _errorMessage;
+  bool _isLoading = false;
+
+//mark as incomplete
+  void createUser(String password, String email) async {
+
+
+  await FirebaseFirestore.instance.collection('incomplete_mark').doc(_emailController.text).set({
+    'email' : email,
+    'creationTime': Timestamp.now(),
+    'status' : 'incomplete',
+    'password': password,
+  });
+}
 
   Future<void> _registerUser() async {
+  if (_emailController.text.isEmpty || _passwordController.text.isEmpty || _reenterPasswordController.text.isEmpty) {
+    setState(() {
+      _errorMessage = "Name cannot be the empty.";
+    });
+    return;
+  }
+
   if (_passwordController.text != _reenterPasswordController.text) {
     setState(() {
       _errorMessage = "Passwords do not match!";
@@ -26,21 +47,32 @@ class _RegisterState extends State<Register> {
     return;
   }
 
-  try {
+  //trigger loading screen
+  setState(() {
+    _isLoading = true;
+  });
 
+  try {
     setState(() {
-      _errorMessage = null;
+    
+    //clear previous error message
+      _errorMessage = null; 
     });
+    
     // Create the user and get the UserCredential
     UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
       email: _emailController.text,
       password: _passwordController.text,
     );
 
+ 
+
     // Retrieve the UID from the UserCredential
     String? uid = userCredential.user?.uid;
 
-    if (uid != null) {
+    if (uid != null) { 
+      
+    createUser(_passwordController.text, _emailController.text);
       // Pass the UID to RegisterStep2
       Navigator.pushReplacement(
         context,
@@ -51,11 +83,18 @@ class _RegisterState extends State<Register> {
         _errorMessage = "Failed to retrieve UID.";
       });
     }
+    //stop loading state
+
+
   } on FirebaseAuthException catch (e) {
     setState(() {
       _errorMessage = e.message;
     });
   }
+
+  setState(() {
+      _isLoading = false;
+    });
 }
 
 
@@ -63,14 +102,15 @@ class _RegisterState extends State<Register> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      body: SingleChildScrollView(
+      body: Stack(
+       children: [
+        SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.only(top: 100),
           color: Colors.green,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              
               Text("Welcome,", style: CustomStyle.lightLargeHeading),
               Text("Delicacy Ahead", style: CustomStyle.lightLargeHeading),
               Container(
@@ -132,7 +172,16 @@ class _RegisterState extends State<Register> {
             ],
           ),
         ),
-      )
+       ),
+       if (_isLoading)
+            Container(
+              color: Colors.black54, // Semi-transparent background
+              child: const Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              ),
+            ),
+       ],
+    ),
     );
   }
 }

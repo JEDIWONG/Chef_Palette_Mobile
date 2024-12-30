@@ -2,8 +2,10 @@ import 'package:chef_palette/component/custom_button.dart';
 import 'package:chef_palette/component/steps_bar.dart';
 import 'package:chef_palette/index.dart';
 import 'package:chef_palette/style/style.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'as cf;
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 
   // Function to show dialog box
@@ -22,6 +24,30 @@ import 'package:geolocator/geolocator.dart';
       ),
     );
   }
+
+Future<void> saveBranchToUserDatabase(String? branch) async {
+  try {
+    // Get the current user's UID
+    String? uid = FirebaseAuth.instance.currentUser?.uid;
+
+    // Ensure the branch and uid are not null
+    if (branch != null && uid != null) {
+      // Reference to the user's document in the 'users' collection
+      cf.DocumentReference userDoc = cf.FirebaseFirestore.instance.collection('users').doc(uid);
+
+      // Update the branch location
+      await userDoc.set({
+        'branchLocation': branch,
+      });
+
+      debugPrint("Branch location added successfully: $branch");
+    } else {
+      debugPrint("Failed to add branch: Branch or UID is null");
+    }
+  } catch (e) {
+    debugPrint("Error saving branch location: $e");
+  }
+}
 
 
 class RegisterStep3 extends StatefulWidget {
@@ -225,7 +251,7 @@ class _RegisterStep3State extends State<RegisterStep3> {
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const Index(initIndex: 0,)),
+                          builder: (context) => const Index(initIndex: 0)),
                           (route) => false,
                       );
                     },
@@ -237,6 +263,7 @@ class _RegisterStep3State extends State<RegisterStep3> {
                   InkWell(
                     splashColor: Colors.green,
                     onTap: (){
+                      saveBranchToUserDatabase(nearestBranch);
                        Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => const Index(initIndex: 0,)), // home page after login

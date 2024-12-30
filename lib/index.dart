@@ -84,6 +84,7 @@ class IndexState extends State<Index>{
        onPopInvoked: onPopInvoked,
        child:pageList.elementAt(selectedIndex),
       ),
+      
       floatingActionButton: FloatingActionButton(
         onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context)=>const Cart()));},
         backgroundColor: Colors.amberAccent,
