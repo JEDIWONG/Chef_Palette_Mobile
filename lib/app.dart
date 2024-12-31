@@ -1,5 +1,7 @@
 import 'package:chef_palette/auth/auth.dart';
-import 'package:chef_palette/index.dart';
+import 'package:chef_palette/index.dart' as cf;
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -41,11 +43,16 @@ class _SplashScreenState extends State<SplashScreen> {
     // Check if the user is logged in
     final isUserLoggedIn = await checkSession();
 
+
+//check email to delete authentication data created despite not complete registration
+//due to exiting app on the 2nd registration page
+//an incomplete file is generated and will removed after registration
+
     // Navigate to the appropriate screen
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => isUserLoggedIn ? const Index(initIndex: 0,) : const Auth(),
+        builder: (context) => isUserLoggedIn ? const cf.Index(initIndex: 0,) : const Auth(),
       ),
     );
   }
