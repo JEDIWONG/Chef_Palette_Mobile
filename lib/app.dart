@@ -46,23 +46,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
 //check email to delete authentication data created despite not complete registration
 //due to exiting app on the 2nd registration page
-
-QuerySnapshot query =  
-  await FirebaseFirestore.instance.collection('incomplete_mark').where("status", isEqualTo: "incomplete").get();
-
-if (query.docs.isNotEmpty) {
-    // Get the first matching document
-    DocumentSnapshot doc = query.docs.first;
-    // Access neighboring fields
-
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: doc['email'],
-        password: doc['password'],
-      );
-    
-      await FirebaseAuth.instance.currentUser?.delete();
-      await FirebaseFirestore.instance.collection('incomplete_mark').doc(doc['email']).delete();
-  }
+//an incomplete file is generated and will removed after registration
 
     // Navigate to the appropriate screen
     Navigator.pushReplacement(

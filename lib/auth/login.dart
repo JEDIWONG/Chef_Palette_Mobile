@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:chef_palette/auth/resetpassword.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' hide Index;
 import 'package:shared_preferences/shared_preferences.dart'; 
+import 'package:crypto/crypto.dart';
 //since we have a class named Index in index.dart, we need to hide it to avoid conflict
 
 

@@ -62,16 +62,40 @@ class _RegisterStep3State extends State<RegisterStep3> {
   String? selectedBranch;
   // List of branch coordinates (latitude, longitude)
   final List<Map<String, dynamic>> branches = [
-    {'name': 'Kota Samarahan', 'latitude': 1.4643256, 'longitude': 110.415054},
-    {'name': 'Kuching Jalan Padungan', 'latitude': 1.5566214, 'longitude': 110.351420},
-    {'name': 'Sabah Segama Complex', 'latitude': 5.9424039, 'longitude': 116.0568832},
-    {'name': 'Wilayah Persekutuan Labuan', 'latitude': 5.2790732, 'longitude': 115.2429376},
-    {'name': 'Selangor', 'latitude': 3.0738379, 'longitude': 101.5183467},
-    {'name': 'Perak', 'latitude': 4.5921, 'longitude': 101.0901},
+    // {'name': 'Kota Samarahan', 'latitude': 1.4643256, 'longitude': 110.415054},
+    // {'name': 'Kuching Jalan Padungan', 'latitude': 1.5566214, 'longitude': 110.351420},
+    // {'name': 'Sabah Segama Complex', 'latitude': 5.9424039, 'longitude': 116.0568832},
+    // {'name': 'Wilayah Persekutuan Labuan', 'latitude': 5.2790732, 'longitude': 115.2429376},
+    // {'name': 'Selangor', 'latitude': 3.0738379, 'longitude': 101.5183467},
+    // {'name': 'Perak', 'latitude': 4.5921, 'longitude': 101.0901},
   ];
 
+
+  Future<List<Map<String, dynamic>>> fetchBranches() async {
+    List<Map<String, dynamic>> branches = [];
+    try {
+      cf.QuerySnapshot snapshot = await cf.FirebaseFirestore.instance.collection('branchs').get();
+      for (var doc in snapshot.docs) {
+        branches.add({
+          'name': doc['name'],
+          'latitude': doc['latitude'],
+          'longitude': doc['longitude'],
+        });
+      }
+    } catch (e) {
+      print("Error fetching branches: $e");
+    }
+    return branches;
+  }
+
+
   // Function to calculate the nearest branch
-  String getNearestBranch(Position userPosition) {
+  Future<String> getNearestBranch(Position userPosition) async {
+
+   _RegisterStep3State branchService = _RegisterStep3State();
+    List<Map<String, dynamic>> branches = await branchService.fetchBranches();
+
+
     double minDistance = double.infinity;
     String nearestBranch = '';
 
@@ -135,7 +159,7 @@ class _RegisterStep3State extends State<RegisterStep3> {
     Position? position = await _RegisterStep3State().getCurrentLocation(context);
 
     if (position != null) {
-      String branch = _RegisterStep3State().getNearestBranch(position);
+      String branch = await _RegisterStep3State().getNearestBranch(position);
       setState(() {
         nearestBranch = branch;
         selectedState = branch;
@@ -197,24 +221,37 @@ class _RegisterStep3State extends State<RegisterStep3> {
                   const SizedBox(height: 50),
 
                   // Dropdown Button for Malaysian States
-                  DropdownButtonFormField<String>(
-                    value: selectedState,
-                    hint: const Text("Select your state"),
-                    decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    items: branches.map((branch) {
-                      return DropdownMenuItem<String>(
-                        value: branch['name'],
-                        child: Text(branch['name']),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedState = newValue;
-                      });
+                  FutureBuilder<List<Map<String, dynamic>>>(
+                    future: _RegisterStep3State().fetchBranches(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text("Error: ${snapshot.error}");
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const Text("No branches available");
+                      } else {
+                        return DropdownButtonFormField<String>(
+                          value: selectedState,
+                          hint: const Text("Select your state"),
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          items: snapshot.data!.map((branch) {
+                            return DropdownMenuItem<String>(
+                              value: branch['name'],
+                              child: Text(branch['name']),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              selectedState = newValue;
+                            });
+                          },
+                        );
+                      }
                     },
                   ),
 
@@ -248,6 +285,7 @@ class _RegisterStep3State extends State<RegisterStep3> {
                     fg: const Color.fromARGB(255, 255, 255, 255),
                     text: "Finish Setup",
                     func: (){
+                      saveBranchToUserDatabase(nearestBranch);
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
@@ -263,7 +301,6 @@ class _RegisterStep3State extends State<RegisterStep3> {
                   InkWell(
                     splashColor: Colors.green,
                     onTap: (){
-                      saveBranchToUserDatabase(nearestBranch);
                        Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => const Index(initIndex: 0,)), // home page after login

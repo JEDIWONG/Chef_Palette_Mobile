@@ -4,18 +4,18 @@ import 'package:chef_palette/component/custom_button.dart';
 import 'package:chef_palette/component/steps_bar.dart';
 import 'package:chef_palette/models/user_model.dart';
 import 'package:chef_palette/style/style.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 class RegisterStep2 extends StatefulWidget {
-  const RegisterStep2({super.key, required this.uid, required this.email});
+  const RegisterStep2({super.key, required this.password, required this.email});
 
   final String email;
-  final String uid;
+  final String password;
   
   @override
   State<RegisterStep2> createState() => _RegisterStep2State();
@@ -58,20 +58,40 @@ class _RegisterStep2State extends State<RegisterStep2> {
         setState(() {
                 isFormComplete = true; // Mark the form as complete
         });
-
-        await FirebaseFirestore.instance.collection('incomplete_mark').doc(widget.email).delete();
-
-      UserModel user = UserModel(
-        uid: widget.uid,
+ ///
+ ///
+ ///
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: widget.email,
-        firstName: _firstNameController.text.trim(),
-        lastName: _lastNameController.text.trim(),
-        phoneNumber: number.phoneNumber.toString(),
-        dob: "${_selectedDate!.day}-${_selectedDate!.month}-${_selectedDate!.year}",
-        joinDate: joinDate,
+        password: widget.password,
       );
 
-      await _firestoreService.createUser(user);
+      String? uid = userCredential.user?.uid;
+
+        if(uid != null){
+            UserModel user = UserModel(
+              uid: uid,
+              email: widget.email,
+              firstName: _firstNameController.text.trim(),
+              lastName: _lastNameController.text.trim(),
+              phoneNumber: number.phoneNumber.toString(),
+              dob: "${_selectedDate!.day}-${_selectedDate!.month}-${_selectedDate!.year}",
+              joinDate: joinDate,
+            );
+
+            await _firestoreService.createUser(user);
+
+             final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool('isLoggedIn', true);
+      
+        }
+        else 
+        {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Failed to create user")),
+          );
+          return;
+        }
 
       Navigator.push(
         context,
@@ -107,7 +127,6 @@ class _RegisterStep2State extends State<RegisterStep2> {
           ],
         ),
       );
-    await FirebaseAuth.instance.currentUser?.delete(); //undo account creation
     return shouldLeave ?? false; // Default to staying on the page
     }
       
@@ -166,40 +185,40 @@ class _RegisterStep2State extends State<RegisterStep2> {
                     // ),
                    
                     InternationalPhoneNumberInput(
-                    onInputChanged: (PhoneNumber number) {
-                      setState(() {
-                        this.number = number; // Update state
-                      });
-                      print('Phone Number Changed: ${number.phoneNumber}');
-                    },
-                    onInputValidated: (bool value) {
-                      print('Phone Number Valid: $value');
-                    },
-                    selectorConfig: const SelectorConfig(
-                      selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-                      useBottomSheetSafeArea: true,
-                    ),
-                    ignoreBlank: true,
-                    validator: (userInput) {
-                          if (userInput!.isEmpty) {
-                            return 'Please enter your phone number';
-                          }
+                          onInputChanged: (PhoneNumber number) {
+                            setState(() {
+                              this.number = number; // Update state
+                            });
+                            debugPrint('Phone Number Changed: ${number.phoneNumber}');
+                          },
+                          onInputValidated: (bool value) {
+                            debugPrint('Phone Number Valid: $value');
+                          },
+                          selectorConfig: const SelectorConfig(
+                            selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+                            useBottomSheetSafeArea: true,
+                          ),
+                          ignoreBlank: false,
+                          validator: (userInput) {
+                                if (userInput!.isEmpty) {
+                                  return 'Please enter your phone number';
+                                }
 
-                          // Ensure it is only digits and optional '+' or '00' for the country code.
-                          if (!RegExp(r'^(\+|-|00)?[\-\0-9]+$').hasMatch(userInput)) {
-                            return 'Please enter a valid phone number';
-                          }
-                        
-                          return null; // Return null when the input is valid
-                    },
-                    autoValidateMode: AutovalidateMode.onUserInteraction,
-                    selectorTextStyle: const TextStyle(color: Colors.black),
-                    initialValue: number,
-                    textFieldController: controller,
-                    formatInput: true,
-                    keyboardType: TextInputType.phone,
-                    inputBorder: const OutlineInputBorder(),
-                    hintText: 'Phone Number',
+                                // Ensure it is only digits and optional '+' or '00' for the country code.
+                                if (!RegExp(r'^(\+|00)?[\-\0-9]+$').hasMatch(userInput.replaceAll(' ', ''))) {
+                                  return 'Please enter a valid phone number';
+                                }
+                              
+                                return null; // Return null when the input is valid
+                          },
+                          autoValidateMode: AutovalidateMode.onUserInteraction,
+                          selectorTextStyle: const TextStyle(color: Colors.black),
+                          initialValue: number,
+                          textFieldController: controller,
+                          formatInput: true,
+                          keyboardType: TextInputType.phone,
+                          inputBorder: const OutlineInputBorder(),
+                          hintText: 'Phone Number',
                     ),
                 
                     const SizedBox(height: 30),

@@ -5,6 +5,7 @@ import 'package:chef_palette/style/style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:password_strength_indicator_plus/password_strength_indicator_plus.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -20,22 +21,25 @@ class _RegisterState extends State<Register> {
   String? _errorMessage;
   bool _isLoading = false;
 
-//mark as incomplete
-  void createUser(String password, String email) async {
+//create incomplete_mark record
+//to allow deletion for incomplete account (exists in auth but not in db)
 
 
-  await FirebaseFirestore.instance.collection('incomplete_mark').doc(_emailController.text).set({
-    'email' : email,
-    'creationTime': Timestamp.now(),
-    'status' : 'incomplete',
-    'password': password,
-  });
-}
 
   Future<void> _registerUser() async {
+
+try {
+   RegExp regex =
+        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+   
+      if (!regex.hasMatch(_passwordController.text)) {
+       setState(() { _errorMessage = 'Please make a stronger password.';});
+    return;
+  }
+
   if (_emailController.text.isEmpty || _passwordController.text.isEmpty || _reenterPasswordController.text.isEmpty) {
     setState(() {
-      _errorMessage = "Name cannot be the empty.";
+      _errorMessage = "Please fill in all fields.";
     });
     return;
   }
@@ -47,42 +51,32 @@ class _RegisterState extends State<Register> {
     return;
   }
 
+QuerySnapshot query =  
+  await FirebaseFirestore.instance.collection('users').where('email', isEqualTo: _emailController.text).get();
+
+  if (query.docs.isNotEmpty) {
+    setState(() {
+      _errorMessage = "Account already exist";
+    });
+    return;
+  }
   //trigger loading screen
   setState(() {
     _isLoading = true;
   });
 
-  try {
+  
     setState(() {
     
     //clear previous error message
       _errorMessage = null; 
     });
     
-    // Create the user and get the UserCredential
-    UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: _emailController.text,
-      password: _passwordController.text,
-    );
-
- 
-
-    // Retrieve the UID from the UserCredential
-    String? uid = userCredential.user?.uid;
-
-    if (uid != null) { 
-      
-    createUser(_passwordController.text, _emailController.text);
       // Pass the UID to RegisterStep2
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => RegisterStep2(uid: uid, email: _emailController.text,)),
+        MaterialPageRoute(builder: (context) => RegisterStep2(password: _passwordController.text, email: _emailController.text,)),
       );
-    } else {
-      setState(() {
-        _errorMessage = "Failed to retrieve UID.";
-      });
-    }
     //stop loading state
 
 
@@ -141,6 +135,7 @@ class _RegisterState extends State<Register> {
                         prefixIcon: Icon(Icons.lock),
                       ),
                     ),
+                    
                     const SizedBox(height: 30),
                     TextFormField(
                       controller: _reenterPasswordController,
@@ -150,6 +145,12 @@ class _RegisterState extends State<Register> {
                         prefixIcon: Icon(Icons.lock),
                       ),
                     ),
+
+                    PasswordStrengthIndicatorPlus(
+                                textController: _passwordController,   
+                    ),
+                    
+                    
                     const SizedBox(height: 50),
                     RectButton(
                       bg: const Color.fromARGB(255, 51, 64, 129),
