@@ -36,7 +36,7 @@ Future<void> saveBranchToUserDatabase(String? branch) async {
       cf.DocumentReference userDoc = cf.FirebaseFirestore.instance.collection('users').doc(uid);
 
       // Update the branch location
-      await userDoc.set({
+      await userDoc.update({
         'branchLocation': branch,
       });
 

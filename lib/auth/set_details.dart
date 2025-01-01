@@ -30,10 +30,12 @@ class _RegisterStep2State extends State<RegisterStep2> {
   final TextEditingController controller = TextEditingController();
   String joinDate = DateFormat('yyyy-MM-dd').format(DateTime.now()); // ISO 8601 format
   bool isFormComplete =  false;
+  bool isPhoneNumberValid = false;
   
  
   String initialCountry = 'MY';
   PhoneNumber number = PhoneNumber(isoCode: 'MY');
+
 
   
   Future<void> _saveUserData() async {
@@ -45,6 +47,13 @@ class _RegisterStep2State extends State<RegisterStep2> {
       return;
     }
 //ceck phone num format 
+  if(!isPhoneNumberValid){
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Phone number is not valid")),
+    );
+    return;
+  }
+  
 
     else
     if (_selectedDate == null) {
@@ -58,9 +67,7 @@ class _RegisterStep2State extends State<RegisterStep2> {
         setState(() {
                 isFormComplete = true; // Mark the form as complete
         });
- ///
- ///
- ///
+
       UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: widget.email,
         password: widget.password,
@@ -81,7 +88,7 @@ class _RegisterStep2State extends State<RegisterStep2> {
 
             await _firestoreService.createUser(user);
 
-             final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setBool('isLoggedIn', true);
       
         }
@@ -186,12 +193,14 @@ class _RegisterStep2State extends State<RegisterStep2> {
                    
                     InternationalPhoneNumberInput(
                           onInputChanged: (PhoneNumber number) {
-                            setState(() {
-                              this.number = number; // Update state
-                            });
-                            debugPrint('Phone Number Changed: ${number.phoneNumber}');
+                            
+                            debugPrint('Phone Number: ${number.phoneNumber}');
+                        
                           },
                           onInputValidated: (bool value) {
+                            setState(() {
+                              isPhoneNumberValid = value;
+                            });
                             debugPrint('Phone Number Valid: $value');
                           },
                           selectorConfig: const SelectorConfig(

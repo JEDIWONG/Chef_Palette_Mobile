@@ -7,11 +7,12 @@ import 'package:chef_palette/component/order_item.dart';
 import 'package:chef_palette/component/payment_selector.dart';
 import 'package:chef_palette/controller/cart_controller.dart';
 import 'package:chef_palette/controller/order_controller.dart';
-import 'package:chef_palette/index.dart';
+import 'package:chef_palette/index.dart' as cf;
 import 'package:chef_palette/models/cart_item_model.dart';
 import 'package:chef_palette/models/order_model.dart';
 import 'package:chef_palette/services/firestore_services.dart'; 
 import 'package:chef_palette/style/style.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -28,14 +29,36 @@ class _CheckoutState extends State<Checkout> {
   final ScrollController _scrollController = ScrollController();
   
   List<bool> isSelected = [true, false, false];
-
   double processingFee = 0.0; 
   
   String paymentMethod = "Select a Payment method";
-  String branchName = "Nasi Lemak Bamboo (Samarahan)";
+  String branchName = ""; 
+  
+  final user = FirebaseAuth.instance.currentUser;
+  String uid = FirebaseAuth.instance.currentUser!.uid;
+
+  Future<void> fetchBranchName() async {
+    final DocumentSnapshot branchSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid) // Replace with the actual document ID
+        .get();
+
+    setState(() {
+      branchName = branchSnapshot['branchLocation'];
+    });
+  }
+  
+  
+
   double discountRate = 0.0;
 
-  final user  = FirebaseAuth.instance.currentUser;
+ 
+@override
+  void initState() {
+    super.initState();
+    fetchBranchName();
+  }
+
 
   void updateProcessingFee() {
     setState(() {
@@ -99,7 +122,7 @@ class _CheckoutState extends State<Checkout> {
             ),
           );
 
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>const Index(initIndex: 1,))); 
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>const cf.Index(initIndex: 1,))); 
         }, 
         rad: 0,   
       ),
@@ -148,8 +171,8 @@ class _CheckoutState extends State<Checkout> {
               ),
             ),
 
-            const AddressSelector(
-              addr: "Nasi Lemak Bamboo (Samarahan)",
+            AddressSelector(
+              addr: branchName,
               hour: "7 AM - 8 PM",
             ),
             

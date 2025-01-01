@@ -28,6 +28,10 @@ class _RegisterState extends State<Register> {
 
   Future<void> _registerUser() async {
 
+    setState(() {
+      _errorMessage = null;
+    });
+
 try {
    RegExp regex =
         RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
@@ -36,6 +40,18 @@ try {
        setState(() { _errorMessage = 'Please make a stronger password.';});
     return;
   }
+  //might be achieve by just using firebase settings, extra here
+
+ final bool emailValid = 
+    RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+      .hasMatch(_emailController.text);
+
+if(!emailValid){
+  setState(() {
+    _errorMessage = "Invalid email format";
+  });
+  return;
+}
 
   if (_emailController.text.isEmpty || _passwordController.text.isEmpty || _reenterPasswordController.text.isEmpty) {
     setState(() {
@@ -49,29 +65,21 @@ try {
       _errorMessage = "Passwords do not match!";
     });
     return;
-  }
-
-QuerySnapshot query =  
+  } 
+  QuerySnapshot query =  
   await FirebaseFirestore.instance.collection('users').where('email', isEqualTo: _emailController.text).get();
-
+ 
   if (query.docs.isNotEmpty) {
     setState(() {
       _errorMessage = "Account already exist";
     });
     return;
   }
-  //trigger loading screen
+
   setState(() {
     _isLoading = true;
   });
 
-  
-    setState(() {
-    
-    //clear previous error message
-      _errorMessage = null; 
-    });
-    
       // Pass the UID to RegisterStep2
       Navigator.pushReplacement(
         context,
