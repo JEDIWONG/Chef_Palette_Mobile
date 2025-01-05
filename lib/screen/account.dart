@@ -72,7 +72,7 @@ class _AccountState extends State<Account> {
   
   Future<void> _fetchUserData() async {
     final User? user = FirebaseAuth.instance.currentUser;
-
+    firstName = "Loading...";
 
     if (user != null) {
       

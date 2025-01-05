@@ -36,7 +36,7 @@ class _CartState extends State<Cart> {
   }
 
   // Holds the branch name
-  String branchName =""; 
+  String branchName ="Loading...."; 
   String uid = FirebaseAuth.instance.currentUser!.uid;
   
   Future<void> fetchBranchName() async {
@@ -46,7 +46,7 @@ class _CartState extends State<Cart> {
         .get();
 
     setState(() {
-      branchName = branchSnapshot['branchLocation'];
+      branchName = "Current branch: ${branchSnapshot['branchLocation']}";
     });
   }
 
