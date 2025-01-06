@@ -10,6 +10,7 @@ import 'package:chef_palette/style/style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Account extends StatefulWidget {
   const Account({super.key});
@@ -32,11 +33,18 @@ class _AccountState extends State<Account> {
           currentLastName: lastName,
           onSave: (newFirstName, newLastName) async {      
               // Update Firestore 
+              if (newFirstName.isEmpty || newLastName.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Please fill in all fields")),
+                );
+                return;
+              }else{
               String userId = FirebaseAuth.instance.currentUser!.uid;
               await FirebaseFirestore.instance.collection('users').doc(userId).update({
                 'firstName': newFirstName,
                 'lastName': newLastName,
               });
+              }
 
               // Update Firebase Auth profile
               await FirebaseAuth.instance.currentUser!.updateDisplayName('$newFirstName.trim $newLastName.trim');
@@ -64,7 +72,7 @@ class _AccountState extends State<Account> {
   
   Future<void> _fetchUserData() async {
     final User? user = FirebaseAuth.instance.currentUser;
-
+    firstName = "Loading...";
 
     if (user != null) {
       
@@ -84,6 +92,10 @@ class _AccountState extends State<Account> {
 
   // Sign-out function
   Future<void> _signOut() async {
+
+final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool('isLoggedIn', false);
+
     await FirebaseAuth.instance.signOut();
     Navigator.pushReplacement(
       context,

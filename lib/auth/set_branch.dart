@@ -2,20 +2,100 @@ import 'package:chef_palette/component/custom_button.dart';
 import 'package:chef_palette/component/steps_bar.dart';
 import 'package:chef_palette/index.dart';
 import 'package:chef_palette/style/style.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'as cf;
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 
-class LocationService {
+  // Function to show dialog box
+  void _showDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
+
+Future<void> saveBranchToUserDatabase(String? branch) async {
+  try {
+    // Get the current user's UID
+    String? uid = FirebaseAuth.instance.currentUser?.uid;
+
+    // Ensure the branch and uid are not null
+    if (branch != null && uid != null) {
+      // Reference to the user's document in the 'users' collection
+      cf.DocumentReference userDoc = cf.FirebaseFirestore.instance.collection('users').doc(uid);
+
+      // Update the branch location
+      await userDoc.update({
+        'branchLocation': branch,
+      });
+
+      debugPrint("Branch location added successfully: $branch");
+    } else {
+      debugPrint("Failed to add branch: Branch or UID is null");
+    }
+  } catch (e) {
+    debugPrint("Error saving branch location: $e");
+  }
+}
+
+
+class RegisterStep3 extends StatefulWidget {
+  const RegisterStep3({super.key});
+
+  @override
+  _RegisterStep3State createState() => _RegisterStep3State();
+}
+
+class _RegisterStep3State extends State<RegisterStep3> {
+
+  String? selectedBranch;
   // List of branch coordinates (latitude, longitude)
   final List<Map<String, dynamic>> branches = [
-    {'name': 'Kuching, Kota Samarahan', 'latitude': 1.4624359, 'longitude': 110.417582},
-    {'name': 'Kuching Kota Padungan', 'latitude': 4.387372, 'longitude': 110.7806254},
-    {'name': 'Sabah Segama Complex', 'latitude': 5.9424039, 'longitude': 116.0568832},
+    // {'name': 'Kota Samarahan', 'latitude': 1.4643256, 'longitude': 110.415054},
+    // {'name': 'Kuching Jalan Padungan', 'latitude': 1.5566214, 'longitude': 110.351420},
+    // {'name': 'Sabah Segama Complex', 'latitude': 5.9424039, 'longitude': 116.0568832},
+    // {'name': 'Wilayah Persekutuan Labuan', 'latitude': 5.2790732, 'longitude': 115.2429376},
+    // {'name': 'Selangor', 'latitude': 3.0738379, 'longitude': 101.5183467},
+    // {'name': 'Perak', 'latitude': 4.5921, 'longitude': 101.0901},
   ];
 
+
+  Future<List<Map<String, dynamic>>> fetchBranches() async {
+    List<Map<String, dynamic>> branches = [];
+    try {
+      cf.QuerySnapshot snapshot = await cf.FirebaseFirestore.instance.collection('branchs').get();
+      for (var doc in snapshot.docs) {
+        branches.add({
+          'name': doc['name'],
+          'latitude': doc['latitude'],
+          'longitude': doc['longitude'],
+        });
+      }
+    } catch (e) {
+      print("Error fetching branches: $e");
+    }
+    return branches;
+  }
+
+
   // Function to calculate the nearest branch
-  String getNearestBranch(Position userPosition) {
+  Future<String> getNearestBranch(Position userPosition) async {
+
+   _RegisterStep3State branchService = _RegisterStep3State();
+    List<Map<String, dynamic>> branches = await branchService.fetchBranches();
+
+
     double minDistance = double.infinity;
     String nearestBranch = '';
 
@@ -35,6 +115,7 @@ class LocationService {
 
     return nearestBranch;
   }
+
 
 
 //get current location
@@ -60,48 +141,34 @@ class LocationService {
     }
 
     return await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-  }
-}
 
-  // Function to show dialog box
-  void _showDialog(BuildContext context, String title, String message) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(title),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text("OK"),
-          ),
-        ],
-      ),
-    );
   }
 
 
-class RegisterStep3 extends StatefulWidget {
-  const RegisterStep3({super.key});
-
-  @override
-  _RegisterStep3State createState() => _RegisterStep3State();
-}
-
-class _RegisterStep3State extends State<RegisterStep3> {
   String? selectedState;
   String? nearestBranch;
+  bool _isLoading = false;
 
   Future<void> _detectNearestBranch() async {
-    LocationService locationService = LocationService();
-    Position? position = await locationService.getCurrentLocation(context);
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    //LocationService locationService = LocationService();
+    Position? position = await _RegisterStep3State().getCurrentLocation(context);
 
     if (position != null) {
-      String branch = locationService.getNearestBranch(position);
+      String branch = await _RegisterStep3State().getNearestBranch(position);
       setState(() {
         nearestBranch = branch;
+        selectedState = branch;
       });
 
+    setState(() {
+      _isLoading = false;
+    });
+      
       // Show detected branch dialog
       showDialog(
         context: context,
@@ -119,14 +186,15 @@ class _RegisterStep3State extends State<RegisterStep3> {
     }
   }
 
-  // List of states in Malaysia
-  final List<String> states = [
-    "Sabah",
-    "Sarawak",
-    "Kuala Lumpur",
-    "Selangor",
-    "Perak",
-  ];
+ // List of states in Malaysia
+  // final List<String> states = [
+  //   "Sabah",
+  //   "Kota Samarahan Sarawak",
+  //   "Kuching Jalan Padungan Sarawak",
+  //   "Kuala Lumpur",
+  //   "Selangor",
+  //   "Perak",
+  // ];
 
   @override
   Widget build(BuildContext context) {
@@ -153,24 +221,37 @@ class _RegisterStep3State extends State<RegisterStep3> {
                   const SizedBox(height: 50),
 
                   // Dropdown Button for Malaysian States
-                  DropdownButtonFormField<String>(
-                    value: selectedState,
-                    hint: const Text("Select your state"),
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    items: states.map((String state) {
-                      return DropdownMenuItem<String>(
-                        value: state,
-                        child: Text(state),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedState = newValue;
-                      });
+                  FutureBuilder<List<Map<String, dynamic>>>(
+                    future: _RegisterStep3State().fetchBranches(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      } else if (snapshot.hasError) {
+                        return Text("Error: ${snapshot.error}");
+                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return const Text("No branches available");
+                      } else {
+                        return DropdownButtonFormField<String>(
+                          value: selectedState,
+                          hint: const Text("Select your state"),
+                          decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          items: snapshot.data!.map((branch) {
+                            return DropdownMenuItem<String>(
+                              value: branch['name'],
+                              child: Text(branch['name']),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              selectedState = newValue;
+                            });
+                          },
+                        );
+                      }
                     },
                   ),
 
@@ -179,8 +260,9 @@ class _RegisterStep3State extends State<RegisterStep3> {
                   RectButton(
                     bg: Colors.green,
                     fg: const Color.fromARGB(255, 255, 255, 255),
-                    text: "Get Nearest Branch",
-                    func: _detectNearestBranch,
+                    text: _isLoading ? "Loading..." : "Get Nearest Branch",
+                    func: _isLoading ? (){} : _detectNearestBranch,
+                    
                     //() {
                       // if (selectedState != null) {
                       //   // Handle the submission with the selected state
@@ -196,17 +278,34 @@ class _RegisterStep3State extends State<RegisterStep3> {
                    // },
                     rad: 10,
                   ),
+
+                  const SizedBox(height: 20),
+                  RectButton(
+                    bg: Colors.purple,
+                    fg: const Color.fromARGB(255, 255, 255, 255),
+                    text: "Finish Setup",
+                    func: (){
+                      saveBranchToUserDatabase(nearestBranch);
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const Index(initIndex: 0)),
+                          (route) => false,
+                      );
+                    },
+                    
+                    rad: 10,
+                  ),
+
                   const SizedBox(height: 20),
                   InkWell(
                     splashColor: Colors.green,
                     onTap: (){
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const Index(initIndex: 0,),
-                        ),
-                      );
-                      
+                       Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => const Index(initIndex: 0,)), // home page after login
+                          (route) => false, // This removes all routes (i.e., Auth, Login, etc.) from the stack
+                     );
                     } ,
                     child: Text("Skip For Now",style: CustomStyle.link2,),
                   )
@@ -220,3 +319,4 @@ class _RegisterStep3State extends State<RegisterStep3> {
     );
   }
 }
+

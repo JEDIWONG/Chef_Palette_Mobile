@@ -5,6 +5,8 @@ import 'package:chef_palette/models/cart_item_model.dart';
 import 'package:chef_palette/screen/checkout.dart';
 import 'package:chef_palette/services/firestore_services.dart';
 import 'package:chef_palette/style/style.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Cart extends StatefulWidget {
@@ -22,6 +24,7 @@ class _CartState extends State<Cart> {
   void initState() {
     super.initState();
     loadCartItems(); 
+    fetchBranchName();
   }
 
   Future<void> loadCartItems() async {
@@ -29,6 +32,21 @@ class _CartState extends State<Cart> {
     setState(() {
       cartItems = items;
       isCartEmpty = cartItems.isEmpty;
+    });
+  }
+
+  // Holds the branch name
+  String branchName ="Loading...."; 
+  String uid = FirebaseAuth.instance.currentUser!.uid;
+  
+  Future<void> fetchBranchName() async {
+    final DocumentSnapshot branchSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid) // Replace with the actual document ID
+        .get();
+
+    setState(() {
+      branchName = "Current branch: ${branchSnapshot['branchLocation']}";
     });
   }
 
@@ -73,8 +91,8 @@ class _CartState extends State<Cart> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            const AddressSelector(
-              addr: "Nasi Lemak Bamboo (Samarahan)", 
+            AddressSelector(
+              addr: branchName, 
               hour: "7AM-8PM"
             ),
             if (cartItems.isEmpty)

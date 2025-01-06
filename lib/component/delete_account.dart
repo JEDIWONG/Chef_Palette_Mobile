@@ -2,6 +2,7 @@ import 'package:chef_palette/auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ConfirmDeleteAccount extends StatelessWidget {
   const ConfirmDeleteAccount({super.key});
@@ -10,9 +11,16 @@ class ConfirmDeleteAccount extends StatelessWidget {
     try {
       // Delete the user's account
 
-      await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).delete();
-
+      String oldUserid = FirebaseAuth.instance.currentUser!.uid;
+      
       await FirebaseAuth.instance.currentUser?.delete();
+      
+      await FirebaseFirestore.instance.collection('users').doc(oldUserid).delete();
+
+       final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool('isLoggedIn', false);
+      
+      // Delete the user's document from Firestore
       // Navigate to the home or login page after account deletion
       Navigator.pushAndRemoveUntil(
         context,

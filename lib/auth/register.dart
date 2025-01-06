@@ -2,8 +2,10 @@ import 'package:chef_palette/auth/set_details.dart';
 import 'package:chef_palette/component/custom_button.dart';
 import 'package:chef_palette/component/steps_bar.dart';
 import 'package:chef_palette/style/style.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:password_strength_indicator_plus/password_strength_indicator_plus.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
@@ -17,41 +19,84 @@ class _RegisterState extends State<Register> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _reenterPasswordController = TextEditingController();
   String? _errorMessage;
+  bool _isLoading = false;
+
+//create incomplete_mark record
+//to allow deletion for incomplete account (exists in auth but not in db)
+
+
 
   Future<void> _registerUser() async {
+
+    setState(() {
+      _errorMessage = null;
+    });
+
+try {
+   RegExp regex =
+        RegExp(r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+   
+      if (!regex.hasMatch(_passwordController.text)) {
+       setState(() { _errorMessage = 'Please make a stronger password.';});
+    return;
+  }
+  //might be achieve by just using firebase settings, extra here
+
+ final bool emailValid = 
+    RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+      .hasMatch(_emailController.text);
+
+if(!emailValid){
+  setState(() {
+    _errorMessage = "Invalid email format";
+  });
+  return;
+}
+
+  if (_emailController.text.isEmpty || _passwordController.text.isEmpty || _reenterPasswordController.text.isEmpty) {
+    setState(() {
+      _errorMessage = "Please fill in all fields.";
+    });
+    return;
+  }
+
   if (_passwordController.text != _reenterPasswordController.text) {
     setState(() {
       _errorMessage = "Passwords do not match!";
     });
     return;
+  } 
+  QuerySnapshot query =  
+  await FirebaseFirestore.instance.collection('users').where('email', isEqualTo: _emailController.text).get();
+ 
+  if (query.docs.isNotEmpty) {
+    setState(() {
+      _errorMessage = "Account already exist";
+    });
+    return;
   }
 
-  try {
-    // Create the user and get the UserCredential
-    UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: _emailController.text,
-      password: _passwordController.text,
-    );
+  setState(() {
+    _isLoading = true;
+  });
 
-    // Retrieve the UID from the UserCredential
-    String? uid = userCredential.user?.uid;
-
-    if (uid != null) {
       // Pass the UID to RegisterStep2
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => RegisterStep2(uid: uid, email: _emailController.text,)),
+        MaterialPageRoute(builder: (context) => RegisterStep2(password: _passwordController.text, email: _emailController.text,)),
       );
-    } else {
-      setState(() {
-        _errorMessage = "Failed to retrieve UID.";
-      });
-    }
+    //stop loading state
+
+
   } on FirebaseAuthException catch (e) {
     setState(() {
       _errorMessage = e.message;
     });
   }
+
+  setState(() {
+      _isLoading = false;
+    });
 }
 
 
@@ -59,14 +104,15 @@ class _RegisterState extends State<Register> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      body: SingleChildScrollView(
+      body: Stack(
+       children: [
+        SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.only(top: 100),
           color: Colors.green,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              
               Text("Welcome,", style: CustomStyle.lightLargeHeading),
               Text("Delicacy Ahead", style: CustomStyle.lightLargeHeading),
               Container(
@@ -97,6 +143,7 @@ class _RegisterState extends State<Register> {
                         prefixIcon: Icon(Icons.lock),
                       ),
                     ),
+                    
                     const SizedBox(height: 30),
                     TextFormField(
                       controller: _reenterPasswordController,
@@ -106,6 +153,12 @@ class _RegisterState extends State<Register> {
                         prefixIcon: Icon(Icons.lock),
                       ),
                     ),
+
+                    PasswordStrengthIndicatorPlus(
+                                textController: _passwordController,   
+                    ),
+                    
+                    
                     const SizedBox(height: 50),
                     RectButton(
                       bg: const Color.fromARGB(255, 51, 64, 129),
@@ -128,7 +181,16 @@ class _RegisterState extends State<Register> {
             ],
           ),
         ),
-      )
+       ),
+       if (_isLoading)
+            Container(
+              color: Colors.black54, // Semi-transparent background
+              child: const Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              ),
+            ),
+       ],
+    ),
     );
   }
 }
