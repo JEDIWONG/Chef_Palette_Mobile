@@ -25,7 +25,7 @@ class DashboardCard extends StatelessWidget{
               BoxShadow(
                 offset: Offset(0, 0),
                 spreadRadius: 0.5,
-                color: Colors.green,
+                color: Colors.grey,
                 blurRadius: 0.5,
                 blurStyle: BlurStyle.normal,
               )
