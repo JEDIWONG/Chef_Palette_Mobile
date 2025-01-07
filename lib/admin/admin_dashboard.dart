@@ -1,13 +1,18 @@
+import 'package:chef_palette/admin/admin_user.dart';
+import 'package:chef_palette/admin/component/dashboard_card.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 
-class AdminDashboard extends StatelessWidget{
+class AdminDashboard extends StatelessWidget {
   const AdminDashboard({super.key});
+
+  
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    List <String> name = ["Manage Order","Manage Menu","Manage Reservation","Transaction Record","Manage Rewards","Manage Members"];
 
+    return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.green,
         toolbarHeight: 100,
@@ -18,14 +23,25 @@ class AdminDashboard extends StatelessWidget{
         ),
       ),
       backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            
-          ],
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, 
+            crossAxisSpacing: 10, 
+            mainAxisSpacing: 20, 
+            childAspectRatio: 1/1.1
+          ),
+          itemCount: 6, 
+          itemBuilder: (context, index) {
+            return DashboardCard(
+              target: const AdminUser(),
+              title: name[index],
+              iconUrl: "assets/images/test.png",
+            );
+          },
         ),
       ),
-    ); 
+    );
   }
 }
