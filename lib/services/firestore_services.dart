@@ -41,6 +41,7 @@ class FirestoreService {
             phoneNumber: data['phoneNumber'] as String,
             dob: data['dob'] as String,
             joinDate: data['joinDate'] as String,
+            role: 'member',
           );
         }
       }

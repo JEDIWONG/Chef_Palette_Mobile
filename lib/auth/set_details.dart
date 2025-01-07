@@ -84,6 +84,7 @@ class _RegisterStep2State extends State<RegisterStep2> {
               phoneNumber: number.phoneNumber.toString(),
               dob: "${_selectedDate!.day}-${_selectedDate!.month}-${_selectedDate!.year}",
               joinDate: joinDate,
+              role: 'member',
             );
 
             await _firestoreService.createUser(user);
