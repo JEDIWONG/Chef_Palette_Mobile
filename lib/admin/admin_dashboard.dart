@@ -1,3 +1,8 @@
+import 'package:chef_palette/admin/admin_menu.dart';
+import 'package:chef_palette/admin/admin_order.dart';
+import 'package:chef_palette/admin/admin_reservation.dart';
+import 'package:chef_palette/admin/admin_rewards.dart';
+import 'package:chef_palette/admin/admin_transaction.dart';
 import 'package:chef_palette/admin/admin_user.dart';
 import 'package:chef_palette/admin/component/dashboard_card.dart';
 import 'package:chef_palette/style/style.dart';
@@ -11,6 +16,7 @@ class AdminDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List <String> name = ["Manage Order","Manage Menu","Manage Reservation","Transaction Record","Manage Rewards","Manage Members"];
+    List <Widget> widget = const [AdminOrder(),AdminMenu(),AdminReservation(),AdminTransaction(),AdminRewards(),AdminUser()]; 
 
     return Scaffold(
       appBar: AppBar(
@@ -35,7 +41,7 @@ class AdminDashboard extends StatelessWidget {
           itemCount: 6, 
           itemBuilder: (context, index) {
             return DashboardCard(
-              target: const AdminUser(),
+              target: widget[index],
               title: name[index],
               iconUrl: "assets/images/test.png",
             );

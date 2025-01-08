@@ -1,7 +1,7 @@
 import "package:flutter/material.dart"; 
 
-class AdminMenu extends StatelessWidget{
-  const AdminMenu({super.key});
+class AdminOrder extends StatelessWidget{
+  const AdminOrder({super.key});
 
   
   @override

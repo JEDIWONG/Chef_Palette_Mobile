@@ -1,8 +1,7 @@
 import "package:flutter/material.dart"; 
 
-class AdminMenu extends StatelessWidget{
-  const AdminMenu({super.key});
-
+class AdminRewards extends StatelessWidget{
+  const AdminRewards({super.key});
   
   @override
   Widget build(BuildContext context) {
