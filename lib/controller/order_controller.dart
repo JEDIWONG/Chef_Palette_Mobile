@@ -63,5 +63,39 @@ class OrderController {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getAllOrders() async {
+    try {
+      // Query the Firestore collection "orders" to get all orders
+      QuerySnapshot querySnapshot = await _firestore.collection('orders').get();
+
+      // Map the query result to a list of maps containing document ID and OrderModel
+      List<Map<String, dynamic>> orders = querySnapshot.docs.map((doc) {
+        return {
+          "id": doc.id, // Document ID
+          "userID": doc['userID'], // User ID associated with the order
+          "order": OrderModel.fromMap(doc.data() as Map<String, dynamic>) // OrderModel object
+        };
+      }).toList();
+
+      return orders;
+    } catch (e) {
+      print('Error fetching orders: $e');
+      return [];
+    }
+  }
+
+  // Update the status of an order based on its ID
+  Future<void> updateOrderStatus(String orderId, String newStatus) async {
+    try {
+      // Reference the specific order document by its ID and update the status field
+      await _firestore.collection('orders').doc(orderId).update({
+        'status': newStatus,
+      });
+      print('Order status updated successfully to $newStatus');
+    } catch (e) {
+      print('Error updating order status: $e');
+      throw Exception('Failed to update order status');
+    }
+  }
 
 }

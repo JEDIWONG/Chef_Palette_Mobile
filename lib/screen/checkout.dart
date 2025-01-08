@@ -303,9 +303,7 @@ class OrderSummary extends StatelessWidget {
                 )
               ),
             ]
-          
           ),
-    
         ],
       ),
     );
