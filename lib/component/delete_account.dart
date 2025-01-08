@@ -34,6 +34,7 @@ class ConfirmDeleteAccount extends StatelessWidget {
           content: Text(e.message ?? "Failed to delete account."),
         ),
       );
+       Navigator.pop(context);
     }
   }
 

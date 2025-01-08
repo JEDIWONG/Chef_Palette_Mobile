@@ -35,7 +35,7 @@ class _RegisterStep2State extends State<RegisterStep2> {
  
   String initialCountry = 'MY';
   PhoneNumber number = PhoneNumber(isoCode: 'MY');
-
+ String? userPhone; 
 
   
   Future<void> _saveUserData() async {
@@ -74,14 +74,14 @@ class _RegisterStep2State extends State<RegisterStep2> {
       );
 
       String? uid = userCredential.user?.uid;
-
+    
         if(uid != null){
             UserModel user = UserModel(
               uid: uid,
               email: widget.email,
               firstName: _firstNameController.text.trim(),
               lastName: _lastNameController.text.trim(),
-              phoneNumber: number.phoneNumber.toString(),
+                phoneNumber: userPhone.toString(),
               dob: "${_selectedDate!.day}-${_selectedDate!.month}-${_selectedDate!.year}",
               joinDate: joinDate,
               role: 'member',
@@ -102,12 +102,12 @@ class _RegisterStep2State extends State<RegisterStep2> {
           return;
         }
 
-      Navigator.push(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
-          builder: (context) => const RegisterStep3(),
-        ),
-      );
+          builder: (context) => const RegisterStep3()),
+          (route) => false, 
+        );
     }
   }
 
@@ -139,7 +139,10 @@ class _RegisterStep2State extends State<RegisterStep2> {
   }
 
   @override
+
+  
   Widget build(BuildContext context) {
+   
     return WillPopScope(
     onWillPop: _onWillPop,
     child: Scaffold(
@@ -191,12 +194,13 @@ class _RegisterStep2State extends State<RegisterStep2> {
                    
                     InternationalPhoneNumberInput(
                           onInputChanged: (PhoneNumber number) {
-                            
-                            debugPrint('Phone Number: ${number.phoneNumber}');
-                        
+                           userPhone = number.phoneNumber;
+                        debugPrint('Phone Number: ${number.phoneNumber}');
+              
                           },
                           onInputValidated: (bool value) {
                             setState(() {
+                              
                               isPhoneNumberValid = value;
                             });
                             debugPrint('Phone Number Valid: $value');
@@ -221,9 +225,13 @@ class _RegisterStep2State extends State<RegisterStep2> {
                           autoValidateMode: AutovalidateMode.onUserInteraction,
                           selectorTextStyle: const TextStyle(color: Colors.black),
                           initialValue: number,
+                         
                           textFieldController: controller,
                           formatInput: true,
                           keyboardType: TextInputType.phone,
+                           onSaved: (PhoneNumber number){
+                            userPhone = number.phoneNumber;
+                          },
                           inputBorder: const OutlineInputBorder(),
                           hintText: 'Phone Number',
                     ),
@@ -251,7 +259,7 @@ class _RegisterStep2State extends State<RegisterStep2> {
                       bg: const Color.fromARGB(255, 51, 64, 129),
                       fg: const Color.fromARGB(255, 255, 255, 255),
                       text: "Move On",
-                      func: _saveUserData, 
+                      func: _saveUserData,
                       rad: 10,
                     ),
                   ],
