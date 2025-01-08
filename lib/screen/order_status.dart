@@ -40,7 +40,7 @@ class _OrderStatusState extends State<OrderStatus> {
         shadowColor: Colors.grey,
         automaticallyImplyLeading: false,
         title: Text("Order Status", style: CustomStyle.h2),
-        leading: const CustomBackButton(title: "Menu", first: false),
+        leading: const CustomBackButton(title: "Order", first: false),
         leadingWidth: MediaQuery.sizeOf(context).width * 0.3,
         centerTitle: true,
         backgroundColor: Colors.white,
