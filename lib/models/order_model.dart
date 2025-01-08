@@ -8,6 +8,7 @@ class OrderModel {
   final List<CartItemModel> orderItems;
   final double price;
   final String status;
+  final String orderType;
 
   OrderModel({
     
@@ -18,6 +19,7 @@ class OrderModel {
     required this.orderItems,
     required this.price,
     required this.status, 
+    required this.orderType, 
   });
 
   Map<String, dynamic> toMap() {
@@ -29,6 +31,7 @@ class OrderModel {
       'orderItems': orderItems.map((item) => item.toMap()).toList(), 
       'price': price,
       'status':status,
+      'orderType':orderType,
     };
   }
 
@@ -43,6 +46,7 @@ class OrderModel {
       ),
       price: map['price']??0,
       status: map['status']??'Pending', 
+      orderType: map['orderType']??"Dine-In", 
     );
   }
 }

@@ -29,6 +29,7 @@ class _OrderStatusState extends State<OrderStatus> {
     super.initState();
     // Fetch the order by ID using the order controller
     orderFuture = OrderController().getOrderById(widget.orderId);
+    
   }
 
   @override
@@ -79,7 +80,9 @@ class _OrderStatusState extends State<OrderStatus> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   
-                  const SizedBox(height: 50,),
+                  const SizedBox(height: 30,),
+
+                  
 
                   Container(
                     alignment: Alignment.center,
@@ -99,6 +102,11 @@ class _OrderStatusState extends State<OrderStatus> {
                       semanticsValue: statuses[currentStep],
                       minHeight: 10,
                     ),
+                  ),
+
+                  ListTile(
+                    leading: const Icon(Icons.location_pin,color: Colors.red,),
+                    title: Text(order.branchName,style: CustomStyle.h4,),
                   ),
 
                   ListTile(
@@ -135,7 +143,7 @@ class _OrderStatusState extends State<OrderStatus> {
                             }).toList(),
                           ),
                         ),
-                      )
+                      ),
                     ]
                   ),                  
                 ],

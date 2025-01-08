@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:accordion/accordion.dart';
-import 'package:chef_palette/component/address_selector.dart';
 import 'package:chef_palette/component/custom_button.dart';
 import 'package:chef_palette/component/discount_selector.dart';
 import 'package:chef_palette/component/order_item.dart';
@@ -33,6 +32,7 @@ class _CheckoutState extends State<Checkout> {
   
   String paymentMethod = "Select a Payment method";
   String branchName = ""; 
+  List <String> orderType = ["order"];
   
   final user = FirebaseAuth.instance.currentUser;
   String uid = FirebaseAuth.instance.currentUser!.uid;
@@ -48,10 +48,7 @@ class _CheckoutState extends State<Checkout> {
     });
   }
   
-  
-
   double discountRate = 0.0;
-
  
 @override
   void initState() {
@@ -59,6 +56,11 @@ class _CheckoutState extends State<Checkout> {
     fetchBranchName();
   }
 
+  void updateOrderType() {
+    setState(() {
+      
+    });
+  }
 
   void updateProcessingFee() {
     setState(() {
@@ -118,7 +120,8 @@ class _CheckoutState extends State<Checkout> {
               branchName: branchName,
               orderItems: cartItems,      
               price: totalPrice,          
-              status: 'Pending',          
+              status: 'Pending',
+              orderType: '',          
             ),
           );
 
@@ -144,6 +147,7 @@ class _CheckoutState extends State<Checkout> {
                       isSelected[i] = i == index;
                     }
                   });
+                  updateOrderType();
                   updateProcessingFee(); // Update processing fee based on the selected option
                 },
                 borderRadius: BorderRadius.circular(10),
@@ -171,7 +175,7 @@ class _CheckoutState extends State<Checkout> {
               ),
             ),
       
-            OrderSummary(processingFee: processingFee,),
+            OrderSummary(processingFee: processingFee, branchName: branchName,),
 
             const TotalPriceBar(),
 
@@ -200,7 +204,6 @@ class _CheckoutState extends State<Checkout> {
                 ],
               )
             ),
-
           ],
         ),
       ),
@@ -208,10 +211,13 @@ class _CheckoutState extends State<Checkout> {
   }
 }
 
+
+
 class OrderSummary extends StatelessWidget {
-  const OrderSummary({super.key, required this.processingFee});
+  const OrderSummary({super.key, required this.processingFee, required this.branchName});
 
   final double processingFee; 
+  final String branchName; 
 
   Future<double> calculateProcessingFee() async {
     
@@ -230,6 +236,18 @@ class OrderSummary extends StatelessWidget {
             disableScrolling: true,
             paddingBetweenClosedSections: 50,
             children: [
+
+              AccordionSection(
+                isOpen: false,
+                headerBackgroundColor: Colors.green,
+                contentBorderColor: Colors.green, 
+                headerPadding: const EdgeInsets.all(10),
+                header: Text("Branch Selected", style: CustomStyle.lightH4),
+                content: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 30),
+                  child: Text(branchName,style: CustomStyle.txt,),
+                ),
+              ),
               AccordionSection(
                 isOpen: true,
                 headerBackgroundColor: Colors.green,
