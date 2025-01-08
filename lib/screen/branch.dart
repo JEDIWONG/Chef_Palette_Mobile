@@ -7,7 +7,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:chef_palette/models/branch_model.dart';
 
 class Branch extends StatefulWidget {
-  const Branch({super.key});
+  const Branch({super.key, required this.onBranchChanged});
+
+  final Function(String) onBranchChanged; // Callback function to handle branch name change
 
   @override
   State<Branch> createState() => _BranchState();
@@ -35,17 +37,19 @@ class _BranchState extends State<Branch> {
   Future<void> updateBranchLocation(String branchName) async {
     try {
       final userController = UserController();
-      
-      await userController.updateUserBranchLocation(uid,branchName);
+      await userController.updateUserBranchLocation(uid, branchName);
 
       setState(() {
         selectedBranch = branchName;
       });
+
+      // Invoke the callback to notify parent widget of the branch change
+      widget.onBranchChanged(branchName);
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Branch updated to $branchName')),
       );
     } catch (e) {
-      
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to update branch')),
       );
@@ -71,12 +75,11 @@ class _BranchState extends State<Branch> {
       ),
       body: SingleChildScrollView(
         child: Column(
-
           crossAxisAlignment: CrossAxisAlignment.start,
-          children:[
+          children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 30,horizontal: 10),
-              child: Text("Please Select A Branch : ",style:CustomStyle.h4,),
+              padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 10),
+              child: Text("Please Select A Branch : ", style: CustomStyle.h4,),
             ),
             Column(
               children: branches.map((branch) {

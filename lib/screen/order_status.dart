@@ -82,8 +82,6 @@ class _OrderStatusState extends State<OrderStatus> {
                   
                   const SizedBox(height: 30,),
 
-                  
-
                   Container(
                     alignment: Alignment.center,
                     margin: const EdgeInsets.symmetric(vertical: 10),
@@ -106,6 +104,7 @@ class _OrderStatusState extends State<OrderStatus> {
 
                   ListTile(
                     leading: const Icon(Icons.location_pin,color: Colors.red,),
+                    subtitle: Text("${order.orderType}",style: CustomStyle.subtitle,),
                     title: Text(order.branchName,style: CustomStyle.h4,),
                   ),
 
@@ -121,7 +120,7 @@ class _OrderStatusState extends State<OrderStatus> {
                   // Current Status Text
                   
                   const SizedBox(height: 20),
-
+                  
                   Accordion(
                     children: [
                       AccordionSection(
@@ -146,6 +145,13 @@ class _OrderStatusState extends State<OrderStatus> {
                       ),
                     ]
                   ),                  
+                  
+                  ListTile(
+                    tileColor: Colors.green,
+                    leading: Text("Order ID: ",style: CustomStyle.h5,),
+                    title: Text(widget.orderId,style: CustomStyle.lightTxt,),
+                    trailing: const Icon(Icons.copy,color: Colors.white,),
+                  )
                 ],
               ),
             );

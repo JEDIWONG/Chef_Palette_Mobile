@@ -20,7 +20,9 @@ class Cart extends StatefulWidget {
 
 class _CartState extends State<Cart> {
   List<CartItemModel> cartItems = []; // Holds cart items
-  bool isCartEmpty = true; // Tracks whether the cart is empty
+  bool isCartEmpty = true; // Tracks whether the cart is empty    
+  String branchName = "Loading...."; 
+  String uid = FirebaseAuth.instance.currentUser!.uid;
 
   @override
   void initState() {
@@ -37,10 +39,6 @@ class _CartState extends State<Cart> {
     });
   }
 
-  // Holds the branch name
-  String branchName = "Loading...."; 
-  String uid = FirebaseAuth.instance.currentUser!.uid;
-
   Future<void> fetchBranchName() async {
     try {
       final userController = UserController();
@@ -50,14 +48,14 @@ class _CartState extends State<Cart> {
       final user = await userController.fetchUserById(uid);
       if (user != null && user.branchLocation.isNotEmpty) {
         setState(() {
-          branchName = "${user.branchLocation}";
+          branchName = user.branchLocation;
         });
       } else {
         // Fetch the first branch if user has no branch location
         final branches = await branchController.fetchBranches();
         if (branches.isNotEmpty) {
           setState(() {
-            branchName = "${branches.first.name}";
+            branchName = branches.first.name;
           });
         } else {
           setState(() {
@@ -115,8 +113,15 @@ class _CartState extends State<Cart> {
           children: [
             AddressSelector(
               addr: branchName, 
-              hour: "7AM-8PM"
+              hour: "7AM-8PM",
+              onBranchChanged: (String newBranchName) {
+                // Handle the branch name change here
+                setState(() {
+                  branchName = newBranchName;
+                });
+              },
             ),
+
             if (cartItems.isEmpty)
               const Center(child: Text("Your cart is empty")),
             if (cartItems.isNotEmpty)

@@ -2,7 +2,6 @@ import 'package:chef_palette/admin/admin_dashboard.dart';
 import 'package:chef_palette/component/custom_button.dart';
 import 'package:chef_palette/index.dart';
 import 'package:chef_palette/style/style.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:chef_palette/auth/resetpassword.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' hide Index;

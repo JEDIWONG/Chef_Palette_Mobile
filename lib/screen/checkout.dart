@@ -32,7 +32,8 @@ class _CheckoutState extends State<Checkout> {
   
   String paymentMethod = "Select a Payment method";
   String branchName = ""; 
-  List <String> orderType = ["order"];
+  List <String> orderTypes = ["Dine-In","Pickup","Delivery"];
+  String orderType = "Dine-In";
   
   final user = FirebaseAuth.instance.currentUser;
   String uid = FirebaseAuth.instance.currentUser!.uid;
@@ -56,9 +57,9 @@ class _CheckoutState extends State<Checkout> {
     fetchBranchName();
   }
 
-  void updateOrderType() {
+  void updateOrderType(int index) {
     setState(() {
-      
+      orderType = orderType[index];
     });
   }
 
@@ -121,7 +122,7 @@ class _CheckoutState extends State<Checkout> {
               orderItems: cartItems,      
               price: totalPrice,          
               status: 'Pending',
-              orderType: '',          
+              orderType: orderType,          
             ),
           );
 
@@ -147,7 +148,7 @@ class _CheckoutState extends State<Checkout> {
                       isSelected[i] = i == index;
                     }
                   });
-                  updateOrderType();
+                  updateOrderType(index);
                   updateProcessingFee(); // Update processing fee based on the selected option
                 },
                 borderRadius: BorderRadius.circular(10),
@@ -175,7 +176,7 @@ class _CheckoutState extends State<Checkout> {
               ),
             ),
       
-            OrderSummary(processingFee: processingFee, branchName: branchName,),
+            OrderSummary(processingFee: processingFee, branchName: branchName, orderType: orderType,),
 
             const TotalPriceBar(),
 
@@ -214,11 +215,12 @@ class _CheckoutState extends State<Checkout> {
 
 
 class OrderSummary extends StatelessWidget {
-  const OrderSummary({super.key, required this.processingFee, required this.branchName});
+  const OrderSummary({super.key, required this.processingFee, required this.branchName, required this.orderType});
 
   final double processingFee; 
   final String branchName; 
-
+  final String orderType; 
+  
   Future<double> calculateProcessingFee() async {
     
     return Future.value(processingFee); 
