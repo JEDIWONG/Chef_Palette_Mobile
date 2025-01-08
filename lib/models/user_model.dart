@@ -7,6 +7,7 @@ class UserModel {
   String dob;
   String joinDate;
   String role;
+  String branchLocation;
 
   UserModel({
     required this.uid,
@@ -17,6 +18,7 @@ class UserModel {
     required this.dob,
     required this.joinDate,
     required this.role,
+    required this.branchLocation,
   });
 
   Map<String, dynamic> toMap() {
@@ -29,6 +31,7 @@ class UserModel {
       'dob':dob,
       'joinDate':joinDate,
       'role':role,
+      'branchLocation':branchLocation,
     };
   }
 }

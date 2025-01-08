@@ -1,13 +1,15 @@
 import 'package:chef_palette/component/address_selector.dart';
 import 'package:chef_palette/component/cart_item.dart';
 import 'package:chef_palette/component/custom_button.dart';
+import 'package:chef_palette/controller/branch_controller.dart';
+import 'package:chef_palette/controller/user_controller.dart';
 import 'package:chef_palette/models/cart_item_model.dart';
 import 'package:chef_palette/screen/checkout.dart';
 import 'package:chef_palette/services/firestore_services.dart';
 import 'package:chef_palette/style/style.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 
 class Cart extends StatefulWidget {
   const Cart({super.key});
@@ -36,18 +38,38 @@ class _CartState extends State<Cart> {
   }
 
   // Holds the branch name
-  String branchName ="Loading...."; 
+  String branchName = "Loading...."; 
   String uid = FirebaseAuth.instance.currentUser!.uid;
-  
-  Future<void> fetchBranchName() async {
-    final DocumentSnapshot branchSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid) // Replace with the actual document ID
-        .get();
 
-    setState(() {
-      branchName = "Current branch: ${branchSnapshot['branchLocation']}";
-    });
+  Future<void> fetchBranchName() async {
+    try {
+      final userController = UserController();
+      final branchController = BranchController();
+
+      // Fetch user data
+      final user = await userController.fetchUserById(uid);
+      if (user != null && user.branchLocation.isNotEmpty) {
+        setState(() {
+          branchName = "${user.branchLocation}";
+        });
+      } else {
+        // Fetch the first branch if user has no branch location
+        final branches = await branchController.fetchBranches();
+        if (branches.isNotEmpty) {
+          setState(() {
+            branchName = "${branches.first.name}";
+          });
+        } else {
+          setState(() {
+            branchName = "No branches available";
+          });
+        }
+      }
+    } catch (e) {
+      setState(() {
+        branchName = "Error fetching branch: $e";
+      });
+    }
   }
 
   void handleItemRemoved(String itemId) {
@@ -116,5 +138,3 @@ class _CartState extends State<Cart> {
     );
   }
 }
-
-

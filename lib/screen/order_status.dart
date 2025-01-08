@@ -137,11 +137,7 @@ class _OrderStatusState extends State<OrderStatus> {
                         ),
                       )
                     ]
-                  ),
-
-                  // Order Items List
-                  
-                  
+                  ),                  
                 ],
               ),
             );

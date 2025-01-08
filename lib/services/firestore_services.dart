@@ -42,6 +42,7 @@ class FirestoreService {
             dob: data['dob'] as String,
             joinDate: data['joinDate'] as String,
             role: 'member',
+            branchLocation: data["branchLocation"] as String,
           );
         }
       }

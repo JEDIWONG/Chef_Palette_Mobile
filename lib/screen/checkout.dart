@@ -170,13 +170,7 @@ class _CheckoutState extends State<Checkout> {
                 ],
               ),
             ),
-
-            AddressSelector(
-              addr: branchName,
-              hour: "7 AM - 8 PM",
-            ),
-            
-            
+      
             OrderSummary(processingFee: processingFee,),
 
             const TotalPriceBar(),

@@ -85,6 +85,7 @@ class _RegisterStep2State extends State<RegisterStep2> {
               dob: "${_selectedDate!.day}-${_selectedDate!.month}-${_selectedDate!.year}",
               joinDate: joinDate,
               role: 'member',
+              branchLocation: '',
             );
 
             await _firestoreService.createUser(user);
@@ -108,10 +109,6 @@ class _RegisterStep2State extends State<RegisterStep2> {
         ),
       );
     }
-
-    
-
-  
   }
 
 
