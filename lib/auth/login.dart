@@ -2,6 +2,7 @@ import 'package:chef_palette/admin/admin_dashboard.dart';
 import 'package:chef_palette/component/custom_button.dart';
 import 'package:chef_palette/index.dart';
 import 'package:chef_palette/style/style.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:chef_palette/auth/resetpassword.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' hide Index;
@@ -36,9 +37,11 @@ Future<void> _login() async {
       return;
     }
 
-    //let user know the email is not registered
-    QuerySnapshot query =  
-    await FirebaseFirestore.instance.collection('users').where("email", isEqualTo:_emailController.text).get();
+    //let user know the email is not registered + check role
+        QuerySnapshot query =  
+        await FirebaseFirestore.instance.collection('users').
+        where("email", isEqualTo:_emailController.text).
+        get();
         
         if (query.docs.isEmpty && emailValid) {
           setState(() {
@@ -46,50 +49,57 @@ Future<void> _login() async {
           });
           return;
         }
-        if (!emailValid ) {
-          setState(() {
-            _errorMessage = "Wrong email format.";
-          });
-          return;
-        }
-        
+      
+      if(query.docs.isNotEmpty){
+          if (!emailValid ) {
+            setState(() {
+              _errorMessage = "Wrong email format.";
+            });
+            return;
+          }
+        try{
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+              email: _emailController.text,
+              password: _passwordController.text,
+            );
+            
+          if (query.docs.first.get('role') == 'admin') {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const AdminDashboard()), // Admin login page
+              (route) => false,
+            );
+
+          } else {
+            final SharedPreferences prefs = await SharedPreferences.getInstance();
+            prefs.setBool('isLoggedIn', true);
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const Index(initIndex: 0,)), // Home page after login
+              (route) => false, // This removes all routes (i.e., Auth, Login, etc.) from the stack
+            );
+      }
+
       setState(() {
       _isLoading = true; // Start loading state 
       _errorMessage = null; 
     });
-
-    // Check the role of the user by querying Firestore
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .where('email', isEqualTo: _emailController.text)
-        .get();
-
-    if (querySnapshot.docs.isNotEmpty) {
-      final userDoc = querySnapshot.docs.first;
-      final String? role = userDoc.get('role');
-
-      if (role == 'admin') {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const AdminDashboard()), // Admin login page
-          (route) => false,
-        );
-      } else {
-        final SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setBool('isLoggedIn', true);
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const Index(initIndex: 0,)), // Home page after login
-          (route) => false, // This removes all routes (i.e., Auth, Login, etc.) from the stack
-        );
-      }
-    } else {
+        
+    } on FirebaseAuthException catch (e) {
       setState(() {
-        _errorMessage = "User role not found.";
+        _isLoading = false; // Stop loading state
+        _errorMessage = e.message; // Display error message
       });
     }
+    
+    
+    // else {
+    //   setState(() {
+    //     _errorMessage = "User role not found.";
+    //   });
+     }
 
-  }
+}
 
 
   Future<void> _resetPassword() async {

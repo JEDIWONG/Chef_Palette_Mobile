@@ -59,28 +59,21 @@ class RegisterStep3 extends StatefulWidget {
 
 class _RegisterStep3State extends State<RegisterStep3> {
 
-  String? selectedBranch;
+
   // List of branch coordinates (latitude, longitude)
-  final List<Map<String, dynamic>> branches = [
-    // {'name': 'Kota Samarahan', 'latitude': 1.4643256, 'longitude': 110.415054},
-    // {'name': 'Kuching Jalan Padungan', 'latitude': 1.5566214, 'longitude': 110.351420},
-    // {'name': 'Sabah Segama Complex', 'latitude': 5.9424039, 'longitude': 116.0568832},
-    // {'name': 'Wilayah Persekutuan Labuan', 'latitude': 5.2790732, 'longitude': 115.2429376},
-    // {'name': 'Selangor', 'latitude': 3.0738379, 'longitude': 101.5183467},
-    // {'name': 'Perak', 'latitude': 4.5921, 'longitude': 101.0901},
-  ];
-
-
+  final List<Map<String, dynamic>> branches = [];
   Future<List<Map<String, dynamic>>> fetchBranches() async {
     List<Map<String, dynamic>> branches = [];
     try {
       cf.QuerySnapshot snapshot = await cf.FirebaseFirestore.instance.collection('branchs').get();
       for (var doc in snapshot.docs) {
+    if (RegExp(r'^branchID\d+$').hasMatch(doc.id)){
         branches.add({
           'name': doc['name'],
           'latitude': doc['latitude'],
           'longitude': doc['longitude'],
         });
+      }
       }
     } catch (e) {
       print("Error fetching branches: $e");
@@ -116,6 +109,7 @@ class _RegisterStep3State extends State<RegisterStep3> {
     return nearestBranch;
   }
 
+bool _isLoading = false;
 
 
 //get current location
@@ -123,6 +117,7 @@ class _RegisterStep3State extends State<RegisterStep3> {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       _showDialog(context, "Error", "Please enable location services.");
+      _isLoading = false;
       return null;
     }
 
@@ -131,12 +126,14 @@ class _RegisterStep3State extends State<RegisterStep3> {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
         _showDialog(context, "Permission Denied", "Location permission is required.");
+        _isLoading = false;
         return null;
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
       _showDialog(context, "Permission Denied Forever", "Enable location permission from settings.");
+      _isLoading = false;
       return null;
     }
 
@@ -146,8 +143,6 @@ class _RegisterStep3State extends State<RegisterStep3> {
 
 
   String? selectedState;
-  String? nearestBranch;
-  bool _isLoading = false;
 
   Future<void> _detectNearestBranch() async {
 
@@ -161,8 +156,8 @@ class _RegisterStep3State extends State<RegisterStep3> {
     if (position != null) {
       String branch = await _RegisterStep3State().getNearestBranch(position);
       setState(() {
-        nearestBranch = branch;
         selectedState = branch;
+        updateButtonState();
       });
 
     setState(() {
@@ -186,15 +181,14 @@ class _RegisterStep3State extends State<RegisterStep3> {
     }
   }
 
- // List of states in Malaysia
-  // final List<String> states = [
-  //   "Sabah",
-  //   "Kota Samarahan Sarawak",
-  //   "Kuching Jalan Padungan Sarawak",
-  //   "Kuala Lumpur",
-  //   "Selangor",
-  //   "Perak",
-  // ];
+bool _isButtonEnabled = false;
+
+  void updateButtonState() {
+  setState(() {
+    _isButtonEnabled = selectedState != null;
+  });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -248,6 +242,7 @@ class _RegisterStep3State extends State<RegisterStep3> {
                           onChanged: (String? newValue) {
                             setState(() {
                               selectedState = newValue;
+                              updateButtonState();
                             });
                           },
                         );
@@ -262,38 +257,24 @@ class _RegisterStep3State extends State<RegisterStep3> {
                     fg: const Color.fromARGB(255, 255, 255, 255),
                     text: _isLoading ? "Loading..." : "Get Nearest Branch",
                     func: _isLoading ? (){} : _detectNearestBranch,
-                    
-                    //() {
-                      // if (selectedState != null) {
-                      //   // Handle the submission with the selected state
-                      //   print("Selected State: $selectedState");
-                      // } else {
-                      //   // Handle the case where no state is selected
-                      //   ScaffoldMessenger.of(context).showSnackBar(
-                      //     const SnackBar(
-                      //       content: Text("Please select a state."),
-                      //     ),
-                      //   );
-                      // }
-                   // },
                     rad: 10,
                   ),
 
                   const SizedBox(height: 20),
                   RectButton(
-                    bg: Colors.purple,
+                    bg:  _isButtonEnabled ? Colors.purple : Colors.grey,
                     fg: const Color.fromARGB(255, 255, 255, 255),
                     text: "Finish Setup",
-                    func: (){
-                      saveBranchToUserDatabase(nearestBranch);
+                    func:_isButtonEnabled ? (){
+                      saveBranchToUserDatabase(selectedState);
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const Index(initIndex: 0)),
                           (route) => false,
                       );
-                    },
-                    
+                    }: 
+                    (){},                    
                     rad: 10,
                   ),
 
