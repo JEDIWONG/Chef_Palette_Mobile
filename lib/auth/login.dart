@@ -25,6 +25,11 @@ class _LoginState extends State<Login> {
   
 
 Future<void> _login() async {
+
+    setState(() {
+      _errorMessage = null;
+    });
+
     //check valid email format to differentiate error 
      final bool emailValid = 
       RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
@@ -57,20 +62,19 @@ Future<void> _login() async {
             });
             return;
           }
-        try{
+      try{
           await FirebaseAuth.instance.signInWithEmailAndPassword(
               email: _emailController.text,
               password: _passwordController.text,
             );
             
           if (query.docs.first.get('role') == 'admin') {
-            Navigator.pushAndRemoveUntil(
+            Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const AdminDashboard()), // Admin login page
-              (route) => false,
             );
 
-          } else {
+          } else if (query.docs.first.get('role')=='member') {
             final SharedPreferences prefs = await SharedPreferences.getInstance();
             prefs.setBool('isLoggedIn', true);
             Navigator.pushAndRemoveUntil(
@@ -78,28 +82,25 @@ Future<void> _login() async {
               MaterialPageRoute(builder: (context) => const Index(initIndex: 0,)), // Home page after login
               (route) => false, // This removes all routes (i.e., Auth, Login, etc.) from the stack
             );
+          } else {
+          setState(() {
+            _errorMessage = "User role not found.";
+          });
       }
 
-      setState(() {
-      _isLoading = true; // Start loading state 
-      _errorMessage = null; 
-    });
-        
+          setState(() {
+          _isLoading = true; // Start loading state 
+          _errorMessage = null; 
+        });
+
     } on FirebaseAuthException catch (e) {
       setState(() {
         _isLoading = false; // Stop loading state
         _errorMessage = e.message; // Display error message
-      });
+        });
+      }
     }
-    
-    
-    // else {
-    //   setState(() {
-    //     _errorMessage = "User role not found.";
-    //   });
-     }
-
-}
+  }
 
 
   Future<void> _resetPassword() async {

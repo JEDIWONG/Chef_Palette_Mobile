@@ -10,7 +10,7 @@ class AdminTransaction extends StatelessWidget{
       body: SingleChildScrollView(
         child: Column(
           children: [
-            
+            Text("sus"),
           ],
         ),
       ),

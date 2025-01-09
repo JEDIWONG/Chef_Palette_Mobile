@@ -195,4 +195,32 @@ class FirestoreService {
     }
   }
 
+  Future<List<UserModel>> fetchAllUsers() async {
+    try {
+      // Get all documents from users collection
+      QuerySnapshot querySnapshot = await _firestore.collection('users').get();
+      List<UserModel> users = [];
+
+      for (var doc in querySnapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        
+        users.add(UserModel(
+          uid: data['uid'],
+          email: data['email'],
+          firstName: data['firstName'],
+          lastName: data['lastName'],
+          phoneNumber: data['phoneNumber'],
+          dob: data['dob'],
+          joinDate: data['joinDate'],
+          role: data['role'] ?? 'member', // Default to 'member' if role is not set
+          branchLocation: data['branchLocation'],
+        ));
+      }
+
+      return users;
+    } catch (e) {
+      print("Failed to fetch users: $e");
+      return [];
+    }
+  }
 }

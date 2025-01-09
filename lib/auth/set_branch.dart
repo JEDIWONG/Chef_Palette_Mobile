@@ -282,6 +282,7 @@ bool _isButtonEnabled = false;
                   InkWell(
                     splashColor: Colors.green,
                     onTap: (){
+                      selectedState = "No branch selected";
                        Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(builder: (context) => const Index(initIndex: 0,)), // home page after login
