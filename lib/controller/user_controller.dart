@@ -6,23 +6,23 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class UserController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Fetch all users from Firebase Firestore
   Future<List<UserModel>> fetchUsers() async {
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot =
           await _firestore.collection('users').get();
 
       return snapshot.docs.map((doc) {
+        final data = doc.data();
         return UserModel(
-          uid: doc['uid'] ?? '',
-          email: doc['email'] ?? '',
-          firstName: doc['firstName'] ?? '',
-          lastName: doc['lastName'] ?? '',
-          phoneNumber: doc['phoneNumber'] ?? '',
-          dob: doc['dob'] ?? '',
-          joinDate: doc['joinDate'] ?? '',
-          role: doc['role'] ?? '',
-          branchLocation: doc['branchLocation'] ?? '',
+          uid: doc.id, // Use document ID as uid
+          email: data['email'] ?? '',
+          firstName: data['firstName'] ?? '',
+          lastName: data['lastName'] ?? '',
+          phoneNumber: data['phoneNumber'] ?? '',
+          dob: data['dob'] ?? '',
+          joinDate: data['joinDate'] ?? '',
+          role: data['role'] ?? '',
+          branchLocation: data['branchLocation'] ?? '',
         );
       }).toList();
     } catch (e) {
@@ -30,6 +30,7 @@ class UserController {
       return [];
     }
   }
+
 
   // Fetch a single user by their UID
   Future<UserModel?> fetchUserById(String uid) async {
