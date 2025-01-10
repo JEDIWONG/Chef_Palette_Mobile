@@ -20,6 +20,7 @@ class _RegisterState extends State<Register> {
   final TextEditingController _reenterPasswordController = TextEditingController();
   String? _errorMessage;
   bool _isLoading = false;
+  bool _isPasswordVisible = false;
 
 //create incomplete_mark record
 //to allow deletion for incomplete account (exists in auth but not in db)
@@ -100,6 +101,7 @@ if(!emailValid){
 }
 
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -137,20 +139,40 @@ if(!emailValid){
                     const SizedBox(height: 30),
                     TextFormField(
                       controller: _passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        label: Text("Password"),
-                        prefixIcon: Icon(Icons.lock),
+                      obscureText: !_isPasswordVisible,
+                      decoration: InputDecoration(
+                        label: const Text("Password"),
+                         prefixIcon: const Icon(Icons.lock),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible; // Toggle state
+                            });
+                          },
+                        ),
                       ),
                     ),
                     
                     const SizedBox(height: 30),
                     TextFormField(
                       controller: _reenterPasswordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        label: Text("Reenter Password"),
-                        prefixIcon: Icon(Icons.lock),
+                      obscureText: !_isPasswordVisible,
+                      decoration: InputDecoration(
+                        label: const Text("Reenter Password"),
+                        prefixIcon: const Icon(Icons.lock),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible; // Toggle state
+                            });
+                          },
+                        ),
                       ),
                     ),
 

@@ -74,10 +74,17 @@ class _AccountState extends State<Account> {
     final User? user = FirebaseAuth.instance.currentUser;
     firstName = "Loading...";
 
-    if (user != null) {
+     if (user != null) {
       
-      UserModel? currUser = await FirestoreService().getUser(user.uid);
-
+      UserModel? currUser;
+      try {
+        currUser = await FirestoreService().getUser(user!.uid).timeout(const Duration(seconds: 10));
+      } catch (e) {
+        setState(() {
+          firstName = "internet loss or internal error";
+        });
+      
+      }
       
       setState(() {
         firstName = currUser?.firstName ?? "Default First Name";  // Default if null

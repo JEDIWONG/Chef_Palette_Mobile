@@ -1,6 +1,7 @@
 import 'package:chef_palette/component/product_card.dart';
 import 'package:chef_palette/data/product_data.dart';
 import 'package:chef_palette/screen/notification.dart';
+import 'package:chef_palette/screen/reservation.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 
@@ -105,6 +106,28 @@ class _MenuState extends State<Menu> {
             ),
           ),
 
+          SliverPersistentHeader(
+            pinned: false,
+            floating: false,
+            delegate: _SliverHeaderDelegate(
+              height: 50,
+              child: Container(
+                alignment: Alignment.centerRight,
+                margin: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber,
+                    foregroundColor: Colors.black
+                  ),
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>Reservation()));
+                  },
+                  child: Text("Reservation",style: TextStyle(fontWeight: FontWeight.bold))
+                ),
+              )
+              
+            ),
+          ),
           SliverPersistentHeader(
             pinned: false,
             floating: false,
