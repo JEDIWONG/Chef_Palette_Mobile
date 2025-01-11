@@ -45,9 +45,10 @@ class ReservationController {
     try {
       QuerySnapshot snapshot = await _firestore.collection('reservations').get();
       return snapshot.docs.map((doc) {
+        debugPrint(doc.id); //yea doc id does exist
         return ReservationModel.fromMap({
           ...doc.data() as Map<String, dynamic>,
-          'id': doc.id, // Include the document ID
+          'id': doc.id, // Include the document ID, i try use id but still can't??
         });
       }).toList();
     } catch (e) {
@@ -62,6 +63,7 @@ class ReservationController {
       DocumentSnapshot snapshot =
           await _firestore.collection('reservations').doc(id).get();
       if (snapshot.exists) {
+        debugPrint(snapshot.id);
         return ReservationModel.fromMap({
           ...snapshot.data() as Map<String, dynamic>,
           'id': snapshot.id,
