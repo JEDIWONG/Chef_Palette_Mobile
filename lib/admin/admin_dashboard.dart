@@ -11,8 +11,6 @@ import 'package:flutter/material.dart';
 class AdminDashboard extends StatelessWidget {
   const AdminDashboard({super.key});
 
-  
-
   @override
   Widget build(BuildContext context) {
     List <String> name = ["Manage Order","Manage Menu","Manage Reservation","Transaction Record","Manage Rewards","Manage Members"];
@@ -20,6 +18,8 @@ class AdminDashboard extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        centerTitle: true,
         backgroundColor: Colors.green,
         toolbarHeight: 100,
         leadingWidth: MediaQuery.sizeOf(context).width * 0.30,
