@@ -28,6 +28,8 @@ Future<void> _login() async {
 
     setState(() {
       _errorMessage = null;
+      _isLoading = true;
+
     });
 
     //check valid email format to differentiate error 
@@ -38,6 +40,7 @@ Future<void> _login() async {
         if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       setState(() {
         _errorMessage = "Please fill in both email and password.";
+        _isLoading = false;
       });
       return;
     }
@@ -47,10 +50,13 @@ Future<void> _login() async {
         await FirebaseFirestore.instance.collection('users').
         where("email", isEqualTo:_emailController.text).
         get();
+
+
         
         if (query.docs.isEmpty && emailValid) {
           setState(() {
             _errorMessage = "Email not registered in database.";
+            _isLoading = false;
           });
           return;
         }
@@ -59,6 +65,7 @@ Future<void> _login() async {
           if (!emailValid ) {
             setState(() {
               _errorMessage = "Wrong email format.";
+               _isLoading = false;
             });
             return;
           }
@@ -69,6 +76,7 @@ Future<void> _login() async {
             );
             
           if (query.docs.first.get('role') == 'admin') {
+            _isLoading = false;
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const AdminDashboard()), // Admin login page
@@ -77,6 +85,7 @@ Future<void> _login() async {
           } else if (query.docs.first.get('role')=='member') {
             final SharedPreferences prefs = await SharedPreferences.getInstance();
             prefs.setBool('isLoggedIn', true);
+            _isLoading = false;
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const Index(initIndex: 0,)), // Home page after login
@@ -84,6 +93,7 @@ Future<void> _login() async {
             );
           } else {
           setState(() {
+            _isLoading = false;
             _errorMessage = "User role not found.";
           });
       }
