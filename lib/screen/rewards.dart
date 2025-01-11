@@ -13,7 +13,7 @@ class _RewardsState extends State<Rewards> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -23,8 +23,8 @@ class _RewardsState extends State<Rewards> {
           bottom: const TabBar(
             tabs: [
               Tab(text: "Redeem"),
-              Tab(text: "Earn"),
-              Tab(text: "History"),
+              Tab(text: "Earned"),
+              
             ],
           ),
         ),
@@ -34,11 +34,9 @@ class _RewardsState extends State<Rewards> {
               child: RewardsRedeem(),
             ),
             Center(
-              child: Text(""), // You can replace with actual content for Earn tab
+              child: Text(""),
             ),
-            Center(
-              child: Text('History Content'), // You can replace with actual content for History tab
-            ),
+            
           ],
         ),
       ),
@@ -80,6 +78,7 @@ class RewardsRedeem extends StatelessWidget {
               color: Colors.green,
             ),
           ),
+          
           SizedBox(height: 20),
           RedeemCard(title: "Free Nasi Lemak Pop", quantity: 1, score: 3000),
           RedeemCard(title: "Free Coffee", quantity: 1, score: 1000),
