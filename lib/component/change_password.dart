@@ -54,7 +54,7 @@ class _SetNewPasswordState extends State<SetNewPassword> {
 
     try {
 
-      final user = FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
 
     if (user!= null) {
               final cred = EmailAuthProvider.credential(

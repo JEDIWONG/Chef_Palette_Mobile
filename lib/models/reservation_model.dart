@@ -33,15 +33,15 @@ class ReservationModel {
   // Create a ReservationModel from a Map (for retrieving from databases)
   factory ReservationModel.fromMap(Map<String, dynamic> map) {
     return ReservationModel(
-      userId: map['userId'],
-      date: DateTime.parse(map['date']),
+      userId: map['userId'] ?? '',
+      date: map['date'] != null ? DateTime.parse(map['date']) : DateTime.now(),
       time: TimeOfDay(
-        hour: int.parse(map['time'].split(':')[0]),
-        minute: int.parse(map['time'].split(':')[1]),
+        hour: map['time'] != null ? int.parse(map['time'].split(':')[0]) : 0,
+        minute: map['time'] != null ? int.parse(map['time'].split(':')[1]) : 0,
       ),
-      numberOfPersons: map['numberOfPersons'],
-      notes: map['notes'],
-      status: map['status'],
+      numberOfPersons: map['numberOfPersons'] ?? 0,
+      notes: map['notes'] ?? '',
+      status: map['status'] ?? '',
     );
   }
 

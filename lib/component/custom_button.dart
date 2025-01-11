@@ -1,5 +1,4 @@
 import 'package:chef_palette/index.dart';
-import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 
 class RectButton extends StatelessWidget{

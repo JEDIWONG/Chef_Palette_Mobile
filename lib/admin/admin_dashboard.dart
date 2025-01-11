@@ -16,7 +16,7 @@ class AdminDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List <String> name = ["Manage Order","Manage Menu","Manage Reservation","Transaction Record","Manage Rewards","Manage Members"];
-    List <Widget> widget = const [AdminOrder(),AdminMenu(),AdminReservation(),AdminTransaction(),AdminRewards(),AdminUser()]; 
+    List <Widget> widget = [const AdminOrder(),const AdminMenu(),ReservationAdminPanel(),const AdminTransaction(),const AdminRewards(),const AdminUser()]; 
 
     return Scaffold(
       appBar: AppBar(
@@ -43,7 +43,7 @@ class AdminDashboard extends StatelessWidget {
             return DashboardCard(
               target: widget[index],
               title: name[index],
-              iconUrl: "assets/images/test.png",
+              iconUrl: "assets/images/settings.png",
             );
           },
         ),
