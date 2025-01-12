@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
     
 class ForgotPassword extends StatefulWidget {
-  const ForgotPassword({super.key});
+  const ForgotPassword({Key? key}) : super(key: key);
 
   @override
   _ForgotPasswordState createState() => _ForgotPasswordState();

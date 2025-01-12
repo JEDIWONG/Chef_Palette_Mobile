@@ -1,3 +1,4 @@
+import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 
 class DashboardCard extends StatelessWidget{

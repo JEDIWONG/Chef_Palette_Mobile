@@ -250,10 +250,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_secure_storage
-      sha256: "9cad52d75ebc511adfae3d447d5d13da15a55a92c9410e50f67335b6d21d16ea"
+      sha256: "1913841ac4c7bf57cd2e05b717e1fbff7841b542962feff827b16525a781b3e4"
       url: "https://pub.dev"
     source: hosted
-    version: "9.2.4"
+    version: "9.2.3"
   flutter_secure_storage_linux:
     dependency: transitive
     description:
@@ -668,10 +668,10 @@ packages:
     dependency: transitive
     description:
       name: shared_preferences_android
-      sha256: bf808be89fe9dc467475e982c1db6c2faf3d2acf54d526cd5ec37d86c99dbd84
+      sha256: "02a7d8a9ef346c9af715811b01fbd8e27845ad2c41148eefd31321471b41863d"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.1"
+    version: "2.4.0"
   shared_preferences_foundation:
     dependency: transitive
     description:

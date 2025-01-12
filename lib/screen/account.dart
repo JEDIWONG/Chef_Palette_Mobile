@@ -78,7 +78,7 @@ class _AccountState extends State<Account> {
       
       UserModel? currUser;
       try {
-        currUser = await FirestoreService().getUser(user.uid).timeout(const Duration(seconds: 10));
+        currUser = await FirestoreService().getUser(user!.uid).timeout(const Duration(seconds: 10));
       } catch (e) {
         setState(() {
           firstName = "internet loss or internal error";
