@@ -1,3 +1,4 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "cmake.sourceDirectory": "C:/Users/USER/Desktop/Vault/Project Folder/Software Engineering Lab/chef-palette/chef_palette/linux"
 }
