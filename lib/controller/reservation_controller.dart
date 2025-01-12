@@ -64,7 +64,7 @@ class ReservationController {
       DocumentSnapshot snapshot =
           await _firestore.collection('reservations').doc(id).get();
       if (snapshot.exists) {
-        debugPrint("this is snapshopt id: ${snapshot.id}");
+        debugPrint(" id: ${snapshot.id}");
         return ReservationModel.fromMap({
           ...snapshot.data() as Map<String, dynamic>,
           'id': snapshot.id,
@@ -86,7 +86,7 @@ class ReservationController {
 
       return snapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>;
-        debugPrint("again another test: ${doc.id}");
+        debugPrint("List of reservation ID requested by user: ${doc.id}");
         // Include the Firestore document ID in the Map
         return {
           'id': doc.id, // Firestore document ID

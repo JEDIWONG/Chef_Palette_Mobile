@@ -1,6 +1,10 @@
 import 'package:chef_palette/controller/reservation_controller.dart';
 import 'package:chef_palette/models/reservation_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+//debugPrint can be remvoed, used to see if ID has value via console
 
 class ReservationAdminPanel extends StatefulWidget {
   const ReservationAdminPanel({super.key});
@@ -25,14 +29,20 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
           Map<String, List<Map<String, dynamic>>> groupedByUser = {};
             for (var reservation in  await _reservationController.getAllReservations()) {
               final status = reservation.status;
-             
+              debugPrint("at this point: ${reservation.userId}");
+              final userDoc = await FirebaseFirestore.instance.collection('users').doc(reservation.userId).get();
+              final firstName = userDoc.data()?['firstName'] ?? 'Unknown User';
+              final userName = userDoc.exists ? (userDoc.data()!['firstName'] ?? 'Unknown User') : 'Unknown User';
+
+
               groupedByUser.putIfAbsent(status, () => []);
               groupedByUser[status]!.add({
                 'id':reservation.id,
                 'status': reservation.status,
                 'reservation': reservation,
+                'username': firstName,
               }); 
-              debugPrint("reservation id 2: ${reservation.id}");
+                debugPrint("Detected ID List: ${reservation.id}");
             }
               setState(() {
               userReservations = groupedByUser;
@@ -45,7 +55,7 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
 
   Future<void> _updateReservationStatus(String id, String status) async {
     try {
-      debugPrint('so the id is..: $id'); //check if id is valid
+      debugPrint('so the current edited document id is..: $id'); //check if id is valid
       final updatedReservation = await _reservationController.getReservationById(id);
       if (updatedReservation != null) {
         updatedReservation.status = status;
@@ -84,16 +94,17 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
                     final reservation = res['reservation'] as ReservationModel; 
                     debugPrint("this reservation info: ${res['reservation'].toString()}");
                     final id = res['id'];
-                        debugPrint("here is res['id']: $id");
+                    debugPrint("The id detected in database:  $id");
                     return Card(
                       child: ListTile(
                         title: Text(
-                          "Date: ${reservation.date.toLocal()}" 
+                          "Date:  ${DateFormat('yyyy-MM-dd').format(reservation.date)}" 
                           "\nTime: ${reservation.time.format(context)}",
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Text("Name: ${res['username']}"),
                             Text("User ID: ${reservation.userId}"),
                             Text("Number of Persons: ${reservation.numberOfPersons}"),
                             Text("Notes: ${reservation.notes}"),
