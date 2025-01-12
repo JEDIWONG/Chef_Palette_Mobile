@@ -25,11 +25,13 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
           Map<String, List<Map<String, dynamic>>> groupedByUser = {};
             for (var reservation in  await _reservationController.getAllReservations()) {
               final status = reservation.status;
+             
               groupedByUser.putIfAbsent(status, () => []);
               groupedByUser[status]!.add({
                 'status': reservation.status,
                 'reservation': reservation,
-              });
+              }); 
+              debugPrint("reservation id 2: ${reservation.id}");
             }
               setState(() {
               userReservations = groupedByUser;
@@ -42,6 +44,7 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
 
   Future<void> _updateReservationStatus(String id, String status) async {
     try {
+      debugPrint('so the id is..: $id'); //check if id is valid
       final updatedReservation = await _reservationController.getReservationById(id);
       if (updatedReservation != null) {
         updatedReservation.status = status;
@@ -78,6 +81,7 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
                   children: reservations.map((res) {
                      
                     final reservation = res['reservation'] as ReservationModel; 
+                    debugPrint("this reservation info: ${res['reservation'].toString()}");
                     final id = res['id'];
                         debugPrint("here is res['id']: $id");
                     return Card(
