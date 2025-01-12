@@ -2,6 +2,7 @@ import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 import 'delete_account.dart';
 import 'change_password.dart';
+import 'change_email.dart';
 
 class AccountSetting extends StatelessWidget{
   const AccountSetting({super.key});
@@ -57,6 +58,29 @@ class AccountSetting extends StatelessWidget{
                 fixedSize: const Size(100, 30)
               ),
               child: const Text("Delete"),
+
+            ),
+          ),
+          ListTile(
+
+            leading: const Icon(Icons.email,color: Color.fromARGB(255, 214, 204, 13),),
+            title: Text("Change Email Address",style: CustomStyle.h4,),
+          
+            trailing: ElevatedButton(
+              onPressed: (){
+                Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChangeEmailPage(),
+                      ),
+                );
+              }, 
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+                fixedSize: const Size(100, 30)
+              ),
+              child: const Text("Edit"),
 
             ),
           )

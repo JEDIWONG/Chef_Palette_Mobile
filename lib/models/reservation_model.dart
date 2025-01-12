@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ReservationModel {
-  String? id; 
+  String id; 
   String userId; // User ID associated with the reservation
   DateTime date; // Date of the reservation
   TimeOfDay time; // Time of the reservation
@@ -11,7 +11,7 @@ class ReservationModel {
 
   // Constructor
   ReservationModel({
-    this.id,
+    required this.id,
     required this.userId,
     required this.date,
     required this.time,
@@ -23,6 +23,7 @@ class ReservationModel {
   // Convert ReservationModel to a Map (for storing in databases like Firebase)
   Map<String, dynamic> toMap() {
     return {
+      'id' : id,
       'userId': userId,
       'date': date.toIso8601String(),
       'time': '${time.hour}:${time.minute}', // Store time as a string
@@ -35,7 +36,7 @@ class ReservationModel {
   // Create a ReservationModel from a Map (for retrieving from databases)
   factory ReservationModel.fromMap(Map<String, dynamic> map, {String? id}) {
     return ReservationModel(
-      id: id,
+      id: map['id'],
       userId: map['userId'] ?? '',
       date: map['date'] != null ? DateTime.parse(map['date']) : DateTime.now(),
       time: TimeOfDay(
