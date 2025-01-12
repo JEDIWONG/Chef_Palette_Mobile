@@ -28,6 +28,7 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
              
               groupedByUser.putIfAbsent(status, () => []);
               groupedByUser[status]!.add({
+                'id':reservation.id,
                 'status': reservation.status,
                 'reservation': reservation,
               }); 
