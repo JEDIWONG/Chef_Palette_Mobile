@@ -21,7 +21,7 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
 
   Future<void> _fetchAllReservations() async {
     try {
-      // Group reservations by userId
+      // Group reservations by status
           Map<String, List<Map<String, dynamic>>> groupedByUser = {};
             for (var reservation in  await _reservationController.getAllReservations()) {
               final status = reservation.status;
@@ -72,14 +72,19 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
               itemBuilder: (context, index) {
                 final status = userReservations.keys.elementAt(index);
                 final reservations = userReservations[status]!;
+              
                 return ExpansionTile(
                   title: Text("Status: $status"),
                   children: reservations.map((res) {
-                    final reservation = res['reservation'] as ReservationModel;
+                     
+                    final reservation = res['reservation'] as ReservationModel; 
+                    final id = res['id'];
+                        debugPrint("here is res['id']: $id");
                     return Card(
                       child: ListTile(
                         title: Text(
-                          "Date: ${reservation.date.toLocal()} - Time: ${reservation.time.format(context)}",
+                          "Date: ${reservation.date.toLocal()}" 
+                          "\nTime: ${reservation.time.format(context)}",
                         ),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,8 +112,7 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
                           onChanged: (String? newValue) {
                             if (newValue != null) {
                               debugPrint("this is executred");
-                              debugPrint(res['reservation']);
-                              _updateReservationStatus(res['id'], newValue);
+                              _updateReservationStatus(id, newValue);
                              }
                             else {
                               debugPrint("error on set value.");
