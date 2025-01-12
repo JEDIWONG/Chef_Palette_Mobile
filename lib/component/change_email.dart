@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ChangeEmailPage extends StatefulWidget {
+  const ChangeEmailPage({super.key});
+
     @override
     _ChangeEmailPageState createState() => _ChangeEmailPageState();
 }
