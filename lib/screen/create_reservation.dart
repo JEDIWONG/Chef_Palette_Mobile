@@ -8,6 +8,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+String id = '';
+
 class CreateReservation extends StatefulWidget {
   const CreateReservation({super.key});
 
@@ -24,22 +26,22 @@ class _CreateReservationState extends State<CreateReservation> {
   String selectedTime = "Select Time"; // State for time
   int numberOfPersons = 1; // State for number of persons
   String notes = ""; // State for notes
-  String id = '';
   
-  Future<void> createReservation(ReservationModel reservation) async {
-    try {
-      // Add reservation without manually specifying an ID
-      DocumentReference docRef = await FirebaseFirestore.instance
-          .collection('reservations')
-          .add(reservation.toMap());
+  
+  // Future<void> createReservation(ReservationModel reservation) async {
+  //   try {
+  //     // Add reservation without manually specifying an ID
+  //     DocumentReference docRef = await FirebaseFirestore.instance
+  //         .collection('reservations')
+  //         .add(reservation.toMap());
 
-      // Use the generated document ID
-      id = docRef.id;
-      debugPrint('Reservation created with ID: $id');
-    } catch (e) {
-      debugPrint('Error creating reservation: $e');
-    }
-  }
+  //     // Use the generated document ID
+  //     id = docRef.id;
+  //     debugPrint('Reservation created with ID: $id');
+  //   } catch (e) {
+  //     debugPrint('Error creating reservation: $e');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -208,6 +210,7 @@ class _CreateReservationState extends State<CreateReservation> {
 
                     // Create the reservation model
                     ReservationModel reservation = ReservationModel(
+                      id: id,
                       date: parsedDate,
                       time: TimeOfDay(
                         hour: int.parse(selectedTime.split(":")[0]),

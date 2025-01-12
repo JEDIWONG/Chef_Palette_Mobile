@@ -76,7 +76,10 @@ Future<void> _login() async {
             );
             
           if (query.docs.first.get('role') == 'admin') {
-            _isLoading = false;
+            setState(() {
+              _isLoading = false;
+              debugPrint("pause lload?");
+            });
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const AdminDashboard()), // Admin login page

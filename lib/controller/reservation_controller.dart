@@ -10,7 +10,8 @@ class ReservationController {
   // Add a new reservation to the "reservations" collection
   Future<void> addReservation(ReservationModel reservation) async {
     try {
-      await _firestore.collection('reservations').add(reservation.toMap());
+      DocumentReference docRef = await _firestore.collection('reservations').add(reservation.toMap());
+      await docRef.update({'id':docRef.id});
       print("Reservation added successfully!");
     } catch (e) {
       print("Failed to add reservation: $e");
@@ -46,9 +47,10 @@ class ReservationController {
       QuerySnapshot snapshot = await _firestore.collection('reservations').get();
       return snapshot.docs.map((doc) {
         debugPrint(doc.id); //yea doc id does exist
+        
         return ReservationModel.fromMap({
           ...doc.data() as Map<String, dynamic>,
-          'id': doc.id, // Include the document ID, i try use id but still can't??
+          'id': doc.id, // Include the document ID
         });
       }).toList();
     } catch (e) {
@@ -63,7 +65,7 @@ class ReservationController {
       DocumentSnapshot snapshot =
           await _firestore.collection('reservations').doc(id).get();
       if (snapshot.exists) {
-        debugPrint(snapshot.id);
+        debugPrint(" id: ${snapshot.id}");
         return ReservationModel.fromMap({
           ...snapshot.data() as Map<String, dynamic>,
           'id': snapshot.id,
@@ -85,11 +87,12 @@ class ReservationController {
 
       return snapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>;
-
+        debugPrint("List of reservation ID requested by user: ${doc.id}");
         // Include the Firestore document ID in the Map
         return {
           'id': doc.id, // Firestore document ID
           'reservation': ReservationModel(
+            id: doc.id,
             userId: data['userId'] ?? '',
             date: DateTime.parse(data['date']),
             time: TimeOfDay(
