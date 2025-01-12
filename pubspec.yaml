@@ -51,6 +51,7 @@ dependencies:
   linear_progress_bar: ^1.1.3
   intl_phone_number_input: ^0.7.4
   password_strength_indicator_plus: ^0.0.1
+  syncfusion_flutter_gauges: ^28.1.38
 
 dev_dependencies:
   flutter_test:
@@ -95,10 +96,12 @@ flutter:
     - assets/images/prod_8.png
     - assets/images/prod_9.png
     - assets/images/prod_10.png
+    - assets/images/settings.png
     - assets/icons/cat_0.png
     - assets/icons/cat_1.png
     - assets/icons/cat_2.png
     - assets/icons/cat_3.png
+    
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
