@@ -1,7 +1,6 @@
 import 'package:chef_palette/component/custom_button.dart';
 import 'package:chef_palette/component/reservation_ticket_card.dart';
 import 'package:chef_palette/controller/reservation_controller.dart';
-import 'package:chef_palette/models/reservation_model.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
