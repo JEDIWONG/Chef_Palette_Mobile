@@ -48,7 +48,7 @@ class RewardsEarn extends StatelessWidget {
                     ),
                   ),
                 ),
-                ...redeemedRewards.map((reward) => RedeemedRewardCard(reward: reward)).toList(),
+                ...redeemedRewards.map((reward) => RedeemedRewardCard(reward: reward)),
               ],
             ),
           );
