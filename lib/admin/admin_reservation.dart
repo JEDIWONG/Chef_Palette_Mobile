@@ -31,16 +31,17 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
               final status = reservation.status;
               debugPrint("at this point: ${reservation.userId}");
               final userDoc = await FirebaseFirestore.instance.collection('users').doc(reservation.userId).get();
-              final firstName = userDoc.data()?['firstName'] ?? 'Unknown User';
-              final userName = userDoc.exists ? (userDoc.data()!['firstName'] ?? 'Unknown User') : 'Unknown User';
-
+                final firstName = userDoc.data()?['firstName'] ?? 'Unknown';
+                final lastName = userDoc.data()?['lastName'] ?? 'User';
+                final fullName = '$firstName $lastName';
+              //'$newFirstName.trim $newLastName.trim'
 
               groupedByUser.putIfAbsent(status, () => []);
               groupedByUser[status]!.add({
                 'id':reservation.id,
                 'status': reservation.status,
                 'reservation': reservation,
-                'username': firstName,
+                'username': fullName,
               }); 
                 debugPrint("Detected ID List: ${reservation.id}");
             }

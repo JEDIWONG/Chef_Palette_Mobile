@@ -47,6 +47,7 @@ class ReservationController {
       QuerySnapshot snapshot = await _firestore.collection('reservations').get();
       return snapshot.docs.map((doc) {
         debugPrint(doc.id); //yea doc id does exist
+        
         return ReservationModel.fromMap({
           ...doc.data() as Map<String, dynamic>,
           'id': doc.id, // Include the document ID

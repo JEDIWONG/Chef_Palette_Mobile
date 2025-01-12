@@ -7,6 +7,7 @@ import 'package:chef_palette/admin/admin_user.dart';
 import 'package:chef_palette/admin/component/dashboard_card.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AdminDashboard extends StatelessWidget {
   const AdminDashboard({super.key});
@@ -15,8 +16,28 @@ class AdminDashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     List <String> name = ["Manage Order","Manage Menu","Manage Reservation","Transaction Record","Manage Rewards","Manage Members"];
     List <Widget> widget = [const AdminOrder(),const AdminMenu(),ReservationAdminPanel(),const AdminTransaction(),const AdminRewards(),const AdminUser()]; 
+    DateTime? lastPressed;
+    
 
-    return Scaffold(
+    return WillPopScope(
+      onWillPop: () async {
+        final now = DateTime.now();
+        if (lastPressed == null || now.difference(lastPressed!) > const Duration(seconds: 2)) {
+          // Show toast if back button is pressed once
+          lastPressed = now;
+          Fluttertoast.showToast(
+            backgroundColor: Colors.green,
+            msg: "Press back again to go to the login page",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+          );
+          return false; // Prevent navigation
+        }
+        // Navigate to the login page on the second press
+        return true;
+      },
+    // return Scaffold(
+    child: Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true,
@@ -48,6 +69,7 @@ class AdminDashboard extends StatelessWidget {
           },
         ),
       ),
+    ),
     );
   }
 }
