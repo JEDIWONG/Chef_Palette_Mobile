@@ -16,6 +16,10 @@ class ReservationAdminPanel extends StatefulWidget {
 class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
   final ReservationController _reservationController = ReservationController();
   Map<String, List<Map<String, dynamic>>> userReservations = {};
+  List<ReservationModel> pendingReservations = [];
+  List<ReservationModel> historyReservations = [];
+
+
 
   @override
   void initState() {
@@ -26,7 +30,21 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
   Future<void> _fetchAllReservations() async {
     try {
       // Group reservations by status
-          Map<String, List<Map<String, dynamic>>> groupedByUser = {};
+          Map<String, List<Map<String, dynamic>>> groupedByStatus = {};
+        final allReservations = await _reservationController.getAllReservations();
+        final pending = allReservations
+          .where((res) => res.status == "Pending")
+          .toList();
+      final history = allReservations
+          .where((res) => res.status == "Approved" || res.status == "Rejected")
+          .toList();
+
+         setState(() {
+        pendingReservations = pending;
+        historyReservations = history;
+      });
+
+
             for (var reservation in  await _reservationController.getAllReservations()) {
               final status = reservation.status;
               debugPrint("at this point: ${reservation.userId}");
@@ -36,17 +54,17 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
                 final fullName = '$firstName $lastName';
               //'$newFirstName.trim $newLastName.trim'
 
-              groupedByUser.putIfAbsent(status, () => []);
-              groupedByUser[status]!.add({
+              groupedByStatus.putIfAbsent(status, () => []);
+              groupedByStatus[status]!.add({
                 'id':reservation.id,
                 'status': reservation.status,
                 'reservation': reservation,
                 'username': fullName,
               }); 
-                debugPrint("Detected ID List: ${reservation.id}");
+                debugPrint("List of groupedByStatus: $groupedByStatus");
             }
               setState(() {
-              userReservations = groupedByUser;
+              userReservations = groupedByStatus;
               });                  
                                
     } catch (e) {
@@ -76,17 +94,36 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
     }
   }
 
+    void _navigateToHistoryPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => HistoryPage(reservations: historyReservations),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Admin - Reservations")),
-      body: userReservations.isEmpty
+      appBar: AppBar(
+        title: Text("Admin - Reservations"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: _navigateToHistoryPage,
+          ),
+        ],
+    ),
+     
+      body: pendingReservations.isEmpty
           ? Center(child: CircularProgressIndicator())
           : ListView.builder(
-              itemCount: userReservations.length,
+              itemCount: pendingReservations.length,
               itemBuilder: (context, index) {
                 final status = userReservations.keys.elementAt(index);
                 final reservations = userReservations[status]!;
+                debugPrint("Testing: ${reservations.toString()}");
               
                 return ExpansionTile(
                   title: Text("Status: $status"),
@@ -140,6 +177,44 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
                       ),
                     );
                   }).toList(),
+                );
+              },
+            ),
+    );
+  }
+}
+
+class HistoryPage extends StatelessWidget {
+  final List<ReservationModel> reservations;
+
+  const HistoryPage({super.key, required this.reservations});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Reservations - History"),
+      ),
+      body: reservations.isEmpty
+          ? const Center(child: Text("No history records"))
+          : ListView.builder(
+              itemCount: reservations.length,
+              itemBuilder: (context, index) {
+                final reservation = reservations[index];
+                return Card(
+                  child: ListTile(
+                    title: Text(
+                      'User ID: ${reservation.userId}\nDate: ${reservation.date.toString().split(' ')[0]} - Time: ${reservation.time.format(context)}',
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Number of Persons: ${reservation.numberOfPersons}'),
+                        Text('Notes: ${reservation.notes}'),
+                        Text('Status: ${reservation.status}'),
+                      ],
+                    ),
+                  ),
                 );
               },
             ),
