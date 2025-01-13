@@ -31,8 +31,8 @@ class DashboardCard extends StatelessWidget{
             ]
           ),
           child: ListTile(
-            title: const Image(
-                image: AssetImage("assets/images/test.png"),
+            title: Image(
+                image: AssetImage(iconUrl),
                 height: 100,
               ),
             subtitle: Text(title,style: const TextStyle(fontSize: 14,fontWeight:FontWeight.bold),),

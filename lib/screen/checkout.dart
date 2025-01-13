@@ -6,6 +6,7 @@ import 'package:chef_palette/component/order_item.dart';
 import 'package:chef_palette/component/payment_selector.dart';
 import 'package:chef_palette/controller/cart_controller.dart';
 import 'package:chef_palette/controller/order_controller.dart';
+import 'package:chef_palette/controller/user_rewards_controller.dart';
 import 'package:chef_palette/index.dart' as cf;
 import 'package:chef_palette/models/cart_item_model.dart';
 import 'package:chef_palette/models/order_model.dart';
@@ -100,36 +101,62 @@ class _CheckoutState extends State<Checkout> {
         ),
       ),
       bottomNavigationBar: RectButton(
-        bg: Colors.green, 
-        fg: Colors.white, 
-        text: "Place Order", 
-        func: () async{
+        bg: Colors.green,
+        fg: Colors.white,
+        text: "Place Order",
+        func: () async {
+          try {
+            OrderController orderController = OrderController();
+            CartController cartController = CartController();
+            UserRewardsController rewardsController = UserRewardsController();
 
-          OrderController orderController = OrderController();
-          CartController cartController = CartController();
+            // Calculate total price and fetch cart items
+            double totalPrice = await calculateTotalPrice(); 
+            List<CartItemModel> cartItems = await fetchCartItems();
 
-          double totalPrice = await calculateTotalPrice(); 
-          List<CartItemModel> cartItems = await fetchCartItems(); 
+            // Determine points to be added (e.g., 1 point per $1 spent)
+            int pointsToAdd = totalPrice.floor();
 
-          await cartController.deleteAllCartItems();
+            // Delete all cart items after checkout
+            await cartController.deleteAllCartItems();
 
-          await orderController.createOrder(
-            OrderModel(
-              paymentMethod: paymentMethod,
-              timestamp: DateTime.now(),  
-              userID: user!.uid,          
-              branchName: branchName,
-              orderItems: cartItems,      
-              price: totalPrice,          
-              status: 'Pending',
-              orderType: orderType,          
-            ),
-          );
+            // Create the order
+            await orderController.createOrder(
+              OrderModel(
+                paymentMethod: paymentMethod,
+                timestamp: DateTime.now(),
+                userID: user!.uid,
+                branchName: branchName,
+                orderItems: cartItems,
+                price: totalPrice,
+                status: 'Pending',
+                orderType: orderType,
+              ),
+            );
 
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>const cf.Index(initIndex: 1,))); 
-        }, 
-        rad: 0,   
+            // Add points to the user's rewards
+            await rewardsController.addPoints(user!.uid, pointsToAdd);
+
+            // Navigate to order confirmation page
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const cf.Index(initIndex: 1)),
+            );
+
+            // Success message
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Order placed successfully! $pointsToAdd points added to your account.')),
+            );
+          } catch (e) {
+            // Error handling
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Failed to place order: $e')),
+            );
+          }
+        },
+        rad: 0,
       ),
+
 
       body:  SingleChildScrollView(
         controller: _scrollController,
@@ -211,8 +238,6 @@ class _CheckoutState extends State<Checkout> {
     );
   }
 }
-
-
 
 class OrderSummary extends StatelessWidget {
   const OrderSummary({super.key, required this.processingFee, required this.branchName, required this.orderType});
