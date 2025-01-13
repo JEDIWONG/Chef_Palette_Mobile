@@ -6,9 +6,11 @@ import 'package:chef_palette/models/product.model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_model.dart';
+import '../models/user_transaction_records_model.dart';
 
 class FirestoreService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   Future<void> createUser(UserModel user) async {
     try { 
@@ -223,4 +225,39 @@ class FirestoreService {
       return [];
     }
   }
+
+  // Create a new transaction
+  Future<void> createTransaction(UserTransactionRecordsModel transaction) async {
+    await _db.collection('transactions').add(transaction.toMap());
+  }
+
+  // Get all transactions
+  Future<List<UserTransactionRecordsModel>> getAllTransactions() async {
+    QuerySnapshot snapshot = await _db.collection('transactions').get();
+    return snapshot.docs.map((doc) {
+      return UserTransactionRecordsModel.fromMap(doc.data() as Map<String, dynamic>);
+    }).toList();
+  }
+
+  // Get transactions for a specific user
+  Future<List<UserTransactionRecordsModel>> getUserTransactions(String userId) async {
+    QuerySnapshot snapshot = await _db
+        .collection('transactions')
+        .where('userID', isEqualTo: userId)
+        .get();
+    return snapshot.docs.map((doc) {
+      return UserTransactionRecordsModel.fromMap(doc.data() as Map<String, dynamic>);
+    }).toList();
+  }
+
+  // Update a transaction by orderId
+  Future<void> updateTransaction(String orderId, UserTransactionRecordsModel updatedTransaction) async {
+    await _db.collection('transactions').doc(orderId).update(updatedTransaction.toMap());
+  }
+
+  // Delete a transaction by orderId
+  Future<void> deleteTransaction(String orderId) async {
+    await _db.collection('transactions').doc(orderId).delete();
+  }
 }
+
