@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 class ChangeEmailPage extends StatefulWidget {
     @override
@@ -18,18 +19,22 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
     }
 
     Future<void> _changeEmail() async {
-
-       
+  
         if (_formKey.currentState!.validate()) {
           try{
             final userId = FirebaseAuth.instance.currentUser?.uid; // Replace with logic to retrieve the actual user ID
             final newEmail = _emailController.text.trim(); // Trim whitespace for safety
+            bool _isUpdating = false;
+            bool _isTimeout = false;
+        
+            setState(() {
+                _isUpdating = true;
+                _isTimeout = false;
+              });
  // Handle email change logic here
              updateUserEmail(userId!, newEmail);
             // Assuming you have a method to update the email in your database
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Verification email sent to $newEmail. Please verify to complete the email update.')),
-            );
+            
             } catch (e) {
       // Handle errors
               ScaffoldMessenger.of(context).showSnackBar(
@@ -84,18 +89,27 @@ class _ChangeEmailPageState extends State<ChangeEmailPage> {
 
     if (user != null) {
       // Update email in Firebase Authentication
-      await user.verifyBeforeUpdateEmail(newEmail);
-
+      await user.verifyBeforeUpdateEmail(newEmail).then((_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Verification email sent to $newEmail. Please verify to complete the email update.')),
+        );
+      });
       // Update email in Firestore user document
       final userRef = FirebaseFirestore.instance.collection('users').doc(userId);
       await userRef.update({'email': newEmail});
     } else {
       throw Exception('No authenticated user found');
     }
-  } catch (e) {
-    // Log and rethrow the error
-    print('Error updating email: $e');
-    throw Exception('Failed to update email: $e');
-  }
+  } on FirebaseAuthException catch (e) {
+    // Log and rethrow the erro
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message ?? "Failed to change email."),
+        ),
+      );
+        Navigator.pop(context);
+    }
+
+   
       }
 }
