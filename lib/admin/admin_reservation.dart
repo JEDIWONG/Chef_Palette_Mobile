@@ -1,5 +1,6 @@
 import 'package:chef_palette/controller/reservation_controller.dart';
 import 'package:chef_palette/models/reservation_model.dart';
+import 'package:chef_palette/screen/notification.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -16,10 +17,6 @@ class ReservationAdminPanel extends StatefulWidget {
 class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
   final ReservationController _reservationController = ReservationController();
   Map<String, List<Map<String, dynamic>>> userReservations = {};
-  List<ReservationModel> pendingReservations = [];
-  List<ReservationModel> historyReservations = [];
-
-
 
   @override
   void initState() {
@@ -30,21 +27,7 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
   Future<void> _fetchAllReservations() async {
     try {
       // Group reservations by status
-          Map<String, List<Map<String, dynamic>>> groupedByStatus = {};
-        final allReservations = await _reservationController.getAllReservations();
-        final pending = allReservations
-          .where((res) => res.status == "Pending")
-          .toList();
-      final history = allReservations
-          .where((res) => res.status == "Approved" || res.status == "Rejected")
-          .toList();
-
-         setState(() {
-        pendingReservations = pending;
-        historyReservations = history;
-      });
-
-
+          Map<String, List<Map<String, dynamic>>> groupedByUser = {};
             for (var reservation in  await _reservationController.getAllReservations()) {
               final status = reservation.status;
               debugPrint("at this point: ${reservation.userId}");
@@ -54,17 +37,18 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
                 final fullName = '$firstName $lastName';
               //'$newFirstName.trim $newLastName.trim'
 
-              groupedByStatus.putIfAbsent(status, () => []);
-              groupedByStatus[status]!.add({
+              groupedByUser.putIfAbsent(status, () => []);
+              groupedByUser[status]!.add({
                 'id':reservation.id,
                 'status': reservation.status,
                 'reservation': reservation,
                 'username': fullName,
+                'userId' : reservation.userId,
               }); 
-                debugPrint("List of groupedByStatus: $groupedByStatus");
+                debugPrint("Detected ID List: ${reservation.id}");
             }
               setState(() {
-              userReservations = groupedByStatus;
+              userReservations = groupedByUser;
               });                  
                                
     } catch (e) {
@@ -72,13 +56,19 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
     }
   }
 
-  Future<void> _updateReservationStatus(String id, String status) async {
+  Future<void> _updateReservationStatus(String id, String userId, String status) async {
     try {
       debugPrint('so the current edited document id is..: $id'); //check if id is valid
       final updatedReservation = await _reservationController.getReservationById(id);
       if (updatedReservation != null) {
         updatedReservation.status = status;
         await _reservationController.updateReservation(id, updatedReservation);
+
+        final notificationMessage = status == "Approved"
+          ? "Your reservation has been approved!"
+          : "Your reservation has been rejected.";
+      await sendNotification(userId, notificationMessage);
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Reservation $status successfully!")),
@@ -94,36 +84,17 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
     }
   }
 
-    void _navigateToHistoryPage() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => HistoryPage(reservations: historyReservations),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Admin - Reservations"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.history),
-            onPressed: _navigateToHistoryPage,
-          ),
-        ],
-    ),
-     
-      body: pendingReservations.isEmpty
+      appBar: AppBar(title: Text("Admin - Reservations")),
+      body: userReservations.isEmpty
           ? Center(child: CircularProgressIndicator())
           : ListView.builder(
-              itemCount: pendingReservations.length,
+              itemCount: userReservations.length,
               itemBuilder: (context, index) {
                 final status = userReservations.keys.elementAt(index);
                 final reservations = userReservations[status]!;
-                debugPrint("Testing: ${reservations.toString()}");
               
                 return ExpansionTile(
                   title: Text("Status: $status"),
@@ -133,6 +104,8 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
                     debugPrint("this reservation info: ${res['reservation'].toString()}");
                     final id = res['id'];
                     debugPrint("The id detected in database:  $id");
+                    final userId = res['userId'];
+
                     return Card(
                       child: ListTile(
                         title: Text(
@@ -165,8 +138,8 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
                           ],
                           onChanged: (String? newValue) {
                             if (newValue != null) {
-                              debugPrint("this is executred");
-                              _updateReservationStatus(id, newValue);
+                              debugPrint("this is executred: $userId");
+                              _updateReservationStatus(id, userId, newValue);
                              }
                             else {
                               debugPrint("error on set value.");
@@ -177,44 +150,6 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
                       ),
                     );
                   }).toList(),
-                );
-              },
-            ),
-    );
-  }
-}
-
-class HistoryPage extends StatelessWidget {
-  final List<ReservationModel> reservations;
-
-  const HistoryPage({super.key, required this.reservations});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Reservations - History"),
-      ),
-      body: reservations.isEmpty
-          ? const Center(child: Text("No history records"))
-          : ListView.builder(
-              itemCount: reservations.length,
-              itemBuilder: (context, index) {
-                final reservation = reservations[index];
-                return Card(
-                  child: ListTile(
-                    title: Text(
-                      'User ID: ${reservation.userId}\nDate: ${reservation.date.toString().split(' ')[0]} - Time: ${reservation.time.format(context)}',
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Number of Persons: ${reservation.numberOfPersons}'),
-                        Text('Notes: ${reservation.notes}'),
-                        Text('Status: ${reservation.status}'),
-                      ],
-                    ),
-                  ),
                 );
               },
             ),

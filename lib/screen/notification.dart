@@ -1,68 +1,101 @@
 import 'package:chef_palette/component/news_card.dart';
 import 'package:chef_palette/style/style.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 
 class NotificationScreen extends StatefulWidget{
-  const NotificationScreen({super.key});
+   String userId= FirebaseAuth.instance.currentUser!.uid;
 
-  @override
+  NotificationScreen({required this.userId, Key? key}) : super(key: key);
+@override
   _NotificationScreenState createState() => _NotificationScreenState();
-  
 }
 
-class _NotificationScreenState extends State<NotificationScreen> {
-  
-  @override
-  Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child:  Scaffold(
-        backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          centerTitle: true,
-          leadingWidth: MediaQuery.sizeOf(context).width * 0.30,
-          
-          title: Text(
-            "Notification",
-            style: CustomStyle.h1,
-          ),
+Future<List<Map<String, dynamic>>> fetchUserNotifications(String userId) async {
+  try {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('notifications')
+        .where('userId', isEqualTo: userId)
+        .orderBy('timestamp', descending: true)
+        .get();
 
-          bottom: const TabBar(
-              tabs: [
-                Tab(text: "News"),
-                Tab(text: "Chat"),
-              ],
-            ),
-        ),
-
-        body: const TabBarView(
-          children: [
-            NewsTabs(),
-          ],
-        ),
-
-      )
-    );
+    return snapshot.docs.map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      return {
+        'id': doc.id,
+        'message': data['message'],
+        'timestamp': data['timestamp'],
+        'status': data['status'],
+      };
+    }).toList();
+  } catch (e) {
+    debugPrint("Failed to fetch notifications for user $userId: $e");
+    return [];
   }
 }
 
-class NewsTabs extends StatelessWidget{
 
-  const NewsTabs({super.key});
+Future<void> sendNotification(String userId, String message) async {
+  try {
+    await FirebaseFirestore.instance.collection('notifications').add({
+      'userId': userId,
+      'message': message,
+      'timestamp': FieldValue.serverTimestamp(),
+      'status': 'unread', // Initially mark as unread
+    });
+    debugPrint("Notification sent to user $userId: $message");
+
+  } catch (e) {
+    debugPrint("Failed to send notification: $e");
+  }
+} 
+
+class _NotificationScreenState extends State<NotificationScreen> {
+  late Future<List<Map<String, dynamic>>> _notificationsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _notificationsFuture = fetchUserNotifications(widget.userId);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return  const SingleChildScrollView(
-      child: Column(
-        children: [
-          NewsCard(title: "Order is Ready", desc: "desc", date: "12-12-2024"),
-          NewsCard(title: "Order is Ready", desc: "desc", date: "1-12-2024"),
-        ],
+    return Scaffold(
+      appBar: AppBar(title: Text("Notifications")),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: _notificationsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text("Failed to load notifications"));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text("No notifications"));
+          } else {
+            final notifications = snapshot.data!;
+            return ListView.builder(
+              itemCount: notifications.length,
+              itemBuilder: (context, index) {
+                final notification = notifications[index];
+                return ListTile(
+                  title: Text(notification['message']),
+                  subtitle: Text(
+                    notification['timestamp'].toDate().toString(),
+                  ),
+                  trailing: notification['status'] == 'unread'
+                      ? Icon(Icons.circle, color: Colors.red, size: 12)
+                      : null,
+                );
+              },
+            );
+          }
+        },
       ),
     );
   }
-  
 }
+
 
