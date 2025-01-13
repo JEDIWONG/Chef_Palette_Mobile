@@ -76,14 +76,17 @@ Future<void> _login() async {
             );
             
           if (query.docs.first.get('role') == 'admin') {
-            setState(() {
-              _isLoading = false;
-              debugPrint("pause lload?");
-            });
+            
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const AdminDashboard()), // Admin login page
-            );
+            ).then((_) {
+    // Reset loading state when returning to the login page
+              setState(() {
+                _isLoading = false;
+              });
+              });
+
 
           } else if (query.docs.first.get('role')=='member') {
             final SharedPreferences prefs = await SharedPreferences.getInstance();
