@@ -15,10 +15,28 @@ class AdminDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List <String> name = ["Manage Order","Manage Menu","Manage Reservation","Transaction Record","Manage Rewards","Manage Members","Manage Notification"];
-    List <Widget> widget = [const AdminOrder(),const AdminMenu(),ReservationAdminPanel(),const AdminTransaction(),const AdminRewards(),const AdminUser(),const AdminNotification()]; 
+
+    List<String> name = [
+      "Manage Order",
+      "Manage Menu",
+      "Manage Reservation",
+      "Transaction Record",
+      "Manage Rewards",
+      "Manage Members",
+      "Manage Notification"
+    ];
+
+    List<Widget> widget = [
+      const AdminOrder(),
+      const AdminMenu(),
+      ReservationAdminPanel(),
+      const AdminTransactionPage(),
+      const AdminRewards(),
+      const AdminUser(),
+      const AdminNotification()
+    ];
+
     DateTime? lastPressed;
-    
 
     return WillPopScope(
       onWillPop: () async {
@@ -37,38 +55,58 @@ class AdminDashboard extends StatelessWidget {
         // Navigate to the login page on the second press
         return true;
       },
-    // return Scaffold(
-    child: Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        centerTitle: true,
-        backgroundColor: Colors.green,
-        toolbarHeight: 100,
-        leadingWidth: MediaQuery.sizeOf(context).width * 0.30,
-        title: Text(
-          "Admin Dashboard",
-          style: CustomStyle.lightH2,
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          centerTitle: true,
+          backgroundColor: Colors.green,
+          toolbarHeight: 100,
+          leadingWidth: MediaQuery.sizeOf(context).width * 0.30,
+          title: Text(
+            "Admin Dashboard",
+            style: CustomStyle.lightH2,
+          ),
         ),
+// <<<<<<< master
+        backgroundColor: Colors.white,
+        body: GridView.builder(
+          padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 10),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2, // Number of items per row
+            crossAxisSpacing: 10, // Horizontal space between items
+            mainAxisSpacing: 20, // Vertical space between items
+            childAspectRatio: 1 / 1.1, // Aspect ratio for the items
+          ),
+          itemCount: 7, // Number of items in the grid
+          itemBuilder: (context, index) {
+            return DashboardCard(
+              target: widget[index],
+              title: name[index],
+              iconUrl: "assets/images/settings.png",
+            );
+          },
+
       ),
-      backgroundColor: Colors.white,
-      body: GridView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 30,horizontal: 10),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2, 
-          crossAxisSpacing: 10, 
-          mainAxisSpacing: 20, 
-          childAspectRatio: 1/1.1
-        ),
-        itemCount: 7, 
-        itemBuilder: (context, index) {
-          return DashboardCard(
-            target: widget[index],
-            title: name[index],
-            iconUrl: "assets/images/settings.png",
-          );
-        },
+// =======
+//       backgroundColor: Colors.white,
+//       body: GridView.builder(
+//         padding: const EdgeInsets.symmetric(vertical: 30,horizontal: 10),
+//         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+//           crossAxisCount: 2, 
+//           crossAxisSpacing: 10, 
+//           mainAxisSpacing: 20, 
+//           childAspectRatio: 1/1.1
+// >>>>>>> master
+//         ),
+//         itemCount: 7, 
+//         itemBuilder: (context, index) {
+//           return DashboardCard(
+//             target: widget[index],
+//             title: name[index],
+//             iconUrl: "assets/images/settings.png",
+//           );
+//         }, //conflicted area, if ok dy can remove (cp)
       ),
-    ),
     );
   }
 }

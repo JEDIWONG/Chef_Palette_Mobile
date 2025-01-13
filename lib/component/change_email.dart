@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 class ChangeEmailPage extends StatefulWidget {
+  const ChangeEmailPage({super.key});
+
     @override
     _ChangeEmailPageState createState() => _ChangeEmailPageState();
 }
