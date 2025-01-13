@@ -1,4 +1,5 @@
 import 'package:chef_palette/admin/admin_menu.dart';
+import 'package:chef_palette/admin/admin_notification.dart';
 import 'package:chef_palette/admin/admin_order.dart';
 import 'package:chef_palette/admin/admin_reservation.dart';
 import 'package:chef_palette/admin/admin_rewards.dart';
@@ -14,8 +15,8 @@ class AdminDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List <String> name = ["Manage Order","Manage Menu","Manage Reservation","Transaction Record","Manage Rewards","Manage Members"];
-    List <Widget> widget = [const AdminOrder(),const AdminMenu(),ReservationAdminPanel(),const AdminTransaction(),const AdminRewards(),const AdminUser()]; 
+    List <String> name = ["Manage Order","Manage Menu","Manage Reservation","Transaction Record","Manage Rewards","Manage Members","Manage Notification"];
+    List <Widget> widget = [const AdminOrder(),const AdminMenu(),ReservationAdminPanel(),const AdminTransaction(),const AdminRewards(),const AdminUser(),const AdminNotification()]; 
     DateTime? lastPressed;
     
 
@@ -50,24 +51,22 @@ class AdminDashboard extends StatelessWidget {
         ),
       ),
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, 
-            crossAxisSpacing: 10, 
-            mainAxisSpacing: 20, 
-            childAspectRatio: 1/1.1
-          ),
-          itemCount: 6, 
-          itemBuilder: (context, index) {
-            return DashboardCard(
-              target: widget[index],
-              title: name[index],
-              iconUrl: "assets/images/settings.png",
-            );
-          },
+      body: GridView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 30,horizontal: 10),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2, 
+          crossAxisSpacing: 10, 
+          mainAxisSpacing: 20, 
+          childAspectRatio: 1/1.1
         ),
+        itemCount: 7, 
+        itemBuilder: (context, index) {
+          return DashboardCard(
+            target: widget[index],
+            title: name[index],
+            iconUrl: "assets/images/settings.png",
+          );
+        },
       ),
     ),
     );
