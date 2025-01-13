@@ -41,13 +41,15 @@ class Reservation extends StatelessWidget{
                     ReservationTile(
                       title: "Make a new reservation",
                       subtitle: "Fill in Reservation Information",
-                      dest: CreateReservation()
+                      dest: CreateReservation(),
+                      icons: Icons.task_rounded,
                     ),
 
                     ReservationTile(
                       title: "Reservation Ticket",
                       subtitle: "Check Reservation Details",
-                      dest: ReservationTicket()
+                      dest: ReservationTicket(),
+                      icons: Icons.list_rounded,
                     ),
                 ],
               ),
@@ -62,11 +64,12 @@ class Reservation extends StatelessWidget{
 }
 
 class ReservationTile extends StatelessWidget{
-  const ReservationTile({super.key, required this.title, required this.subtitle, required this.dest});
+  const ReservationTile({super.key, required this.title, required this.subtitle, required this.dest, required this.icons});
 
   final String title; 
   final String subtitle;
   final Widget dest;
+  final IconData icons;
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +82,7 @@ class ReservationTile extends StatelessWidget{
         )
       ),
       iconColor: Colors.green,
-      leading: Icon(Icons.task),
+      leading: Icon(icons),
       title: Text(title,style: CustomStyle.h4),
       subtitle: Text(subtitle,style: CustomStyle.subtitle,),
       onTap: (){

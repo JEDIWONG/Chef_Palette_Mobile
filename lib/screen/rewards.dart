@@ -62,6 +62,7 @@ class _RewardsState extends State<Rewards> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           backgroundColor: Colors.white,
           title: Text("Rewards", style: CustomStyle.h1),
           centerTitle: true,
