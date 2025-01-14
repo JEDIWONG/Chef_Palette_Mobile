@@ -5,6 +5,7 @@ import 'package:chef_palette/admin/admin_reservation.dart';
 import 'package:chef_palette/admin/admin_rewards.dart';
 import 'package:chef_palette/admin/admin_transaction.dart';
 import 'package:chef_palette/admin/admin_user.dart';
+import 'package:chef_palette/auth/auth.dart';
 import 'package:chef_palette/admin/component/dashboard_card.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +54,11 @@ class AdminDashboard extends StatelessWidget {
           return false; // Prevent navigation
         }
         // Navigate to the login page on the second press
+         Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const Auth()),
+        (route) => false, // Remove all routes from the stack
+      );
         return true;
       },
       child: Scaffold(
@@ -67,6 +73,7 @@ class AdminDashboard extends StatelessWidget {
             style: CustomStyle.lightH2,
           ),
         ),
+
         backgroundColor: Colors.white,
         body: GridView.builder(
           padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 10),
@@ -81,12 +88,11 @@ class AdminDashboard extends StatelessWidget {
             return DashboardCard(
               target: widget[index],
               title: name[index],
-              iconUrl: "assets/images/settings.png",
+              iconUrl: "assets/images/test.png",
             );
           },
 
       ),
-
       ),
     );
   }
