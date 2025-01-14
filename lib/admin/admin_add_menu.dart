@@ -1,11 +1,12 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:chef_palette/admin/admin_addons_picker.dart';
 import 'package:chef_palette/admin/admin_category_picker.dart';
 import 'package:chef_palette/admin/admin_create_ingredients.dart';
 import 'package:chef_palette/admin/admin_create_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:chef_palette/models/product_model.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 
 class AdminAddMenu extends StatefulWidget {
@@ -20,10 +21,9 @@ class _AdminAddMenuState extends State<AdminAddMenu> {
   List<Map<String, dynamic>> addons = [];
   List<String> options = [];
   List<String> ingredients = [];
-  File? _selectedImage; // To store the selected image
+  File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
-  
-  // Controllers to capture form inputs
+
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
@@ -33,9 +33,46 @@ class _AdminAddMenuState extends State<AdminAddMenu> {
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
     if (image != null) {
-      setState(() {
-        _selectedImage = File(image.path);
-      });
+      final File imageFile = File(image.path);
+
+      // Validate image size and format
+      if (await _isValidImage(imageFile)) {
+        setState(() {
+          _selectedImage = imageFile;
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Invalid image. Please upload a PNG/JPG image smaller than 1MB.')),
+        );
+      }
+    }
+  }
+
+  // Validate image file (PNG/JPG and <1MB)
+  Future<bool> _isValidImage(File image) async {
+    final int maxSizeInBytes = 1 * 1024 * 1024; // 1MB in bytes
+    final String extension = image.path.split('.').last.toLowerCase();
+
+    final int imageSize = await image.length();
+    return (imageSize <= maxSizeInBytes) && (extension == 'png' || extension == 'jpg');
+  }
+
+  // Method to upload image to Firebase Storage and return URL
+  Future<String> _uploadImageToFirebase(File imageFile, String productID) async {
+    try {
+      final FirebaseStorage storage = FirebaseStorage.instance;
+      final String imagePath = 'assets/images/prod_$productID.png'; // Set path with productID
+      final Reference ref = storage.ref().child(imagePath);
+
+      // Upload file
+      await ref.putFile(imageFile);
+
+      // Get the download URL
+      final String downloadUrl = await ref.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      print("Error uploading image: $e");
+      return '';
     }
   }
 
@@ -52,7 +89,7 @@ class _AdminAddMenuState extends State<AdminAddMenu> {
       name: name,
       desc: description,
       price: price,
-      imgUrl: _selectedImage?.path ?? '',
+      imgUrl: '', // Will be set after image upload
       category: selectedCategory ?? '',
       addons: addons,
       prepTime: prepTime,
@@ -66,6 +103,14 @@ class _AdminAddMenuState extends State<AdminAddMenu> {
     final CollectionReference productsRef = FirebaseFirestore.instance.collection('products');
 
     try {
+      // Upload the image and get the download URL
+      if (_selectedImage != null) {
+        final imageUrl = await _uploadImageToFirebase(_selectedImage!, newProduct.uid);
+
+        // Update imgUrl to the Firebase Storage path formatted to match "assets/images/"
+        newProduct.imgUrl = 'assets/images/prod_${newProduct.uid}.png'; // This path starts with 'assets/images/'
+      }
+
       // Add the new product to Firestore
       await productsRef.doc(newProduct.uid).set(newProduct.toMap());
       print("Product Created: ${newProduct.name}, Price: RM ${newProduct.price}");
@@ -92,6 +137,7 @@ class _AdminAddMenuState extends State<AdminAddMenu> {
       // Handle error appropriately
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

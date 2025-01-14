@@ -1,10 +1,11 @@
 import 'package:chef_palette/component/product_card.dart';
-import 'package:chef_palette/data/product_data.dart';
 import 'package:chef_palette/screen/notification.dart';
 import 'package:chef_palette/screen/reservation.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:chef_palette/models/product_model.dart';
 
 class Menu extends StatefulWidget {
   const Menu({super.key});
@@ -31,22 +32,59 @@ class _MenuState extends State<Menu> {
   String selectedCategory = "All";
   String selectedIcon = "assets/icons/cat_0.png";
 
+  List<ProductModel> products = []; // Product list
+  List<ProductModel> filteredProducts = []; // Filtered product list
+  TextEditingController searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProducts(); // Fetch products when screen is initialized
+    searchController.addListener(_filterProducts); // Listen to search input
+  }
+
+  // Fetch products from Firestore
+  Future<void> fetchProducts() async {
+    try {
+      final snapshot = await FirebaseFirestore.instance.collection('products').get();
+      List<ProductModel> fetchedProducts = [];
+      for (var doc in snapshot.docs) {
+        fetchedProducts.add(ProductModel.fromMap(doc.data()));
+      }
+      setState(() {
+        products = fetchedProducts;
+        filteredProducts = fetchedProducts; // Initialize with all products
+      });
+    } catch (e) {
+      print('Error fetching products: $e');
+    }
+  }
+
+  // Filter products based on search query
+  void _filterProducts() {
+    String query = searchController.text.toLowerCase();
+    setState(() {
+      filteredProducts = products.where((product) {
+        return product.name.toLowerCase().contains(query);
+      }).toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    
-    String Userid = FirebaseAuth.instance.currentUser!.uid;
-    final filteredProducts = selectedCategory == "All"
-        ? products
-        : products.where((product) => product.category == selectedCategory).toList(); 
+    String userId = FirebaseAuth.instance.currentUser!.uid;
 
-    filteredProducts.sort((a, b) => a.name.compareTo(b.name));
-    
+    // Filter products based on selected category
+    List<ProductModel> finalFilteredProducts = selectedCategory == "All"
+        ? filteredProducts
+        : filteredProducts.where((product) => product.category == selectedCategory).toList();
+
+    finalFilteredProducts.sort((a, b) => a.name.compareTo(b.name));
 
     return Scaffold(
       backgroundColor: Colors.white,
       body: CustomScrollView(
         slivers: [
-          // AppBar with title and action buttons
           SliverAppBar(
             automaticallyImplyLeading: false,
             pinned: false,
@@ -64,20 +102,25 @@ class _MenuState extends State<Menu> {
               ),
             ),
             bottom: PreferredSize(
+              
               preferredSize: Size(MediaQuery.sizeOf(context).width, 50),
               child: Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: MediaQuery.sizeOf(context).width * 0.08,
                   vertical: 10,
                 ),
-                child: const SearchBar(
-                  shape: WidgetStatePropertyAll(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                child: TextField(
+                  
+                  controller: searchController,
+                  decoration: InputDecoration(
+                    fillColor: Colors.white,
+                    filled: true,
+                    prefixIcon: const Icon(Icons.search_rounded),
+                    hintText: "Search",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  leading: Icon(Icons.search_rounded),
-                  hintText: "Search",
                 ),
               ),
             ),
@@ -89,7 +132,7 @@ class _MenuState extends State<Menu> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => NotificationScreen(userId: Userid),
+                        builder: (context) => NotificationScreen(userId: userId),
                       ),
                     );
                   },
@@ -108,7 +151,6 @@ class _MenuState extends State<Menu> {
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(40)),
             ),
           ),
-
           SliverPersistentHeader(
             pinned: false,
             floating: false,
@@ -116,28 +158,25 @@ class _MenuState extends State<Menu> {
               height: 50,
               child: Container(
                 alignment: Alignment.centerRight,
-                margin: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.amber,
-                    foregroundColor: Colors.black
+                    foregroundColor: Colors.black,
                   ),
-                  onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>Reservation()));
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => Reservation()));
                   },
-                  child: Text("Reservation",style: TextStyle(fontWeight: FontWeight.bold))
+                  child: Text("Reservation", style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
-              )
-              
+              ),
             ),
           ),
           SliverPersistentHeader(
             pinned: false,
             floating: false,
             delegate: _SliverHeaderDelegate(
-
               child: Container(
-                
                 padding: const EdgeInsets.only(top: 10),
                 height: 80,
                 decoration: const BoxDecoration(
@@ -147,7 +186,7 @@ class _MenuState extends State<Menu> {
                       color: Colors.grey,
                       offset: Offset(0, 0.5),
                       blurRadius: 0,
-                      blurStyle: BlurStyle.outer
+                      blurStyle: BlurStyle.outer,
                     )
                   ]
                 ),
@@ -198,8 +237,6 @@ class _MenuState extends State<Menu> {
               height: 100,
             ),
           ),
-
-          // Product Grid
           SliverPadding(
             padding: const EdgeInsets.all(10),
             sliver: SliverGrid(
@@ -211,7 +248,7 @@ class _MenuState extends State<Menu> {
               ),
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
-                  final product = filteredProducts[index];
+                  final product = finalFilteredProducts[index];
                   return ProductCard(
                     obj: product,
                     imgUrl: product.imgUrl,
@@ -219,7 +256,7 @@ class _MenuState extends State<Menu> {
                     price: product.price,
                   );
                 },
-                childCount: filteredProducts.length,
+                childCount: finalFilteredProducts.length,
               ),
             ),
           ),
@@ -229,7 +266,7 @@ class _MenuState extends State<Menu> {
   }
 }
 
-// Custom SliverPersistentHeader Delegate
+
 class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
   final Widget child;
   final double height;
@@ -237,8 +274,7 @@ class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
   _SliverHeaderDelegate({required this.child, required this.height});
 
   @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
     return SizedBox(
       height: height,
       child: child,

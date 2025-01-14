@@ -6,13 +6,14 @@ import 'package:chef_palette/services/firestore_services.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart'; // Import Firebase Storage
 import 'package:flutter/material.dart';
 
 class ProductDetails extends StatefulWidget {
   const ProductDetails({
     super.key,
     required this.name,
-    required this.imgUrl,
+    required this.imgUrl, // Local image name
     required this.price,
     required this.desc,
     required this.addons,
@@ -20,7 +21,7 @@ class ProductDetails extends StatefulWidget {
   });
 
   final String name;
-  final String imgUrl;
+  final String imgUrl; // Firebase storage reference for the image
   final double price;
   final String desc;
   final List<Map<String, dynamic>> addons; // Addons list
@@ -36,11 +37,26 @@ class _ProductDetailsState extends State<ProductDetails> {
   double totalPrice = 0.0;
   int quantity = 1;
   TextEditingController instructionController = TextEditingController();
+  String? imageUrl; // To store the Firebase image URL
 
   @override
   void initState() {
     super.initState();
     totalPrice = widget.price;
+    _loadImage(); // Load the image URL from Firebase
+  }
+
+  // Function to fetch the image URL from Firebase Storage
+  Future<void> _loadImage() async {
+    try {
+      final storageRef = FirebaseStorage.instance.ref().child(widget.imgUrl);
+      final url = await storageRef.getDownloadURL();
+      setState(() {
+        imageUrl = url; // Store the image URL
+      });
+    } catch (e) {
+      print("Error fetching image from Firebase Storage: $e");
+    }
   }
 
   void _updateTotalPrice() {
@@ -72,7 +88,6 @@ class _ProductDetailsState extends State<ProductDetails> {
   }
 
   Future<void> _addItemToCart() async {
-
     final currentUser = FirebaseAuth.instance.currentUser;
     final itemId = await generateUniqueCartId(currentUser!.uid);
 
@@ -84,7 +99,7 @@ class _ProductDetailsState extends State<ProductDetails> {
       quantity: quantity,
       addons: selectedAddons,
       instruction: instructionController.text,
-      imageUrl: widget.imgUrl, 
+      imageUrl: widget.imgUrl, // Use the original Firebase storage reference
     );
 
     FirestoreService firestoreService = FirestoreService();
@@ -124,12 +139,9 @@ class _ProductDetailsState extends State<ProductDetails> {
             surfaceTintColor: Colors.white,
             elevation: 0,
             flexibleSpace: FlexibleSpaceBar(
-              background: Image.asset(
-                widget.imgUrl,
-                fit: BoxFit.fill,
-                height: 300,
-              ),
-
+              background: imageUrl != null
+                  ? Image.network(imageUrl!, fit: BoxFit.fill, height: 300)
+                  : const Center(child: CircularProgressIndicator()), // Show loader while fetching the image
             ),
             leading: const CustomBackButton(title: "Menu", first: false),
             leadingWidth: MediaQuery.sizeOf(context).width*0.3,
@@ -278,5 +290,4 @@ class _ProductDetailsState extends State<ProductDetails> {
       ),
     );
   }
-
 }

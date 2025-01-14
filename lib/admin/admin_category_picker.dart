@@ -15,7 +15,7 @@ class AdminCategoryPicker extends StatefulWidget {
 }
 
 class _AdminCategoryPickerState extends State<AdminCategoryPicker> {
-  final List<String> categories = ["Beverages", "Desserts", "Main Course"];
+  final List<String> categories = ["beverage", "side", "main"];
   final TextEditingController newCategoryController = TextEditingController();
 
   void addNewCategory() {

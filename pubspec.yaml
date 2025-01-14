@@ -54,6 +54,7 @@ dependencies:
   syncfusion_flutter_gauges: ^28.1.38
   image_picker: ^1.1.2
   path_provider: ^2.1.5
+  firebase_storage: ^12.4.0
 
 dev_dependencies:
   flutter_test:

@@ -2,10 +2,11 @@ import 'package:chef_palette/services/firestore_services.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class CartItem extends StatelessWidget {
   final String itemId;
-  final String imgUrl;
+  final String imgUrl;  // This will now be the Firestorage path to the image
   final String title;
   final int quantity;
   final double price;
@@ -14,7 +15,7 @@ class CartItem extends StatelessWidget {
   const CartItem({
     super.key,
     required this.itemId,
-    required this.imgUrl,
+    required this.imgUrl,  // Firestorage path for image
     required this.title,
     required this.quantity,
     required this.price,
@@ -37,9 +38,9 @@ class CartItem extends StatelessWidget {
         ),
         children: [
           SlidableAction(
-            onPressed: (context) {
+            onPressed: (context) async {
               FirestoreService firestoreService = FirestoreService();
-              firestoreService.deleteCartItem(itemId);
+              await firestoreService.deleteCartItem(itemId);
               onItemRemoved(itemId); // Notify parent widget
             },
             backgroundColor: Colors.red,
@@ -74,11 +75,26 @@ class CartItem extends StatelessWidget {
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(20),
-                      child: Image.asset(
-                        imgUrl,
-                        width: 100,
-                        height: 100,
-                        fit: BoxFit.cover,
+                      // Using Firestorage to load the image
+                      child: FutureBuilder<String>(
+                        future: _loadImageUrl(imgUrl),  // Function to load the image URL from Firestorage
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return CircularProgressIndicator(); // Show loading indicator
+                          }
+                          if (snapshot.hasError) {
+                            return Icon(Icons.error); // Show error icon
+                          }
+                          if (snapshot.hasData) {
+                            return Image.network(
+                              snapshot.data!,
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            );
+                          }
+                          return Icon(Icons.image_not_supported); // Default image if not found
+                        },
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -121,5 +137,15 @@ class CartItem extends StatelessWidget {
       ),
     );
   }
-}
 
+  // Function to load the image URL from Firestorage
+  Future<String> _loadImageUrl(String imgUrl) async {
+    try {
+      final storageRef = FirebaseStorage.instance.ref().child(imgUrl);
+      final url = await storageRef.getDownloadURL();
+      return url;
+    } catch (e) {
+      throw Exception("Error loading image: $e");
+    }
+  }
+}

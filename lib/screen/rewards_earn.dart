@@ -37,6 +37,7 @@ class RewardsEarn extends StatelessWidget {
         : SingleChildScrollView(
             child: Column(
               children: [
+                
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
@@ -49,7 +50,11 @@ class RewardsEarn extends StatelessWidget {
                   ),
                 ),
                 ...redeemedRewards.map((reward) => RedeemedRewardCard(reward: reward)),
+
+                
               ],
+
+              
             ),
           );
   }
