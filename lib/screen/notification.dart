@@ -6,10 +6,11 @@ import 'package:flutter/material.dart';
 
 
 class NotificationScreen extends StatefulWidget{
-   String userId= FirebaseAuth.instance.currentUser!.uid;
+  String userId = FirebaseAuth.instance.currentUser!.uid;
 
   NotificationScreen({required this.userId, Key? key}) : super(key: key);
-@override
+
+  @override
   _NotificationScreenState createState() => _NotificationScreenState();
 }
 
@@ -59,6 +60,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   void initState() {
     super.initState();
     _notificationsFuture = fetchUserNotifications(widget.userId);
+    debugPrint("The id used here is: ${widget.userId}");
   }
 
   @override
