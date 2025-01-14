@@ -55,6 +55,12 @@ class ConfirmDeleteAccount extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
+              const SizedBox(height: 10), // Adjust the spacing between the texts
+              const Text(
+                "Your account info will be wiped completely from the database.",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14, color: Colors.grey), // Smaller text with a lighter color
+              ),
               const SizedBox(height: 40),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
