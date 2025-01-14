@@ -1,6 +1,6 @@
 // should be deleted after finish development
 
-import 'package:chef_palette/models/product.model.dart';
+import 'package:chef_palette/models/product_model.dart';
 
 final List<ProductModel> products = [
 

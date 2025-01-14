@@ -2,7 +2,7 @@
 
 import 'package:chef_palette/models/cart_item_model.dart';
 import 'package:chef_palette/models/cart_model.dart';
-import 'package:chef_palette/models/product.model.dart';
+import 'package:chef_palette/models/product_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_model.dart';

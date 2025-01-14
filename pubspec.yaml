@@ -52,6 +52,8 @@ dependencies:
   intl_phone_number_input: ^0.7.4
   password_strength_indicator_plus: ^0.0.1
   syncfusion_flutter_gauges: ^28.1.38
+  image_picker: ^1.1.2
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:

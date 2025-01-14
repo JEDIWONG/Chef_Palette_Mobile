@@ -11,7 +11,7 @@ class ProductModel {
   double rating;
   List<String> tags;
   List<String> ingredients;
-  List<String> options; // New attribute for optional selections (e.g., Hot/Cold)
+  List<String> options;
 
   ProductModel({
     required this.uid,

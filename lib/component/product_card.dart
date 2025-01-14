@@ -1,4 +1,4 @@
-import 'package:chef_palette/models/product.model.dart';
+import 'package:chef_palette/models/product_model.dart';
 import 'package:chef_palette/screen/product_details.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +39,6 @@ class ProductCard extends StatelessWidget{
               title: Text(name,style: CustomStyle.h2,),
               subtitle: Text("RM ${price.toStringAsFixed(2)}",style: const TextStyle(fontSize: 18,color: Colors.green,fontWeight: FontWeight.bold),),
             )
-            
             
           ],
         ),

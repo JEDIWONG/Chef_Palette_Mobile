@@ -67,7 +67,6 @@ class AdminDashboard extends StatelessWidget {
             style: CustomStyle.lightH2,
           ),
         ),
-// <<<<<<< master
         backgroundColor: Colors.white,
         body: GridView.builder(
           padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 10),
@@ -87,25 +86,7 @@ class AdminDashboard extends StatelessWidget {
           },
 
       ),
-// =======
-//       backgroundColor: Colors.white,
-//       body: GridView.builder(
-//         padding: const EdgeInsets.symmetric(vertical: 30,horizontal: 10),
-//         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-//           crossAxisCount: 2, 
-//           crossAxisSpacing: 10, 
-//           mainAxisSpacing: 20, 
-//           childAspectRatio: 1/1.1
-// >>>>>>> master
-//         ),
-//         itemCount: 7, 
-//         itemBuilder: (context, index) {
-//           return DashboardCard(
-//             target: widget[index],
-//             title: name[index],
-//             iconUrl: "assets/images/settings.png",
-//           );
-//         }, //conflicted area, if ok dy can remove (cp)
+
       ),
     );
   }
