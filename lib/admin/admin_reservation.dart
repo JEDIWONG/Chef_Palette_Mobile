@@ -1,5 +1,6 @@
 import 'package:chef_palette/controller/reservation_controller.dart';
 import 'package:chef_palette/models/reservation_model.dart';
+import 'package:chef_palette/screen/notification.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -42,6 +43,7 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
                 'status': reservation.status,
                 'reservation': reservation,
                 'username': fullName,
+                'userId' : reservation.userId,
               }); 
                 debugPrint("Detected ID List: ${reservation.id}");
             }
@@ -54,13 +56,19 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
     }
   }
 
-  Future<void> _updateReservationStatus(String id, String status) async {
+  Future<void> _updateReservationStatus(String id, String userId, String status) async {
     try {
       debugPrint('so the current edited document id is..: $id'); //check if id is valid
       final updatedReservation = await _reservationController.getReservationById(id);
       if (updatedReservation != null) {
         updatedReservation.status = status;
         await _reservationController.updateReservation(id, updatedReservation);
+
+        final notificationMessage = status == "Approved"
+          ? "Your reservation has been approved!"
+          : "Your reservation has been rejected.";
+      await sendNotification(userId, notificationMessage);
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Reservation $status successfully!")),
@@ -96,6 +104,8 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
                     debugPrint("this reservation info: ${res['reservation'].toString()}");
                     final id = res['id'];
                     debugPrint("The id detected in database:  $id");
+                    final userId = res['userId'];
+
                     return Card(
                       child: ListTile(
                         title: Text(
@@ -128,8 +138,8 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
                           ],
                           onChanged: (String? newValue) {
                             if (newValue != null) {
-                              debugPrint("this is executred");
-                              _updateReservationStatus(id, newValue);
+                              debugPrint("this is executred: $userId");
+                              _updateReservationStatus(id, userId, newValue);
                              }
                             else {
                               debugPrint("error on set value.");

@@ -3,6 +3,7 @@ import 'package:chef_palette/data/product_data.dart';
 import 'package:chef_palette/screen/notification.dart';
 import 'package:chef_palette/screen/reservation.dart';
 import 'package:chef_palette/style/style.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Menu extends StatefulWidget {
@@ -33,11 +34,13 @@ class _MenuState extends State<Menu> {
   @override
   Widget build(BuildContext context) {
     
+    String Userid = FirebaseAuth.instance.currentUser!.uid;
     final filteredProducts = selectedCategory == "All"
         ? products
         : products.where((product) => product.category == selectedCategory).toList(); 
 
     filteredProducts.sort((a, b) => a.name.compareTo(b.name));
+    
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -86,7 +89,7 @@ class _MenuState extends State<Menu> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const NotificationScreen(),
+                        builder: (context) => NotificationScreen(userId: Userid),
                       ),
                     );
                   },
