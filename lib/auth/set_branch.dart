@@ -61,7 +61,7 @@ class _RegisterStep3State extends State<RegisterStep3> {
 
 
   // List of branch coordinates (latitude, longitude)
-  final List<Map<String, dynamic>> branches = [];
+
   Future<List<Map<String, dynamic>>> fetchBranches() async {
     List<Map<String, dynamic>> branches = [];
     try {
