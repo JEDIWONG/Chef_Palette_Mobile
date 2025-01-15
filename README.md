@@ -7,7 +7,6 @@ Chef Palette is a mobile app designed for food ordering and management, aimed at
 - **Flutter**: For building the cross-platform mobile app (iOS & Android).
 - **Firebase**: Used for backend services such as authentication, real-time database, and cloud storage.
 - **Google Maps API**: For location tracking and displaying restaurant locations on the map.
-- **Stripe API**: For secure payment processing.
 - **Dart**: The programming language used in Flutter development.
 
 ## Features
