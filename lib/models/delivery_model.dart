@@ -3,7 +3,6 @@ import 'package:chef_palette/models/order_model.dart';
 
 class DeliveryOrderModel extends OrderModel {
   final String deliveryAddress;
-  final DateTime deliveryTime;
 
   DeliveryOrderModel({
     required String paymentMethod,
@@ -15,7 +14,6 @@ class DeliveryOrderModel extends OrderModel {
     required String status,
     required String orderType,
     required this.deliveryAddress,
-    required this.deliveryTime,
   }) : super(
           paymentMethod: paymentMethod,
           timestamp: timestamp,
@@ -31,7 +29,6 @@ class DeliveryOrderModel extends OrderModel {
   Map<String, dynamic> toMap() {
     final data = super.toMap();
     data['deliveryAddress'] = deliveryAddress;
-    data['deliveryTime'] = deliveryTime.toIso8601String();
     return data;
   }
 
@@ -49,7 +46,6 @@ class DeliveryOrderModel extends OrderModel {
       status: map['status'] ?? 'Pending',
       orderType: map['orderType'] ?? 'Delivery',
       deliveryAddress: map['deliveryAddress'] ?? '',
-      deliveryTime: DateTime.parse(map['deliveryTime']),
     );
   }
 }

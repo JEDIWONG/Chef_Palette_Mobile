@@ -37,6 +37,16 @@ class AdminDashboard extends StatelessWidget {
       const AdminNotification()
     ];
 
+    List<String> img = [
+      "assets/images/settings.png",
+      "assets/images/settings.png",
+      "assets/images/settings.png",
+      "assets/images/settings.png",
+      "assets/images/settings.png",
+      "assets/images/settings.png",
+      "assets/images/settings.png",
+    ];
+
     DateTime? lastPressed;
 
     return WillPopScope(
@@ -88,7 +98,7 @@ class AdminDashboard extends StatelessWidget {
             return DashboardCard(
               target: widget[index],
               title: name[index],
-              iconUrl: "assets/images/test.png",
+              iconUrl: img[index],
             );
           },
 

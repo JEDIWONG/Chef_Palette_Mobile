@@ -102,7 +102,7 @@ class _OrderStatusState extends State<OrderStatus> {
                   ),
 
                   ListTile(
-                    leading: const Icon(Icons.location_pin, color: Colors.red,),
+                    leading: const Icon(Icons.other_houses, color: Colors.green,),
                     subtitle: Text("${order.orderType}", style: CustomStyle.subtitle,),
                     title: Text(order.branchName, style: CustomStyle.h4,),
                   ),
@@ -131,6 +131,13 @@ class _OrderStatusState extends State<OrderStatus> {
                     ListTile(
                       title: Text("Pickup Number : "),
                       trailing: Text(order.pickupNo),  // Fetch Pickup Number from Firebase
+                    ),
+
+                  if (order.orderType == "Delivery")
+                    ListTile(
+                      leading: Icon(Icons.pin_drop,color: Colors.red,),
+                      title: Text("Sending To Your Location At",style: CustomStyle.h4),
+                      subtitle: Text(order.deliveryAddress,style: CustomStyle.subtitle,),  
                     ),
 
                   Accordion(

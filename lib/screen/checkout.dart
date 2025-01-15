@@ -6,13 +6,14 @@ import 'package:chef_palette/component/map_picker.dart';
 import 'package:chef_palette/component/order_item.dart';
 import 'package:chef_palette/component/payment_selector.dart';
 import 'package:chef_palette/controller/cart_controller.dart';
+import 'package:chef_palette/controller/delivery_controller.dart';
 import 'package:chef_palette/controller/dine_in_controller.dart';
 import 'package:chef_palette/controller/order_controller.dart';
 import 'package:chef_palette/controller/pickup_controller.dart';
 import 'package:chef_palette/controller/user_rewards_controller.dart';
-import 'package:chef_palette/data/product_data.dart';
 import 'package:chef_palette/index.dart' as cf;
 import 'package:chef_palette/models/cart_item_model.dart';
+import 'package:chef_palette/models/delivery_model.dart';
 import 'package:chef_palette/models/dine_in_model.dart';
 import 'package:chef_palette/models/order_model.dart';
 import 'package:chef_palette/models/pickup_model.dart';
@@ -21,6 +22,7 @@ import 'package:chef_palette/style/style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Checkout extends StatefulWidget {
   const Checkout({super.key});
@@ -37,6 +39,8 @@ class _CheckoutState extends State<Checkout> {
   String branchName = ""; 
   List <String> orderTypes = ["Dine-In", "Pickup", "Delivery"];
   String orderType = "Dine-In";
+  LatLng selectedLocation= LatLng(3.1390, 101.6869);
+  String selectedAddress = "";
   
   final user = FirebaseAuth.instance.currentUser;
   String uid = FirebaseAuth.instance.currentUser!.uid;
@@ -128,6 +132,7 @@ class _CheckoutState extends State<Checkout> {
             UserRewardsController rewardsController = UserRewardsController();
             DineInOrderController dineInOrderController = DineInOrderController(); // DineIn controller
             PickupOrderController pickupOrderController = PickupOrderController();
+            DeliveryOrderController deliveryOrderController = DeliveryOrderController(); 
 
             double totalPrice = await calculateTotalPrice(); 
             List<CartItemModel> cartItems = await fetchCartItems();
@@ -173,9 +178,9 @@ class _CheckoutState extends State<Checkout> {
             }
 
             else if(orderType=="Delivery"){
-              // Otherwise create a general order (Pickup/Delivery)
-              await orderController.createOrder(
-                OrderModel(
+              
+              await deliveryOrderController.createDeliveryOrder(
+                DeliveryOrderModel(
                   paymentMethod: paymentMethod,
                   timestamp: DateTime.now(),
                   userID: user!.uid,
@@ -184,7 +189,9 @@ class _CheckoutState extends State<Checkout> {
                   price: totalPrice,
                   status: 'Pending',
                   orderType: orderType,
-                ),
+                  deliveryAddress: selectedAddress, 
+                
+                )
               );
             }
 
@@ -266,9 +273,33 @@ class _CheckoutState extends State<Checkout> {
                 ),
               ),
             if (orderType == "Delivery") 
-              ElevatedButton(onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>MapPicker(onLocationPicked: (LatLng , String ) { },)));
-              }, child: Text("data")),
+              ListTile(
+                onTap: () {
+                  // Navigate to the MapPicker screen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MapPicker(
+                        onLocationPicked: (LatLng location, String address) {
+                          setState(() {
+                            // Handle the selected location and address here
+                            selectedLocation = location;
+                            selectedAddress = address;
+                          });
+                        },
+                        initialLocation: LatLng(1.469338, 110.430185), // Default location, e.g., Kuala Lumpur
+                      ),
+                    ),
+                  );
+                },
+                leading: Icon(Icons.map_rounded),
+                title: Text("Select Your Location In Map"),
+                subtitle: Text("Current : $selectedAddress"),
+                trailing: Icon(Icons.navigate_next_rounded),
+              ),
+
+            
+
 
             OrderSummary(processingFee: processingFee, branchName: branchName, orderType: orderType, discountRate: discountRate),
 

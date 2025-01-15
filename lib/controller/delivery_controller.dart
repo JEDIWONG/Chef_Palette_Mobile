@@ -1,12 +1,12 @@
 // ignore_for_file: avoid_print
+import 'package:chef_palette/models/delivery_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:chef_palette/models/order_model.dart';
 
 class DeliveryOrderController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   // Create a delivery order
-  Future<void> createDeliveryOrder(OrderModel order) async {
+  Future<void> createDeliveryOrder(DeliveryOrderModel order) async {
     try {
       await _firestore.collection('delivery_orders').add(order.toMap());
       print('Delivery order created successfully');
@@ -26,7 +26,7 @@ class DeliveryOrderController {
       List<Map<String, dynamic>> orders = querySnapshot.docs.map((doc) {
         return {
           "id": doc.id,
-          "order": OrderModel.fromMap(doc.data() as Map<String, dynamic>)
+          "order": DeliveryOrderModel.fromMap(doc.data() as Map<String, dynamic>)
         };
       }).toList();
 
@@ -46,7 +46,7 @@ class DeliveryOrderController {
       if (docSnapshot.exists) {
         return {
           "id": docSnapshot.id,
-          "order": OrderModel.fromMap(docSnapshot.data() as Map<String, dynamic>)
+          "order": DeliveryOrderModel.fromMap(docSnapshot.data() as Map<String, dynamic>)
         };
       } else {
         print('No delivery order found with ID: $orderID');

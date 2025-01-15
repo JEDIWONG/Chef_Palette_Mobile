@@ -170,9 +170,11 @@ class _AdminUpdateMenuState extends State<AdminUpdateMenu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('Update Menu'),
         centerTitle: true,
+        backgroundColor: Colors.white,
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

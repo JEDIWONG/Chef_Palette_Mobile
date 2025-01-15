@@ -11,6 +11,10 @@
         android:label="Chef Palette"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyA_wd8YVwfm9Opi-L-ci6KQC1FzknOuAOI"/>
+               
         <activity
             android:name=".MainActivity"
             android:label="Chef Palette"
@@ -26,8 +30,7 @@
                  while the Flutter UI initializes. After that, this theme continues
                  to determine the Window background behind the Flutter UI. -->
 
-            <meta-data android:name="com.google.android.geo.API_KEY"
-               android:value="AIzaSyA_wd8YVwfm9Opi-L-ci6KQC1FzknOuAOI"/>
+            
 
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"

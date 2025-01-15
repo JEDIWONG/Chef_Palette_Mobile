@@ -1,11 +1,17 @@
+import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geocoding/geocoding.dart';
 
 class MapPicker extends StatefulWidget {
   final Function(LatLng, String) onLocationPicked;
+  final LatLng initialLocation;
 
-  const MapPicker({Key? key, required this.onLocationPicked}) : super(key: key);
+  const MapPicker({
+    Key? key,
+    required this.onLocationPicked,
+    required this.initialLocation,
+  }) : super(key: key);
 
   @override
   _MapPickerState createState() => _MapPickerState();
@@ -18,18 +24,19 @@ class _MapPickerState extends State<MapPicker> {
   GoogleMapController? _mapController;
 
   @override
+  void initState() {
+    super.initState();
+    _selectedLocation = widget.initialLocation;
+    _updateAddress(widget.initialLocation);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pick a Location'),
-        backgroundColor: Colors.green,
-        centerTitle: true,
-      ),
-      body: Stack(
+    return Stack(
         children: [
           GoogleMap(
-            initialCameraPosition: const CameraPosition(
-              target: LatLng(3.1390, 101.6869), // Default location: Kuala Lumpur
+            initialCameraPosition: CameraPosition(
+              target: widget.initialLocation,
               zoom: 14,
             ),
             onMapCreated: (GoogleMapController controller) {
@@ -82,14 +89,13 @@ class _MapPickerState extends State<MapPicker> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.green,
                   ),
-                  child: const Text("Confirm Location"),
+                  child: Text("Confirm Location",style: CustomStyle.lightH5,),
                 ),
               ],
             ),
           ),
         ],
-      ),
-    );
+      );
   }
 
   Future<void> _updateAddress(LatLng location) async {
