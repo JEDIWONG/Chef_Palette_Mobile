@@ -21,6 +21,7 @@ class CartItemModel {
     required this.instruction,
   }) : totalPrice = price * quantity;
 
+  
   // Method to increase quantity and adjust total price
   void increaseQuantity() {
     quantity++;

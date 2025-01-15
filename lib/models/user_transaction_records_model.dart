@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserTransactionRecordsModel {
   final String orderId;  // Order ID related to the transaction
   final String orderType;  // The type of order (e.g., 'Dine-in', 'Takeaway')
@@ -35,7 +37,7 @@ class UserTransactionRecordsModel {
       orderType: map['orderType'] ?? '',  // Extract orderType from the map
       paymentMethod: map['paymentMethod'] ?? '',  // Extract paymentMethod from the map
       price: map['price']?.toDouble() ?? 0.0,  // Extract price from the map
-      timestamp: DateTime.parse(map['timestamp'] ?? ''),  // Extract timestamp from the map
+      timestamp: (map['timestamp'] as Timestamp).toDate(),  // Extract timestamp from the map
       userID: map['userID'] ?? '',  // Extract userID from the map
     );
   }
