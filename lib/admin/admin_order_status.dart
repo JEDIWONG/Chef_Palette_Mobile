@@ -2,11 +2,13 @@ import 'package:accordion/accordion.dart';
 import 'package:chef_palette/component/loading_progress_bar.dart';
 import 'package:chef_palette/component/order_item.dart';
 import 'package:chef_palette/models/cart_item_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:chef_palette/controller/order_controller.dart';
 import 'package:chef_palette/component/custom_button.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:linear_progress_bar/linear_progress_bar.dart';
+import 'package:chef_palette/models/receipt_model.dart';
 
 class AdminOrderStatus extends StatefulWidget {
   const AdminOrderStatus({super.key, required this.orderId, required this.orderType});
@@ -70,6 +72,16 @@ class _OrderStatusState extends State<AdminOrderStatus> {
     }
   }
 
+Future<void> saveReceiptToDatabase(Receipt receipt) async {
+  try {
+    final db = FirebaseFirestore.instance;
+    await db.collection('receipts').add(receipt.toJson());
+    debugPrint("Receipt saved successfully!");
+  } catch (e) {
+    debugPrint("Failed to save receipt: $e");
+  }
+}
+
 
 
   @override
@@ -108,6 +120,27 @@ class _OrderStatusState extends State<AdminOrderStatus> {
             // Extract order details from the snapshot data
             final order = snapshot.data!["order"];
             final orderItems = order.orderItems;
+
+            void saveOrderAsReceipt() {
+                // Calculate total cost
+                double totalCost = orderItems.fold(
+                  0,
+                  (sum, item) => sum + (item.price * item.quantity),
+                );
+
+                // Create the receipt
+                Receipt receipt = Receipt(
+                  orderId: widget.orderId,
+                  items: orderItems,
+                  total: totalCost,
+                  status: currStatus,
+
+                );
+
+                // Save receipt to database
+                saveReceiptToDatabase(receipt);
+              }
+
 
             return SingleChildScrollView(
               child: Column(
@@ -199,6 +232,9 @@ class _OrderStatusState extends State<AdminOrderStatus> {
                       onChanged: (String? newValue) {
                         if (newValue != null) {
                           updateOrderStatus(newValue);
+                          if(newValue == "Complete"){
+                            saveOrderAsReceipt();
+                          }
                         }
                       },
                       items: statuses.map<DropdownMenuItem<String>>((String value) {
