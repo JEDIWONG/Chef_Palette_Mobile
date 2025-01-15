@@ -1,3 +1,4 @@
+import 'package:chef_palette/admin/admin_update_menu.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -34,8 +35,8 @@ class AdminProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        // Implement navigation logic
-        // Navigator.push(context, MaterialPageRoute(builder: (context) => YourNextScreen()));
+
+        Navigator.push(context, MaterialPageRoute(builder: (context) => AdminUpdateMenu(productId: productID,)));
       },
       child: ListTile(
         leading: FutureBuilder<String>(

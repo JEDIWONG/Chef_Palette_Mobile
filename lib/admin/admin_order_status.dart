@@ -163,6 +163,7 @@ class _OrderStatusState extends State<AdminOrderStatus> {
                                 name: item.name,
                                 price: item.price,
                                 quantity: item.quantity,
+                                addons: item.addons,
                               );
                             }).toList(),
                           ),

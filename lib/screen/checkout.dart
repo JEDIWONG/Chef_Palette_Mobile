@@ -75,9 +75,26 @@ class _CheckoutState extends State<Checkout> {
   }
 
   Future<double> calculateTotalPrice() async {
-    double subPrice = await calculateSubPrice();
-    double tax = await calculateTax();
-    return subPrice + tax + processingFee;
+    double subPrice = await calculateSubPrice(); // Calculate the subtotal
+    double tax = await calculateTax(); // Calculate the tax
+    
+    double discountAmount = subPrice * discountRate; 
+
+    return (subPrice - discountAmount) + tax + processingFee;
+  }
+
+  Future<double> calculateDiscountAmount() async {
+    double subPrice = await calculateSubPrice(); 
+    double discountAmount = subPrice * discountRate;
+
+    return discountAmount;
+  }
+
+
+  void handleDiscountSelected(double rate) {
+    setState(() {
+      discountRate = rate;
+    });
   }
 
   @override
@@ -203,9 +220,9 @@ class _CheckoutState extends State<Checkout> {
               ),
             ),
       
-            OrderSummary(processingFee: processingFee, branchName: branchName, orderType: orderType,),
+            OrderSummary(processingFee: processingFee, branchName: branchName, orderType: orderType,discountRate:discountRate, ),
 
-            const TotalPriceBar(),
+            TotalPriceBar(discountRate: discountRate,),
 
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 30),
@@ -222,13 +239,9 @@ class _CheckoutState extends State<Checkout> {
                   ),
                   
                   DiscountSelector(
-                    onDiscountSelected: (double d){
-                      setState(() {
-                        discountRate = d;
-                      });
-                    },
+                    onDiscountSelected: handleDiscountSelected,
                     current: discountRate,
-                  )
+                  ),
                 ],
               )
             ),
@@ -240,15 +253,33 @@ class _CheckoutState extends State<Checkout> {
 }
 
 class OrderSummary extends StatelessWidget {
-  const OrderSummary({super.key, required this.processingFee, required this.branchName, required this.orderType});
+  const OrderSummary({
+    super.key,
+    required this.processingFee,
+    required this.branchName,
+    required this.orderType,
+    required this.discountRate,
+  });
 
-  final double processingFee; 
-  final String branchName; 
-  final String orderType; 
-  
+  final double processingFee;
+  final String branchName;
+  final String orderType;
+  final double discountRate;
+
+  // Async method for fetching processing fee
   Future<double> calculateProcessingFee() async {
-    
-    return Future.value(processingFee); 
+    return Future.value(processingFee); // You can modify this to get processing fee from an API or logic
+  }
+
+  Future<double> calculateDiscountAmount() async {
+    // First, calculate the subtotal
+    double subprice = await calculateSubPrice();
+
+    // Calculate the discount amount
+    double discountAmount = subprice * discountRate;
+
+    // Return the calculated discount amount
+    return discountAmount;
   }
 
   @override
@@ -258,27 +289,25 @@ class OrderSummary extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           Accordion(
             disableScrolling: true,
             paddingBetweenClosedSections: 50,
             children: [
-
               AccordionSection(
                 isOpen: false,
                 headerBackgroundColor: Colors.green,
-                contentBorderColor: Colors.green, 
+                contentBorderColor: Colors.green,
                 headerPadding: const EdgeInsets.all(10),
                 header: Text("Branch Selected", style: CustomStyle.lightH4),
                 content: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 30),
-                  child: Text(branchName,style: CustomStyle.txt,),
+                  child: Text(branchName, style: CustomStyle.txt),
                 ),
               ),
               AccordionSection(
                 isOpen: true,
                 headerBackgroundColor: Colors.green,
-                contentBorderColor: Colors.green, 
+                contentBorderColor: Colors.green,
                 headerPadding: const EdgeInsets.all(10),
                 header: Text("Order Summary", style: CustomStyle.lightH4),
                 content: Padding(
@@ -299,6 +328,7 @@ class OrderSummary extends StatelessWidget {
                               name: cartItem.name,
                               quantity: cartItem.quantity,
                               price: cartItem.price,
+                              addons: cartItem.addons,
                             );
                           }).toList(),
                         );
@@ -307,27 +337,62 @@ class OrderSummary extends StatelessWidget {
                   ),
                 ),
               ),
-
               AccordionSection(
                 headerBackgroundColor: Colors.green,
-                contentBorderColor: Colors.green, 
-                
+                contentBorderColor: Colors.green,
                 headerPadding: const EdgeInsets.all(10),
                 header: Text("Price Details", style: CustomStyle.lightH4),
                 content: Container(
-                  margin:const EdgeInsets.symmetric(vertical: 10),
+                  margin: const EdgeInsets.symmetric(vertical: 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
+                      // Async breakdown price calculations for Subtotal and Tax
                       const BreakdownPrice(name: "Subtotal", func: calculateSubPrice),
                       const BreakdownPrice(name: "Tax", func: calculateTax),
-                      BreakdownPrice(name: "Processing Fees", func: calculateProcessingFee),
+                      
+                      // Use FutureBuilder for processing fee
+                      FutureBuilder<double>(
+                        future: calculateProcessingFee(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const CircularProgressIndicator(); // Loading state
+                          }
+
+                          if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          }
+
+                          return BreakdownPrice(
+                            name: "Processing Fees",
+                            func: () async => snapshot.data ?? 0.0,
+                          );
+                        },
+                      ),
+                      
+                      // Use FutureBuilder for discount amount
+                      FutureBuilder<double>(
+                        future: calculateDiscountAmount(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const CircularProgressIndicator(); // Loading state
+                          }
+
+                          if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          }
+
+                          return ListTile(
+                            title: Text("Discount :"),
+                            trailing: Text("RM ${snapshot.data?.toStringAsFixed(2) ?? '0.00'}"),
+                          );
+                        },
+                      ),
                     ],
                   ),
-                )
+                ),
               ),
-            ]
+            ],
           ),
         ],
       ),
@@ -335,16 +400,18 @@ class OrderSummary extends StatelessWidget {
   }
 }
 
-class TotalPriceBar extends StatelessWidget{
-  const TotalPriceBar({super.key});
+
+class TotalPriceBar extends StatelessWidget {
+  final double discountRate;
+  const TotalPriceBar({super.key, required this.discountRate});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10),
-      decoration:  BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20), 
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: Colors.green,
           width: 1,
@@ -359,15 +426,15 @@ class TotalPriceBar extends StatelessWidget{
         ]
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(vertical:0,horizontal: 20),
-        leading:  Text("Total", style: CustomStyle.h3),
+        contentPadding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+        leading: Text("Total", style: CustomStyle.h3),
         trailing: FutureBuilder<double>(
-          future: calculateTotalPrice(), 
+          future: calculateTotalPrice(discountRate), 
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return Text("Error: ${snapshot.error}");
             } else if (snapshot.hasData) {
-              return Text("RM ${snapshot.data!.toStringAsFixed(2)}",style: CustomStyle.h2,);
+              return Text("RM ${snapshot.data!.toStringAsFixed(2)}", style: CustomStyle.h2);
             } else {
               return const Text("RM 0.00");
             }
@@ -376,8 +443,17 @@ class TotalPriceBar extends StatelessWidget{
       ),
     );
   }
-  
+
+  Future<double> calculateTotalPrice(double discountRate) async {
+    double subPrice = await calculateSubPrice(); // Calculate the subtotal
+    double tax = await calculateTax(); // Calculate the tax
+    
+    double discountAmount = subPrice * discountRate; // Calculate discount based on discountRate
+
+    return (subPrice - discountAmount) + tax + 0.0; // Add processing fee if necessary
+  }
 }
+
 
 class BreakdownPrice extends StatelessWidget{
   const BreakdownPrice({super.key, required this.name, required this.func});
@@ -446,7 +522,3 @@ Future <double> calculateTotalPrice() async {
 
   return total;
 }
-
-
-
-

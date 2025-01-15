@@ -138,6 +138,7 @@ class _OrderStatusState extends State<OrderStatus> {
                                 name: item.name,
                                 price: item.price,
                                 quantity: item.quantity,
+                                addons: item.addons,
                               );
                             }).toList(),
                           ),
