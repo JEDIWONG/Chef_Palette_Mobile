@@ -97,41 +97,57 @@ class OrderController {
   }
 }
 
-
-
   Future<List<Map<String, dynamic>>> getAllOrders() async {
     try {
-      // Query the Firestore collection "orders" to get all orders
-      QuerySnapshot querySnapshot = await _firestore.collection('orders').get();
+      final collections = ['dine_in_orders', 'pickup_orders', 'delivery_orders'];
+      List<Map<String, dynamic>> allOrders = [];
 
-      // Map the query result to a list of maps containing document ID and OrderModel
-      List<Map<String, dynamic>> orders = querySnapshot.docs.map((doc) {
-        return {
-          "id": doc.id, // Document ID
-          "userID": doc['userID'], // User ID associated with the order
-          "order": OrderModel.fromMap(doc.data() as Map<String, dynamic>) // OrderModel object
-        };
-      }).toList();
+      for (String collection in collections) {
+        final querySnapshot = await _firestore.collection(collection).get();
+        for (var doc in querySnapshot.docs) {
+          final orderData = doc.data();
+          final orderType = collection.replaceAll('_orders', ''); // e.g., "dine_in"
+          allOrders.add({
+            'id': doc.id,
+            'order': OrderModel.fromMap(orderData),
+            'orderType': orderType,
+          });
+        }
+      }
 
-      return orders;
+      return allOrders;
     } catch (e) {
-      print('Error fetching orders: $e');
+      print("Error fetching orders: $e");
       return [];
     }
   }
 
-  // Update the status of an order based on its ID
-  Future<void> updateOrderStatus(String orderId, String newStatus) async {
+  // Update order status based on orderId and orderType
+  Future<void> updateOrderStatus(String orderId, String newStatus, String orderType) async {
     try {
-      // Reference the specific order document by its ID and update the status field
-      await _firestore.collection('orders').doc(orderId).update({
+      // Dynamically select the collection based on orderType
+      String collectionName = '';
+      switch (orderType) {
+        case 'dine_in':
+          collectionName = 'dine_in_orders';
+          break;
+        case 'pickup':
+          collectionName = 'pickup_orders';
+          break;
+        case 'delivery':
+          collectionName = 'delivery_orders';
+          break;
+        default:
+          throw 'Invalid order type';
+      }
+
+      // Update the status in the correct collection
+      await _firestore.collection(collectionName).doc(orderId).update({
         'status': newStatus,
       });
-      print('Order status updated successfully to $newStatus');
     } catch (e) {
-      print('Error updating order status: $e');
-      throw Exception('Failed to update order status');
+      throw 'Failed to update order status: $e';
     }
-  }  
+  } 
 
 }

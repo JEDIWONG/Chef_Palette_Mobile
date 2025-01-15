@@ -8,11 +8,13 @@ class AdminOrderCard extends StatelessWidget {
     required this.orderId,
     required this.status,
     required this.datetime,
+    required this.orderType,
   });
 
   final String orderId;
   final String status;
   final DateTime datetime;
+  final String orderType; 
 
   String convertDate() {
     return "${datetime.year}-${datetime.month.toString().padLeft(2, '0')}-${datetime.day.toString().padLeft(2, '0')}";
@@ -26,7 +28,8 @@ class AdminOrderCard extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => AdminOrderStatus(
-              orderId: orderId,
+              orderId: orderId, 
+              orderType: orderType,
             ),
           ),
         );

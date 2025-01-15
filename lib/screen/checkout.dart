@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:accordion/accordion.dart';
 import 'package:chef_palette/component/custom_button.dart';
 import 'package:chef_palette/component/discount_selector.dart';
+import 'package:chef_palette/component/map_picker.dart';
 import 'package:chef_palette/component/order_item.dart';
 import 'package:chef_palette/component/payment_selector.dart';
 import 'package:chef_palette/controller/cart_controller.dart';
@@ -171,7 +172,7 @@ class _CheckoutState extends State<Checkout> {
               );
             }
 
-            else {
+            else if(orderType=="Delivery"){
               // Otherwise create a general order (Pickup/Delivery)
               await orderController.createOrder(
                 OrderModel(
@@ -265,9 +266,9 @@ class _CheckoutState extends State<Checkout> {
                 ),
               ),
             if (orderType == "Delivery") 
-              Container(
-                child: Text("Placeholder"),
-              ),
+              ElevatedButton(onPressed: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>MapPicker(onLocationPicked: (LatLng , String ) { },)));
+              }, child: Text("data")),
 
             OrderSummary(processingFee: processingFee, branchName: branchName, orderType: orderType, discountRate: discountRate),
 

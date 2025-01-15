@@ -9,9 +9,10 @@ import 'package:chef_palette/style/style.dart';
 import 'package:linear_progress_bar/linear_progress_bar.dart';
 
 class AdminOrderStatus extends StatefulWidget {
-  const AdminOrderStatus({super.key, required this.orderId});
+  const AdminOrderStatus({super.key, required this.orderId, required this.orderType});
 
   final String orderId;
+  final String orderType;
 
   @override
   State<AdminOrderStatus> createState() => _OrderStatusState();
@@ -47,23 +48,28 @@ class _OrderStatusState extends State<AdminOrderStatus> {
 
   Future<void> updateOrderStatus(String newStatus) async {
     try {
-      await OrderController().updateOrderStatus(widget.orderId, newStatus);
+      // Ensure the order ID and new status are properly passed to the controller
+      await OrderController().updateOrderStatus(widget.orderId, newStatus,widget.orderType);
+      
+      // Update the UI with the new status and its description
       setState(() {
         currentStep = statuses.indexOf(newStatus);
         currStatus = newStatus;
         currStatusDesc = statusDesc[currentStep];
       });
 
-
+      // Provide feedback to the user
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Order status updated to $newStatus')),
       );
     } catch (e) {
+      // Handle any errors during the update process
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to update order status: $e')),
       );
     }
   }
+
 
 
   @override

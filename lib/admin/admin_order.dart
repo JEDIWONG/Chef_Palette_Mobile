@@ -9,8 +9,7 @@ class AdminOrder extends StatelessWidget {
   const AdminOrder({super.key});
 
   @override
-  Widget build(BuildContext context) {  
-    
+  Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
@@ -23,10 +22,10 @@ class AdminOrder extends StatelessWidget {
           style: CustomStyle.h3,
         ),
         leading: const CustomBackButton(title: "Back", first: false),
-        leadingWidth: MediaQuery.sizeOf(context).width*0.3,
+        leadingWidth: MediaQuery.sizeOf(context).width * 0.3,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: OrderController().getAllOrders(),
+        future: OrderController().getAllOrders(), // Updated to handle multiple order types
         builder: (context, snapshot) {
           // Show a loading indicator while the future is resolving
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -62,22 +61,21 @@ class AdminOrder extends StatelessWidget {
             child: ListView.builder(
               itemCount: ordersWithIds.length,
               itemBuilder: (context, index) {
-
                 final orderId = ordersWithIds[index]['id'] as String;
                 final order = ordersWithIds[index]['order'] as OrderModel;
+                final orderType = ordersWithIds[index]['orderType'] as String; // New field for type
 
                 return AdminOrderCard(
                   orderId: orderId,
+                  orderType: orderType, 
                   status: order.status,
                   datetime: order.timestamp,
-                  
                 );
               },
             ),
           );
         },
       ),
-
     );
   }
 }
