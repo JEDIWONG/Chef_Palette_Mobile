@@ -1,16 +1,65 @@
-# chef_palette
+# Chef Palette - Food Ordering and Management Mobile App (Nasi Lemak Bamboo)
 
-A new Flutter project.
+Chef Palette is a mobile app designed for food ordering and management, aimed at enhancing the customer experience for Nasi Lemak Bamboo. The app provides a seamless and user-friendly interface for placing orders, customizing meals, and managing restaurant operations efficiently.
 
-## Getting Started
+## Tech Stack
 
-This project is a starting point for a Flutter application.
+- **Flutter**: For building the cross-platform mobile app (iOS & Android).
+- **Firebase**: Used for backend services such as authentication, real-time database, and cloud storage.
+- **Google Maps API**: For location tracking and displaying restaurant locations on the map.
+- **Stripe API**: For secure payment processing.
+- **Dart**: The programming language used in Flutter development.
 
-A few resources to get you started if this is your first Flutter project:
+## Features
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### 1. **User Authentication**
+   - User login and registration.
+   - Firebase Authentication to manage users securely.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 2. **Food Ordering**
+   - Browse the restaurant’s menu.
+   - Customize orders with options to select meal size, toppings, and other add-ons.
+
+### 3. **Location Based Service**
+   - Track User Location 
+
+### 4. **Admin Dashboard**
+   - Manage the restaurant
+
+
+## Setup Instructions
+
+1. Clone the repository to your local machine:
+    
+    git clone https://github.com/JEDIWONG/chef_palette.git
+
+2. Install Flutter if not already installed:
+    
+    https://flutter.dev/docs/get-started/install
+    
+
+3. Install the dependencies:
+    
+    flutter pub get
+    
+
+4. Run the app:
+    
+    flutter run
+    
+
+## Contributing
+
+1. Fork the repository.
+2. Create your branch (`git checkout -b feature/YourFeature`).
+3. Commit your changes (`git commit -am 'Add new feature'`).
+4. Push to the branch (`git push origin feature/YourFeature`).
+5. Open a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+For any further questions or issues, feel free to reach out through the repository's Issues tab.
