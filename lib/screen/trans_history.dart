@@ -70,9 +70,9 @@ class TransactionHistory extends StatelessWidget {
             child: ListView.builder(
               itemCount: ordersWithIds.length,
               itemBuilder: (context, index) {
-                      if (index >= completedOrdersWithIds.length) {
-        return const SizedBox.shrink();
-      }
+              if (index >= completedOrdersWithIds.length) {
+                return const SizedBox.shrink();
+              }
                 // Extract the document ID and OrderModel
                 final orderId = completedOrdersWithIds[index]['id'] as String;
                 final order = completedOrdersWithIds[index]['order'] as OrderModel;

@@ -4,9 +4,8 @@ import 'package:chef_palette/component/account_setting.dart';
 import 'package:chef_palette/component/change_name.dart';
 import 'package:chef_palette/models/user_model.dart';
 import 'package:chef_palette/screen/location.dart';
-import 'package:chef_palette/screen/payment_method.dart';
 import 'package:chef_palette/screen/trans_history.dart';
-import 'package:chef_palette/screen/payment_method.dart';
+import 'package:chef_palette/screen/pay_method.dart';
 import 'package:chef_palette/services/firestore_services.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -114,7 +113,6 @@ final SharedPreferences prefs = await SharedPreferences.getInstance();
 
   @override
   Widget build(BuildContext context) {
-       final Function(String) onPaymentMethodSelected; 
     return SingleChildScrollView(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 50),
@@ -132,7 +130,7 @@ final SharedPreferences prefs = await SharedPreferences.getInstance();
             ),
             const AccountTile(title: "Transaction History", icon: Icons.receipt, screen: TransactionHistory(),),
             const AccountTile(title: "Location", icon: Icons.location_city, screen: Location(),),
-            const AccountTile(title: "Payment Method", icon: Icons.payment_rounded, screen: PaymentMethod(onPaymentMethodSelected: onPaymentMethodSelected),),
+            const AccountTile(title: "Payment Method", icon: Icons.payment_rounded, screen: PaymentMethod(),),
             const AccountSetting(),
             const SizedBox(height: 30),
             OutlinedButton(
