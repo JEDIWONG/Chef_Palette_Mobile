@@ -9,9 +9,10 @@ import 'package:chef_palette/style/style.dart';
 import 'package:linear_progress_bar/linear_progress_bar.dart';
 
 class OrderStatus extends StatefulWidget {
-  const OrderStatus({super.key, required this.orderId});
+  const OrderStatus({super.key, required this.orderId, required this.orderType});
   
   final String orderId;
+  final String orderType;
 
   @override
   State<OrderStatus> createState() => _OrderStatusState();
@@ -29,7 +30,6 @@ class _OrderStatusState extends State<OrderStatus> {
     super.initState();
     // Fetch the order by ID using the order controller
     orderFuture = OrderController().getOrderById(widget.orderId);
-    
   }
 
   @override
@@ -79,7 +79,6 @@ class _OrderStatusState extends State<OrderStatus> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  
                   const SizedBox(height: 30,),
 
                   Container(
@@ -103,33 +102,46 @@ class _OrderStatusState extends State<OrderStatus> {
                   ),
 
                   ListTile(
-                    leading: const Icon(Icons.location_pin,color: Colors.red,),
-                    subtitle: Text("${order.orderType}",style: CustomStyle.subtitle,),
-                    title: Text(order.branchName,style: CustomStyle.h4,),
+                    leading: const Icon(Icons.location_pin, color: Colors.red,),
+                    subtitle: Text("${order.orderType}", style: CustomStyle.subtitle,),
+                    title: Text(order.branchName, style: CustomStyle.h4,),
                   ),
 
                   ListTile(
                     contentPadding: const EdgeInsets.symmetric(horizontal: 30),
-                    title: Text(statuses[currentStep], style:const TextStyle(fontSize: 24,fontWeight: FontWeight.bold,color: Colors.green),),
-                    subtitle: Text(statusDesc[currentStep],style: CustomStyle.subtitle,),
-                    trailing: const Icon(Icons.dining_rounded,color: Colors.green,),
+                    title: Text(statuses[currentStep], style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.green),),
+                    subtitle: Text(statusDesc[currentStep], style: CustomStyle.subtitle,),
+                    trailing: const Icon(Icons.dining_rounded, color: Colors.green,),
                   ),
-                  // Progress Bar
                   
+                  // Progress Bar
                   const LoadingProgressBar(isComplete: false),
-                  // Current Status Text
                   
                   const SizedBox(height: 20),
+
+                  // Conditionally render table number for Dine-in orders
+                  if (order.orderType == "Dine-In") 
+                    ListTile(
+                      title: Text("Table Number : "),
+                      trailing: Text(order.tableNumber),  // Fetch Table Number from Firebase
+                    ),
                   
+                  // Conditionally render pickup number for Pickup orders
+                  if (order.orderType == "Pickup")
+                    ListTile(
+                      title: Text("Pickup Number : "),
+                      trailing: Text(order.pickupNo),  // Fetch Pickup Number from Firebase
+                    ),
+
                   Accordion(
                     children: [
                       AccordionSection(
                         isOpen: true,
                         contentBorderColor: Colors.green,
                         headerBackgroundColor: Colors.green,
-                        headerPadding: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
-                        rightIcon: const Icon(Icons.arrow_drop_up_rounded,color: Colors.white,),
-                        header: Text("Order Summary",style: CustomStyle.lightH3,),
+                        headerPadding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                        rightIcon: const Icon(Icons.arrow_drop_up_rounded, color: Colors.white,),
+                        header: Text("Order Summary", style: CustomStyle.lightH3,),
                         content: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(
@@ -145,13 +157,13 @@ class _OrderStatusState extends State<OrderStatus> {
                         ),
                       ),
                     ]
-                  ),                  
-                  
+                  ),
+
                   ListTile(
                     tileColor: Colors.green,
-                    leading: Text("Order ID: ",style: CustomStyle.h5,),
-                    title: Text(widget.orderId,style: CustomStyle.lightTxt,),
-                    trailing: const Icon(Icons.copy,color: Colors.white,),
+                    leading: Text("Order ID: ", style: CustomStyle.h5,),
+                    title: Text(widget.orderId, style: CustomStyle.lightTxt,),
+                    trailing: const Icon(Icons.copy, color: Colors.white,),
                   )
                 ],
               ),
@@ -161,4 +173,5 @@ class _OrderStatusState extends State<OrderStatus> {
       ),
     );
   }
+
 }

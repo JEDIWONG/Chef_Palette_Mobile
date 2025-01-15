@@ -5,54 +5,57 @@ import 'package:chef_palette/component/discount_selector.dart';
 import 'package:chef_palette/component/order_item.dart';
 import 'package:chef_palette/component/payment_selector.dart';
 import 'package:chef_palette/controller/cart_controller.dart';
+import 'package:chef_palette/controller/dine_in_controller.dart';
 import 'package:chef_palette/controller/order_controller.dart';
+import 'package:chef_palette/controller/pickup_controller.dart';
 import 'package:chef_palette/controller/user_rewards_controller.dart';
+import 'package:chef_palette/data/product_data.dart';
 import 'package:chef_palette/index.dart' as cf;
 import 'package:chef_palette/models/cart_item_model.dart';
+import 'package:chef_palette/models/dine_in_model.dart';
 import 'package:chef_palette/models/order_model.dart';
+import 'package:chef_palette/models/pickup_model.dart';
 import 'package:chef_palette/services/firestore_services.dart'; 
 import 'package:chef_palette/style/style.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class Checkout extends StatefulWidget{
+class Checkout extends StatefulWidget {
   const Checkout({super.key});
   
   @override
   State <Checkout> createState() => _CheckoutState();
-   
 }
 
 class _CheckoutState extends State<Checkout> {
-
   final ScrollController _scrollController = ScrollController();
-  
   List<bool> isSelected = [true, false, false];
   double processingFee = 0.0; 
-  
   String paymentMethod = "Select a Payment method";
   String branchName = ""; 
-  List <String> orderTypes = ["Dine-In","Pickup","Delivery"];
+  List <String> orderTypes = ["Dine-In", "Pickup", "Delivery"];
   String orderType = "Dine-In";
   
   final user = FirebaseAuth.instance.currentUser;
   String uid = FirebaseAuth.instance.currentUser!.uid;
 
+  final TextEditingController tableNumberController = TextEditingController(); // Controller for table number
+
   Future<void> fetchBranchName() async {
     final DocumentSnapshot branchSnapshot = await FirebaseFirestore.instance
         .collection('users')
-        .doc(uid) // Replace with the actual document ID
+        .doc(uid)
         .get();
 
     setState(() {
       branchName = branchSnapshot['branchLocation'];
     });
   }
-  
+
   double discountRate = 0.0;
- 
-@override
+
+  @override
   void initState() {
     super.initState();
     fetchBranchName();
@@ -60,7 +63,7 @@ class _CheckoutState extends State<Checkout> {
 
   void updateOrderType(int index) {
     setState(() {
-      orderType = orderType[index];
+      orderType = orderTypes[index];
     });
   }
 
@@ -75,21 +78,17 @@ class _CheckoutState extends State<Checkout> {
   }
 
   Future<double> calculateTotalPrice() async {
-    double subPrice = await calculateSubPrice(); // Calculate the subtotal
-    double tax = await calculateTax(); // Calculate the tax
-    
+    double subPrice = await calculateSubPrice(); 
+    double tax = await calculateTax(); 
     double discountAmount = subPrice * discountRate; 
-
     return (subPrice - discountAmount) + tax + processingFee;
   }
 
   Future<double> calculateDiscountAmount() async {
     double subPrice = await calculateSubPrice(); 
     double discountAmount = subPrice * discountRate;
-
     return discountAmount;
   }
-
 
   void handleDiscountSelected(double rate) {
     setState(() {
@@ -126,46 +125,79 @@ class _CheckoutState extends State<Checkout> {
             OrderController orderController = OrderController();
             CartController cartController = CartController();
             UserRewardsController rewardsController = UserRewardsController();
+            DineInOrderController dineInOrderController = DineInOrderController(); // DineIn controller
+            PickupOrderController pickupOrderController = PickupOrderController();
 
-            // Calculate total price and fetch cart items
             double totalPrice = await calculateTotalPrice(); 
             List<CartItemModel> cartItems = await fetchCartItems();
 
-            // Determine points to be added (e.g., 1 point per $1 spent)
             int pointsToAdd = totalPrice.floor();
 
-            // Delete all cart items after checkout
             await cartController.deleteAllCartItems();
 
-            // Create the order
-            await orderController.createOrder(
-              OrderModel(
-                paymentMethod: paymentMethod,
-                timestamp: DateTime.now(),
-                userID: user!.uid,
-                branchName: branchName,
-                orderItems: cartItems,
-                price: totalPrice,
-                status: 'Pending',
-                orderType: orderType,
-              ),
-            );
+            // Check if orderType is "Dine-In" and create DineIn order
+            if (orderType == "Dine-In") {
+              await dineInOrderController.createDineInOrder(
+                DineInOrderModel(
+                  paymentMethod: paymentMethod,
+                  timestamp: DateTime.now(),
+                  userID: user!.uid,
+                  branchName: branchName,
+                  orderItems: cartItems,
+                  price: totalPrice,
+                  status: 'Pending',
+                  orderType: orderType,
+                  tableNumber: tableNumberController.text,
+                ),
+              );
+            } 
+            // Check if orderType is "Pickup" and create Pickup order
+           else if (orderType == "Pickup") {
+              // Generate a random number for the pickup number
+              String pickupNo = 'RKI-${DateTime.now().millisecondsSinceEpoch}';
 
-            // Add points to the user's rewards
+              await pickupOrderController.createPickupOrder(
+                PickupOrderModel(
+                  paymentMethod: paymentMethod,
+                  timestamp: DateTime.now(),
+                  userID: user!.uid,
+                  branchName: branchName,
+                  orderItems: cartItems,
+                  price: totalPrice,
+                  status: 'Pending',
+                  orderType: orderType,
+                  pickupNo: pickupNo,
+                ),
+              );
+            }
+
+            else {
+              // Otherwise create a general order (Pickup/Delivery)
+              await orderController.createOrder(
+                OrderModel(
+                  paymentMethod: paymentMethod,
+                  timestamp: DateTime.now(),
+                  userID: user!.uid,
+                  branchName: branchName,
+                  orderItems: cartItems,
+                  price: totalPrice,
+                  status: 'Pending',
+                  orderType: orderType,
+                ),
+              );
+            }
+
             await rewardsController.addPoints(user!.uid, pointsToAdd);
 
-            // Navigate to order confirmation page
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const cf.Index(initIndex: 1)),
             );
 
-            // Success message
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Order placed successfully! $pointsToAdd points added to your account.')),
             );
           } catch (e) {
-            // Error handling
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Failed to place order: $e')),
             );
@@ -173,27 +205,24 @@ class _CheckoutState extends State<Checkout> {
         },
         rad: 0,
       ),
-
-
-      body:  SingleChildScrollView(
+      body: SingleChildScrollView(
         controller: _scrollController,
         child: Column(
           children: [
-
             Container(
               width: MediaQuery.sizeOf(context).width,
               margin: const EdgeInsets.symmetric(vertical: 30),
               alignment: Alignment.center,
               child: ToggleButtons(
                 isSelected: isSelected,
-                 onPressed: (int index) {
+                onPressed: (int index) {
                   setState(() {
                     for (int i = 0; i < isSelected.length; i++) {
                       isSelected[i] = i == index;
                     }
                   });
                   updateOrderType(index);
-                  updateProcessingFee(); // Update processing fee based on the selected option
+                  updateProcessingFee();
                 },
                 borderRadius: BorderRadius.circular(10),
                 textStyle: const TextStyle(fontSize: 14),
@@ -210,7 +239,7 @@ class _CheckoutState extends State<Checkout> {
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
-                    child: Text("PickUp"),
+                    child: Text("Pickup"),
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
@@ -219,13 +248,33 @@ class _CheckoutState extends State<Checkout> {
                 ],
               ),
             ),
-      
-            OrderSummary(processingFee: processingFee, branchName: branchName, orderType: orderType,discountRate:discountRate, ),
 
-            TotalPriceBar(discountRate: discountRate,),
+            // Show the relevant UI based on selected order type
+            if (orderType == "Dine-In") 
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: TextField(
+                  controller: tableNumberController,
+                  decoration: InputDecoration(
+                    labelText: 'Enter Table Number',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+            if (orderType == "Delivery") 
+              Container(
+                child: Text("Placeholder"),
+              ),
+
+            OrderSummary(processingFee: processingFee, branchName: branchName, orderType: orderType, discountRate: discountRate),
+
+            TotalPriceBar(discountRate: discountRate),
 
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 30),
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
               child: Column(
                 spacing: 20,
                 children: [
@@ -237,13 +286,12 @@ class _CheckoutState extends State<Checkout> {
                       });
                     },
                   ),
-                  
                   DiscountSelector(
                     onDiscountSelected: handleDiscountSelected,
                     current: discountRate,
                   ),
                 ],
-              )
+              ),
             ),
           ],
         ),
@@ -251,6 +299,7 @@ class _CheckoutState extends State<Checkout> {
     );
   }
 }
+
 
 class OrderSummary extends StatelessWidget {
   const OrderSummary({
