@@ -35,7 +35,7 @@ class _ReservationAdminPanelState extends State<ReservationAdminPanel> {
                 final firstName = userDoc.data()?['firstName'] ?? 'Unknown';
                 final lastName = userDoc.data()?['lastName'] ?? 'User';
                 final fullName = '$firstName $lastName';
-              //'$newFirstName.trim $newLastName.trim'
+            
 
               groupedByUser.putIfAbsent(status, () => []);
               groupedByUser[status]!.add({

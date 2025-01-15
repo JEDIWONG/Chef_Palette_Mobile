@@ -31,12 +31,18 @@ class _LocationState extends State<Location> {
     if (snapshot.exists) {
       Map<String, dynamic> data = snapshot.data() ?? {};
 
-      _locations.clear(); // Clear the local list and add all location fields
-      data.forEach((key, value) {
-        if (key.startsWith('location')) {
-          _locations.add(value as String);
-        }
-      });
+     // _locations.clear(); // Clear the local list and add all location fields
+      // data.forEach((key, value) {
+      //   if (key.startsWith('location')) {
+      //     _locations.add(value as String);
+      //   }
+      // });
+
+       if (data.containsKey('locations')) {
+        setState(() {
+          _locations = List<String>.from(data['locations']);
+        });
+       }
       _selectedLocation = data['selected_location'] as String?;
       debugPrint("The detected: ${_locations.toString()}");
       setState(() {}); // Refresh the UI
@@ -77,22 +83,27 @@ Future<void> saveSelectedLocationToDatabase(String selectedLocation) async {
     Map<String, dynamic> existingData = snapshot.data() ?? {};
 
     // Find the next available location field name
-    int locationIndex = 1;
-    while (existingData.containsKey('location$locationIndex')) {
-      locationIndex++;
-    }
-    String newField = 'location$locationIndex';
+    // int locationIndex = 1;
+    // while (existingData.containsKey('location$locationIndex')) {
+    //   locationIndex++;
+    // }
+    // String newField = 'location$locationIndex';
 
     // Update the database with the new location
-    await userDoc.update({newField: location});
+   // await userDoc.update({newField: location});
+    
+     await userDoc.update({
+      'locations': FieldValue.arrayUnion([location])
+    });
 
+  
     // Update the local list
     setState(() {
       _locations.add(location);
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Location saved as $newField successfully!")),
+      SnackBar(content: Text("Location saved as $location successfully!")),
     );
   } catch (e) {
     ScaffoldMessenger.of(context).showSnackBar(
