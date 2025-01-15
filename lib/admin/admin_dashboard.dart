@@ -24,7 +24,7 @@ class AdminDashboard extends StatelessWidget {
       "Transaction Record",
       "Manage Rewards",
       "Manage Members",
-      "Manage Notification"
+     // "Manage Notification"
     ];
 
     List<Widget> widget = [
@@ -34,7 +34,7 @@ class AdminDashboard extends StatelessWidget {
       const AdminTransactionPage(),
       const AdminRewards(),
       const AdminUser(),
-      const AdminNotification()
+    //  const AdminNotification()
     ];
 
     List<String> img = [
