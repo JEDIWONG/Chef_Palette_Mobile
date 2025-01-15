@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 
 class NotificationScreen extends StatefulWidget{
   String userId = FirebaseAuth.instance.currentUser!.uid;
-
-  NotificationScreen({required this.userId, Key? key}) : super(key: key);
+  
+  NotificationScreen({required this.userId,Key? key}) : super(key: key);
 
   @override
   _NotificationScreenState createState() => _NotificationScreenState();
@@ -54,6 +54,15 @@ Future<void> sendNotification(String userId, String message) async {
 } 
 
 class _NotificationScreenState extends State<NotificationScreen> {
+
+  void _viewNotification(String notificationId, String message) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => NotificationDetailScreen(notificationId: notificationId, message: message),
+      ),
+    );
+  }
   late Future<List<Map<String, dynamic>>> _notificationsFuture;
 
   @override
@@ -65,6 +74,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(title: Text("Notifications")),
       body: FutureBuilder<List<Map<String, dynamic>>>(
@@ -82,7 +92,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
               itemCount: notifications.length,
               itemBuilder: (context, index) {
                 final notification = notifications[index];
-                return ListTile(
+                return GestureDetector(
+                  onTap: () => _viewNotification(notification['id'], notification['message']),
+                child: ListTile(
                   title: Text(notification['message']),
                   subtitle: Text(
                     notification['timestamp'].toDate().toString(),
@@ -90,11 +102,60 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   trailing: notification['status'] == 'unread'
                       ? Icon(Icons.circle, color: Colors.red, size: 12)
                       : null,
+                  ),
                 );
               },
             );
           }
         },
+      ),
+    );
+  }
+}
+
+class NotificationDetailScreen extends StatelessWidget {
+  final String notificationId;
+  final String message;
+
+  const NotificationDetailScreen({
+    Key? key,
+    required this.notificationId,
+    required this.message,
+  }) : super(key: key);
+
+
+  Future<void> _markAsRead(String notificationId) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('notifications')
+          .doc(notificationId)
+          .update({'read': true});
+      debugPrint('Notification marked as read');
+    } catch (e) {
+      debugPrint('Failed to update notification: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Mark the notification as read when the screen is built.
+    _markAsRead(notificationId);
+
+    return Scaffold(
+      appBar: AppBar(title: const Text("Notification Details")),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Message:",
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Text(message),
+          ],
+        ),
       ),
     );
   }
