@@ -48,11 +48,9 @@ class RewardSelectionScreen extends StatelessWidget {
                   title: const Text('None'),
                   trailing: const Text("0%"),
                   onTap: () {
-                    // Pass back a RewardModel with discount rate set to 0
-                    Navigator.pop(
+                     Navigator.pop(
                         context,
-                        "None"
-                     );// Reset discount rate to 0
+                     );
                   },
                 );
               }

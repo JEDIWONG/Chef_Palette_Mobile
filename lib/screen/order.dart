@@ -23,7 +23,7 @@ class Order extends StatelessWidget {
           style: CustomStyle.h1,
         ),
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
+      body: FutureBuilder<List<Map<String, dynamic>>>(  // Fetching all orders from three collections
         future: OrderController().getOrdersByUser(userId),
         builder: (context, snapshot) {
           // Show a loading indicator while the future is resolving
@@ -68,13 +68,13 @@ class Order extends StatelessWidget {
                   orderId: orderId, 
                   status: order.status, 
                   datetime: order.timestamp,
+                  orderType: order.orderType,
                 );
               },
             ),
           );
         },
       ),
-
     );
   }
 }

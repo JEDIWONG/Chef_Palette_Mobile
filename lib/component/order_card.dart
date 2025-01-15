@@ -4,11 +4,12 @@ import 'package:flutter/material.dart';
 
 
 class OrderCard extends StatelessWidget{
-  const OrderCard({super.key, required this.orderId, required this.status, required this.datetime, });
+  const OrderCard({super.key, required this.orderId, required this.status, required this.datetime, required this.orderType, });
 
   final String orderId;
   final String status;
   final DateTime datetime; 
+  final String orderType;
 
   convertDate(){
     String s;
@@ -22,7 +23,7 @@ class OrderCard extends StatelessWidget{
   Widget build(BuildContext context) {
     return InkWell(
       onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=> OrderStatus(orderId: orderId,)));
+        Navigator.push(context, MaterialPageRoute(builder: (context)=> OrderStatus(orderId: orderId, orderType: orderType,)));
       },
 
       child: Card(
@@ -31,7 +32,7 @@ class OrderCard extends StatelessWidget{
           borderRadius: BorderRadius.circular(20), 
         ),
         child: ListTile(
-          title: Text(status,style: CustomStyle.lightH3,),
+          title: Text("$orderType ($status)",style: CustomStyle.lightH3,),
           subtitle: Text("Created On ${convertDate()}",style: CustomStyle.lightTxt,),
           trailing: const Icon(Icons.navigate_next,color: Colors.white,),
         )
