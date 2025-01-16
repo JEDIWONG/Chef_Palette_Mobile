@@ -235,11 +235,12 @@ void initState() {
                   fixedSize: Size(MediaQuery.sizeOf(context).width * 0.8, 50),
                 ),
                 child: const Text(
-                  "Enter Address",
+                  "Add New Address",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
             ),
+
           ],
         ),
       ),

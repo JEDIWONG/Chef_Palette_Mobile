@@ -56,7 +56,6 @@ dependencies:
   path_provider: ^2.1.5
   firebase_storage: ^12.4.0
   google_maps_flutter: ^2.10.0
-  location: ^4.4.0
 
 dev_dependencies:
   flutter_test:

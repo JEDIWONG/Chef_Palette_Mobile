@@ -3,14 +3,13 @@ import 'package:chef_palette/admin/admin_notification.dart';
 import 'package:chef_palette/admin/admin_order.dart';
 import 'package:chef_palette/admin/admin_reservation.dart';
 import 'package:chef_palette/admin/admin_rewards.dart';
-import 'package:chef_palette/admin/admin_transaction.dart';
 import 'package:chef_palette/admin/admin_user.dart';
 import 'package:chef_palette/auth/auth.dart';
 import 'package:chef_palette/admin/component/dashboard_card.dart';
 import 'package:chef_palette/style/style.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
+import 'package:chef_palette/admin/admin_trans_history.dart';
 class AdminDashboard extends StatelessWidget {
   const AdminDashboard({super.key});
 
@@ -24,17 +23,17 @@ class AdminDashboard extends StatelessWidget {
       "Transaction Record",
       "Manage Rewards",
       "Manage Members",
-      "Manage Notification"
+     // "Manage Notification"
     ];
 
     List<Widget> widget = [
       const AdminOrder(),
       const AdminMenu(),
       ReservationAdminPanel(),
-      const AdminTransactionPage(),
+      AdminTransactionHistory(),
       const AdminRewards(),
       const AdminUser(),
-      const AdminNotification()
+    //  const AdminNotification()
     ];
 
     List<String> img = [
@@ -44,7 +43,7 @@ class AdminDashboard extends StatelessWidget {
       "assets/images/settings.png",
       "assets/images/settings.png",
       "assets/images/settings.png",
-      "assets/images/settings.png",
+     // "assets/images/settings.png",
     ];
 
     DateTime? lastPressed;
@@ -93,7 +92,7 @@ class AdminDashboard extends StatelessWidget {
             mainAxisSpacing: 20, // Vertical space between items
             childAspectRatio: 1 / 1.1, // Aspect ratio for the items
           ),
-          itemCount: 7, // Number of items in the grid
+          itemCount: 6, // Number of items in the grid
           itemBuilder: (context, index) {
             return DashboardCard(
               target: widget[index],
