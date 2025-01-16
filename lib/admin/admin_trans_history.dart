@@ -1,150 +1,146 @@
 import 'package:chef_palette/component/order_card.dart';
 import 'package:chef_palette/controller/order_controller.dart';
+import 'package:chef_palette/controller/user_controller.dart';
 import 'package:chef_palette/models/order_model.dart';
+import 'package:chef_palette/models/user_model.dart';
 import 'package:chef_palette/style/style.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:chef_palette/component/custom_button.dart';
-class AdminTransactionRecord extends StatefulWidget {
+
+class AdminTransactionHistory extends StatefulWidget {
+  const AdminTransactionHistory({super.key});
+
   @override
-  _AdminTransactionRecordState createState() => _AdminTransactionRecordState();
+  State<AdminTransactionHistory> createState() => _TransactionHistoryState();
 }
 
-class _AdminTransactionRecordState extends State<AdminTransactionRecord> {
-  List<Map<String, dynamic>> transactions = [];
+class _TransactionHistoryState extends State<AdminTransactionHistory> {
+  final UserController _userController = UserController();
   bool isLoading = true;
+  List<UserModel> users = [];
 
   @override
   void initState() {
     super.initState();
-    fetchCompletedTransactions();
+    _loadUsers();
   }
 
-  Future<void> fetchCompletedTransactions() async {
+  Future<void> _loadUsers() async {
     try {
-      final db = FirebaseFirestore.instance;
-
-      // Query to fetch all completed transactions
-      final querySnapshot = await db
-          .collection('transactions') // Adjust this to match your database structure
-          .where('status', isEqualTo: 'completed')
-          .get();
-
+      final fetchedUsers = await _userController.fetchUsers(); // Fetch all users
       setState(() {
-        transactions = querySnapshot.docs
-            .map((doc) => {
-                  'userId': doc['userId'],
-                  'orderId': doc['orderId'],
-                  'items': doc['items'], // List of items
-                  'total': doc['total'],
-                  'timestamp': doc['timestamp'],
-                })
-            .toList();
+        users = fetchedUsers;
         isLoading = false;
       });
     } catch (e) {
-      print("Error fetching transactions: $e");
       setState(() {
         isLoading = false;
       });
+      print('Error loading users: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("All Completed Transactions"),
-        backgroundColor: Colors.green,
-      ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : transactions.isEmpty
-              ? const Center(
-                  child: Text(
-                    "No completed transactions found.",
-                    style: TextStyle(fontSize: 16),
-                  ),
-                )
-              : ListView.builder(
-                  itemCount: transactions.length,
-                  itemBuilder: (context, index) {
-                    final transaction = transactions[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 8, horizontal: 16),
-                      child: ListTile(
-                        title: Text(
-                          "Order ID: ${transaction['orderId']}",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("User ID: ${transaction['userId']}"),
-                            const SizedBox(height: 5),
-                            Text(
-                              "Total: \$${transaction['total']}",
-                              style: const TextStyle(color: Colors.green),
-                            ),
-                            const SizedBox(height: 5),
-                            Text(
-                              "Date: ${DateTime.parse(transaction['timestamp']).toLocal()}",
-                            ),
-                          ],
-                        ),
-                        onTap: () {
-                          showTransactionDetails(context, transaction);
-                        },
-                      ),
-                    );
-                  },
-                ),
-    );
-  }
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
-  void showTransactionDetails(
-      BuildContext context, Map<String, dynamic> transaction) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text("Order ID: ${transaction['orderId']}"),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("User ID: ${transaction['userId']}"),
-                const SizedBox(height: 10),
-                Text("Items:"),
-                ...List<dynamic>.from(transaction['items']).map((item) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4.0),
-                    child: Text(
-                      "${item['quantity']} x ${item['name']} @ \$${item['price']} = \$${item['quantity'] * item['price']}",
-                    ),
+    if (users.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          leading: const CustomBackButton(title: "Account", first: false),
+          leadingWidth: MediaQuery.sizeOf(context).width * 0.3,
+          title: Text("Transaction Record", style: CustomStyle.h3),
+        ),
+        body: const Center(
+          child: Text(
+            "No users found in the database.",
+            style: TextStyle(fontSize: 18),
+          ),
+        ),
+      );
+    }
+
+    return Scaffold(
+      resizeToAvoidBottomInset: true,
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        leading: const CustomBackButton(title: "Account", first: false),
+        leadingWidth: MediaQuery.sizeOf(context).width * 0.3,
+        title: Text("Transaction Record", style: CustomStyle.h3),
+      ),
+      body: ListView.builder(
+        itemCount: users.length,
+        itemBuilder: (context, userIndex) {
+          final user = users[userIndex];
+          final userId = user.uid; // Get each user's ID
+
+          return FutureBuilder<List<Map<String, dynamic>>>(
+            future: OrderController().getOrdersByUser(userId), // Fetch orders for the user
+            builder: (context, snapshot) {
+              // if (snapshot.connectionState == ConnectionState.waiting) {
+              //   return const Center(child: CircularProgressIndicator());
+              // }
+
+              if (snapshot.hasError) {
+                return Center(
+                  child: Text(
+                    "Error fetching orders for ${user.firstName}: ${snapshot.error}",
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                );
+              }
+
+              if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return ListTile(
+                  title: Text(
+                    user.firstName,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: const Text("No orders found for this user."),
+                );
+              }
+
+              List<Map<String, dynamic>> completedOrdersWithIds = snapshot.data!
+                  .where((orderWithId) =>
+                      (orderWithId['order'] as OrderModel).status == "Complete")
+                  .toList();
+
+              if (completedOrdersWithIds.isEmpty) {
+                return ListTile(
+                  title: Text(
+                    user.firstName,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: const Text("No completed transactions yet."),
+                );
+              }
+
+              return ExpansionTile(
+                title: Text(
+                  user.firstName,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text("Completed Orders: ${completedOrdersWithIds.length}"),
+                children: completedOrdersWithIds.map((orderWithId) {
+                  final orderId = orderWithId['id'] as String;
+                  final order = orderWithId['order'] as OrderModel;
+
+                  return OrderCard(
+                    orderId: orderId,
+                    status: order.status,
+                    datetime: order.timestamp,
+                    orderType: order.orderType,
                   );
                 }).toList(),
-                const Divider(),
-                Text(
-                  "Total: \$${transaction['total']}",
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.green),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("Close"),
-            ),
-          ],
-        );
-      },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }
